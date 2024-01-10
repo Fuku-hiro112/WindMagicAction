@@ -1,3 +1,4 @@
+using GameInput;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -40,11 +41,11 @@ public class TestCameraMove : MonoBehaviour
             transform.position, //現在の位置
             _target.transform.position, //到着したい位置
             _bias * Time.fixedDeltaTime); //マイルドな考慮バイアス
-        if (Gamepad.current == null || Mathf.Abs(Gamepad.current.rightStick.ReadValue().x) < 0.05f)
+        if (Mathf.Abs(ConfirmAction.s_Instance.LookDirection.x) < 0.05f)
         {
             return; //十分にジョイスティックが倒れていない判定
         }
         transform.Rotate(
-        0, Gamepad.current.rightStick.ReadValue().x * _rotBias * Time.fixedDeltaTime, 0);
+        0, ConfirmAction.s_Instance.LookDirection.x * _rotBias * Time.fixedDeltaTime, 0);
     }
 }

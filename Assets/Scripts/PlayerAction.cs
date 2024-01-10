@@ -24,7 +24,7 @@ public class PlayerAction : MonoBehaviour
     private CombatAction _myCA; // 自身のCombatAction
     private StandAction _stand;
     private WeaponAction _swordAction;
-    private ConfirmAction _confirmAction = ConfirmAction.s_Instance;
+    private ConfirmAction _confirmAction;
 
     void Start()
     {
@@ -37,7 +37,7 @@ public class PlayerAction : MonoBehaviour
         TryGetComponent(out _myCA); // 自身のCombatActionを取得
         transform.Find("PatHeal").TryGetComponent(out _patHeal); // 回復エフェクトを取得
         _smokeMain = _patSmoke.GetComponent<ParticleSystem>().main; // 走行砂煙の本体を取得
-
+        _confirmAction = ConfirmAction.s_Instance;
         _patHeal.Stop(); // 回復エフェクトを停止
         _patStrong.SetActive(false); // 強化エフェクトを無効化
     }
@@ -73,18 +73,21 @@ public class PlayerAction : MonoBehaviour
         Dir.x = Gamepad.current.leftStick.ReadValue().x;
         Dir.z = Gamepad.current.leftStick.ReadValue().y;
         */
-        Vector3 direction = _confirmAction.MoveDirection;
 
-        _smokeMain.startSize = 1.5f * direction.sqrMagnitude; // 移動方向への量に応じて砂煙サイズを制御
+        Vector3 direction = _confirmAction.MoveDirection;
+        var horizontalRotation = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up);
+        var moveDirection = horizontalRotation * direction;
+
+        _smokeMain.startSize = 1.5f * moveDirection.sqrMagnitude; // 移動方向への量に応じて砂煙サイズを制御
         // 移動指示のベクトル長をアニメーターに渡す
-        _myAnim.SetFloat("Speed", direction.magnitude);
+        _myAnim.SetFloat("Speed", moveDirection.magnitude);
 
         //if (Dir.sqrMagnitude < 0.01f) return; // 十分にジョイスティックが倒れていない判定
 
         // 入力方向へ移動する
-        transform.position += direction * _moveSpeed * Time.fixedDeltaTime;
+        transform.position += moveDirection * _moveSpeed * Time.fixedDeltaTime;
         // 入力方向へゆっくり回転する
-        Vector3 LookDir = Vector3.Slerp(transform.forward, direction, _rotSpeed * Time.fixedDeltaTime);
+        Vector3 LookDir = Vector3.Slerp(transform.forward, moveDirection, _rotSpeed * Time.fixedDeltaTime);
         transform.LookAt(transform.position + LookDir);
     }
     /// <summary>
@@ -106,9 +109,12 @@ public class PlayerAction : MonoBehaviour
     /// <returns></returns>
     IEnumerator Vibration(float VibL, float VibR, float Duration)
     {
-        Gamepad.current.SetMotorSpeeds(VibL, VibR);
-        yield return new WaitForSeconds(Duration);
-        Gamepad.current.SetMotorSpeeds(0, 0); // バイブレーション停止
+        if (Gamepad.current != null)
+        {
+            Gamepad.current.SetMotorSpeeds(VibL, VibR);
+            yield return new WaitForSeconds(Duration);
+            Gamepad.current.SetMotorSpeeds(0, 0); // バイブレーション停止
+        }
     }
     // 攻撃有効化
     public void AttackStart()

@@ -22,10 +22,11 @@ public class StandAction : MonoBehaviour
     }
     public void Attack()
     {
-        _elapsed = _closeTime;
+        //_elapsed = _closeTime;
     }
     private void Update()
     {
+        /*
         _elapsed -= Time.deltaTime;
         _elapsed = Mathf.Clamp(_elapsed, 0.0f, _closeTime);
         _closeRatio = Mathf.Lerp(_closeRatio, //現在の倍率
@@ -34,17 +35,21 @@ public class StandAction : MonoBehaviour
 
         Camera.main.gameObject.transform.localPosition = _camDir * _closeRatio;
         Camera.main.gameObject.transform.LookAt(transform.position + Vector3.up);
+        */
     }
     private void FixedUpdate()
     {
+        /*
         if (transform.rotation.x < _minCameraRotate) 
             transform.rotation = Quaternion.Euler(_minCameraRotate, transform.rotation.y, transform.rotation.z);
         if (transform.rotation.x > _maxCameraRotate) 
             transform.rotation = Quaternion.Euler(_maxCameraRotate, transform.rotation.y, transform.rotation.z);
+        */
         transform.position = Vector3.Lerp(
             transform.position, //現在の位置
             _player.transform.position, //到着したい位置
             _bias * Time.fixedDeltaTime); //マイルドな考慮バイアス
+        /*
         if (Gamepad.current == null || Mathf.Abs(Gamepad.current.rightStick.ReadValue().x) < 0.05f)
         {
             return; //十分にジョイスティックが倒れていない判定
@@ -53,5 +58,6 @@ public class StandAction : MonoBehaviour
         -Gamepad.current.rightStick.ReadValue().y * _rotBias * Time.fixedDeltaTime,
         Gamepad.current.rightStick.ReadValue().x * _rotBias * Time.fixedDeltaTime, 
         0);
+        */
     }
 }
