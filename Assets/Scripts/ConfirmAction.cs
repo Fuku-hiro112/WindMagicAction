@@ -94,7 +94,7 @@ namespace GameInput
             //•ûŒü‚ğæ‚é@Vecter2
             Vector2 direction2 = context.ReadValue<Vector2>().normalized;// Î‚ßˆÚ“®‚ª‘‚­‚È‚ç‚È‚¢‚æ‚¤³‹K‰»‚µ‚Ä‚¢‚é
             MoveDirection = new Vector3(direction2.x, 0, direction2.y);
-            Debug.Log(MoveDirection);
+            //Debug.Log(MoveDirection);
         }
         private void OnMoveStop(InputAction.CallbackContext context) => MoveDirection = Vector3.zero;
 

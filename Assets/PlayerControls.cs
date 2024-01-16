@@ -340,6 +340,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""a0892460-8a20-48f8-9845-9d77de02ada0"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Magic"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""7b4b5d62-cc12-47c8-8fc2-e153df595ff6"",
                     ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",

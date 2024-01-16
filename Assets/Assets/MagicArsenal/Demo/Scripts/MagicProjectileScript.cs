@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.ComponentModel;
+using UnityEngine.InputSystem.HID;
 
 namespace MagicArsenal
 {
@@ -9,7 +11,8 @@ namespace MagicArsenal
         public GameObject projectileParticle;
         public GameObject muzzleParticle;
         public GameObject[] trailParticles;
-        [Header("Adjust if not using Sphere Collider")]
+        [SerializeField] private float destroyTime;
+        [Header("スフィアコライダーを使用しない場合は調整してください")]
         public float colliderRadius = 1f;
         [Range(0f, 1f)]
         public float collideOffset = 0.15f;
@@ -44,54 +47,27 @@ namespace MagicArsenal
             {
                 return;
             }
+            // Increment the destroyTimer if the projectile hasn't hit anything.
+            destroyTimer += Time.deltaTime;
 
-            float rad = sphereCollider ? sphereCollider.radius : colliderRadius;
-
-            Vector3 dir = rb.velocity;
-            float dist = dir.magnitude * Time.deltaTime;
-
-            if (rb.useGravity)
+            // Destroy the missile if the destroyTimer exceeds 5 seconds.
+            if (destroyTimer >= 5f)
             {
-                // Handle gravity separately to correctly calculate the direction.
-                dir += Physics.gravity * Time.deltaTime;
-                dist = dir.magnitude * Time.deltaTime;
-            }
-
-            RaycastHit hit;
-            if (Physics.SphereCast(myTransform.position, rad, dir, out hit, dist))
-            {
-                myTransform.position = hit.point + (hit.normal * collideOffset);
-
-                GameObject impactP = Instantiate(impactParticle, myTransform.position, Quaternion.FromToRotation(Vector3.up, hit.normal)) as GameObject;
-
-                if (hit.transform.tag == "Destructible") // Projectile will destroy objects tagged as Destructible
-                {
-                    Destroy(hit.transform.gameObject);
-                }
-
-                foreach (GameObject trail in trailParticles)
-                {
-                    GameObject curTrail = myTransform.Find(projectileParticle.name + "/" + trail.name).gameObject;
-                    curTrail.transform.parent = null;
-                    Destroy(curTrail, 3f);
-                }
-                Destroy(projectileParticle, 3f);
-                Destroy(impactP, 5.0f);
                 DestroyMissile();
-            }
-            else
-            {
-                // Increment the destroyTimer if the projectile hasn't hit anything.
-                destroyTimer += Time.deltaTime;
-
-                // Destroy the missile if the destroyTimer exceeds 5 seconds.
-                if (destroyTimer >= 5f)
-                {
-                    DestroyMissile();
-                }
             }
 
             RotateTowardsDirection();
+        }
+        private void OnTriggerEnter(Collider other)
+        {
+            GameObject impactP = Instantiate(impactParticle, myTransform.position, Quaternion.FromToRotation(Vector3.up, Vector3.up)) as GameObject;
+            if (other.gameObject.CompareTag("Destructible")) // Projectile will destroy objects tagged as Destructible
+            {
+                Destroy(other.transform.gameObject);
+            }
+            Destroy(projectileParticle, 3f);
+            Destroy(impactP, 5.0f);
+            DestroyMissile();
         }
 
         private void DestroyMissile()
@@ -120,7 +96,7 @@ namespace MagicArsenal
             }
         }
 
-        private void RotateTowardsDirection()
+        private void RotateTowardsDirection()// 和訳:方向に回転
         {
             if (rb.velocity != Vector3.zero)
             {

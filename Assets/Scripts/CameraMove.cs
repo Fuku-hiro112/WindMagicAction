@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using GameInput;
+using UnityEngine.Assertions;
 
 [RequireComponent(typeof(Camera))]// Cameraコンポーネントが必要　ない場合は自動的に追加
 public class CameraMove : MonoBehaviour
@@ -13,6 +14,8 @@ public class CameraMove : MonoBehaviour
     [SerializeField] private float _heightM = 1.2f;            // 注視点の高さ[m]
     [SerializeField] private float _rotationSensitivity = 50f;// 感度
     private ConfirmAction _confirmAction;
+    private CombatAction _combatAction;
+    private Vector3 _lookAt;
 
     private void Reset()
     {
@@ -20,42 +23,56 @@ public class CameraMove : MonoBehaviour
     }
     void Start()
     {
-        if (_target == null)
-        {
-            Debug.LogError("ターゲットが設定されていない");
-            Application.Quit();
-        }
+        _combatAction = GameObject.FindGameObjectWithTag("Player")?.GetComponent<CombatAction>();
         _confirmAction = ConfirmAction.s_Instance;
+        ResetPosition();// カメラ位置リセット
 
-        // カメラ位置リセット
-        Vector3 lookAt = _target.position + Vector3.up * _heightM;
-        transform.position = lookAt - transform.forward * _distanceToPlayerM;
+        Assert.IsNotNull(_target, "ターゲットが設定されていない。");
+        Assert.IsNotNull(_combatAction, "_combatActionがNullです。");
     }
-
+    /// <summary>
+    /// カメラ位置リセット
+    /// </summary>
+    public void ResetPosition()
+    {
+        _lookAt = _target.position + Vector3.up * _heightM;
+        transform.position = _lookAt - transform.forward * _distanceToPlayerM;
+    }
     void FixedUpdate()
     {
+
         Vector2 lookDerection = _confirmAction.LookDirection;
         float rotX = lookDerection.x * Time.fixedDeltaTime * _rotationSensitivity;
         float rotY = -lookDerection.y * Time.fixedDeltaTime * _rotationSensitivity;// 上入力した時、上を向きたい為-(マイナスを付けている)
 
-        Vector3 lookAt = _target.position + Vector3.up * _heightM;// カメラの注視点（中心点）
+        _lookAt = _target.position + Vector3.up * _heightM;// カメラの注視点（中心点）
 
         // 回転
-        transform.RotateAround(lookAt, Vector3.up, rotX);// 横回転
+        transform.RotateAround(_lookAt, Vector3.up, rotX);// 横回転
         // カメラがプレイヤーの真上や真下にあるときにそれ以上回転させないようにする
         if (transform.forward.y > 0.9f && rotY < 0 /*真上*/|| 
             transform.forward.y < -0.9f && rotY > 0/*真下*/) 
             rotY = 0;
-        transform.RotateAround(lookAt, transform.right, rotY);// 縦回転 
+        transform.RotateAround(_lookAt, transform.right, rotY);// 縦回転 
 
         // カメラとプレイヤーとの間の距離を調整
-        Vector3 targetPos = lookAt - transform.forward * _distanceToPlayerM;
+        Vector3 targetPos = _lookAt - transform.forward * _distanceToPlayerM;
         //transform.position = Vector3.Lerp(transform.position, targetPos, _bias * Time.fixedDeltaTime);//HACK: 上下を向いた時歩くとだんだん初期位置に戻る
         
         // 注視点の設定
-        transform.LookAt(lookAt);
+        transform.LookAt(_lookAt);
 
         // _slideDistanceM分、カメラを横にずらす
         transform.position = transform.position + transform.right * _slideDistanceM;
     }
+
+    /* Assert.IsNotNullっていう便利機能があったのでいらなくなった（; ;）
+    public static void ErrorLog<T>(T check, string message)
+    {
+        if (check == null)
+        {
+            Debug.LogError(message);
+            Application.Quit();
+        }
+    }*/
 }

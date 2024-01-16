@@ -1,114 +1,287 @@
 fileFormatVersion: 2
 guid: 81736ff260e0ff54e81c5734e7a37d38
 ModelImporter:
-  serializedVersion: 19
-  fileIDToRecycleName:
-    100000: ARM_L
-    100002: ARM_R
-    100004: CENTER_C
-    100006: EX_JAWB1_1_C
-    100008: EYE
-    100010: FINGERBASE_L
-    100012: FINGERBASE_R
-    100014: FOOT_L
-    100016: FOOT_R
-    100018: FOREARM_L
-    100020: FOREARM_R
-    100022: HAND_L
-    100024: HAND_R
-    100026: HEAD1_C
-    100028: HIPS_C
-    100030: LEG_L
-    100032: LEG_R
-    100034: NECK1_C
-    100036: NW_FINGERBASE_TIP_L
-    100038: NW_FINGERBASE_TIP_R
-    100040: NW_HEAD2_C
-    100042: NW_JAWB1_2_C
-    100044: NW_TAIL1_2_C
-    100046: RETMESH2
-    100048: Root
-    100050: RUVret
-    100052: SHOULDER_L
-    100054: SHOULDER_R
-    100056: SPINE1_C
-    100058: SPINE2_C
-    100060: SPINE3_C
-    100062: TAIL1_1_C
-    100064: TEETHret
-    100066: TOEBASE_L
-    100068: TOEBASE_R
-    100070: TOEBASE_TIP_L
-    100072: TOEBASE_TIP_R
-    100074: UPLEG_L
-    100076: UPLEG_R
-    100078: //RootNode
-    400000: ARM_L
-    400002: ARM_R
-    400004: CENTER_C
-    400006: EX_JAWB1_1_C
-    400008: EYE
-    400010: FINGERBASE_L
-    400012: FINGERBASE_R
-    400014: FOOT_L
-    400016: FOOT_R
-    400018: FOREARM_L
-    400020: FOREARM_R
-    400022: HAND_L
-    400024: HAND_R
-    400026: HEAD1_C
-    400028: HIPS_C
-    400030: LEG_L
-    400032: LEG_R
-    400034: NECK1_C
-    400036: NW_FINGERBASE_TIP_L
-    400038: NW_FINGERBASE_TIP_R
-    400040: NW_HEAD2_C
-    400042: NW_JAWB1_2_C
-    400044: NW_TAIL1_2_C
-    400046: RETMESH2
-    400048: Root
-    400050: RUVret
-    400052: SHOULDER_L
-    400054: SHOULDER_R
-    400056: SPINE1_C
-    400058: SPINE2_C
-    400060: SPINE3_C
-    400062: TAIL1_1_C
-    400064: TEETHret
-    400066: TOEBASE_L
-    400068: TOEBASE_R
-    400070: TOEBASE_TIP_L
-    400072: TOEBASE_TIP_R
-    400074: UPLEG_L
-    400076: UPLEG_R
-    400078: //RootNode
-    7400000: Attack
-    9500000: //RootNode
+  serializedVersion: 22200
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: ARM_L
+  - first:
+      1: 100002
+    second: ARM_R
+  - first:
+      1: 100004
+    second: CENTER_C
+  - first:
+      1: 100006
+    second: EX_JAWB1_1_C
+  - first:
+      1: 100008
+    second: EYE
+  - first:
+      1: 100010
+    second: FINGERBASE_L
+  - first:
+      1: 100012
+    second: FINGERBASE_R
+  - first:
+      1: 100014
+    second: FOOT_L
+  - first:
+      1: 100016
+    second: FOOT_R
+  - first:
+      1: 100018
+    second: FOREARM_L
+  - first:
+      1: 100020
+    second: FOREARM_R
+  - first:
+      1: 100022
+    second: HAND_L
+  - first:
+      1: 100024
+    second: HAND_R
+  - first:
+      1: 100026
+    second: HEAD1_C
+  - first:
+      1: 100028
+    second: HIPS_C
+  - first:
+      1: 100030
+    second: LEG_L
+  - first:
+      1: 100032
+    second: LEG_R
+  - first:
+      1: 100034
+    second: NECK1_C
+  - first:
+      1: 100036
+    second: NW_FINGERBASE_TIP_L
+  - first:
+      1: 100038
+    second: NW_FINGERBASE_TIP_R
+  - first:
+      1: 100040
+    second: NW_HEAD2_C
+  - first:
+      1: 100042
+    second: NW_JAWB1_2_C
+  - first:
+      1: 100044
+    second: NW_TAIL1_2_C
+  - first:
+      1: 100046
+    second: RETMESH2
+  - first:
+      1: 100048
+    second: Root
+  - first:
+      1: 100050
+    second: RUVret
+  - first:
+      1: 100052
+    second: SHOULDER_L
+  - first:
+      1: 100054
+    second: SHOULDER_R
+  - first:
+      1: 100056
+    second: SPINE1_C
+  - first:
+      1: 100058
+    second: SPINE2_C
+  - first:
+      1: 100060
+    second: SPINE3_C
+  - first:
+      1: 100062
+    second: TAIL1_1_C
+  - first:
+      1: 100064
+    second: TEETHret
+  - first:
+      1: 100066
+    second: TOEBASE_L
+  - first:
+      1: 100068
+    second: TOEBASE_R
+  - first:
+      1: 100070
+    second: TOEBASE_TIP_L
+  - first:
+      1: 100072
+    second: TOEBASE_TIP_R
+  - first:
+      1: 100074
+    second: UPLEG_L
+  - first:
+      1: 100076
+    second: UPLEG_R
+  - first:
+      1: 100078
+    second: //RootNode
+  - first:
+      4: 400000
+    second: ARM_L
+  - first:
+      4: 400002
+    second: ARM_R
+  - first:
+      4: 400004
+    second: CENTER_C
+  - first:
+      4: 400006
+    second: EX_JAWB1_1_C
+  - first:
+      4: 400008
+    second: EYE
+  - first:
+      4: 400010
+    second: FINGERBASE_L
+  - first:
+      4: 400012
+    second: FINGERBASE_R
+  - first:
+      4: 400014
+    second: FOOT_L
+  - first:
+      4: 400016
+    second: FOOT_R
+  - first:
+      4: 400018
+    second: FOREARM_L
+  - first:
+      4: 400020
+    second: FOREARM_R
+  - first:
+      4: 400022
+    second: HAND_L
+  - first:
+      4: 400024
+    second: HAND_R
+  - first:
+      4: 400026
+    second: HEAD1_C
+  - first:
+      4: 400028
+    second: HIPS_C
+  - first:
+      4: 400030
+    second: LEG_L
+  - first:
+      4: 400032
+    second: LEG_R
+  - first:
+      4: 400034
+    second: NECK1_C
+  - first:
+      4: 400036
+    second: NW_FINGERBASE_TIP_L
+  - first:
+      4: 400038
+    second: NW_FINGERBASE_TIP_R
+  - first:
+      4: 400040
+    second: NW_HEAD2_C
+  - first:
+      4: 400042
+    second: NW_JAWB1_2_C
+  - first:
+      4: 400044
+    second: NW_TAIL1_2_C
+  - first:
+      4: 400046
+    second: RETMESH2
+  - first:
+      4: 400048
+    second: Root
+  - first:
+      4: 400050
+    second: RUVret
+  - first:
+      4: 400052
+    second: SHOULDER_L
+  - first:
+      4: 400054
+    second: SHOULDER_R
+  - first:
+      4: 400056
+    second: SPINE1_C
+  - first:
+      4: 400058
+    second: SPINE2_C
+  - first:
+      4: 400060
+    second: SPINE3_C
+  - first:
+      4: 400062
+    second: TAIL1_1_C
+  - first:
+      4: 400064
+    second: TEETHret
+  - first:
+      4: 400066
+    second: TOEBASE_L
+  - first:
+      4: 400068
+    second: TOEBASE_R
+  - first:
+      4: 400070
+    second: TOEBASE_TIP_L
+  - first:
+      4: 400072
+    second: TOEBASE_TIP_R
+  - first:
+      4: 400074
+    second: UPLEG_L
+  - first:
+      4: 400076
+    second: UPLEG_R
+  - first:
+      4: 400078
+    second: //RootNode
+  - first:
+      74: 7400000
+    second: Attack
+  - first:
+      95: 9500000
+    second: //RootNode
+  externalObjects: {}
   materials:
-    importMaterials: 1
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
-    resampleRotations: 1
+    resampleCurves: 1
     optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
+    extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
       name: Attack
       takeName: Attack
+      internalID: 0
       firstFrame: 0
       lastFrame: 70
       wrapMode: 0
@@ -129,7 +302,21 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0.37224504
+        functionName: AttackStart
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.5998433
+        functionName: AttackFinish
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask:
       - path: 
         weight: 1
@@ -220,25 +407,48 @@ ModelImporter:
     globalScale: 0.01
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 0
     importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
+    nodeNameCollisionStrategy: 0
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 1
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 0
+    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 4
+    normalCalculationMode: 0
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
-  copyAvatar: 0
   humanDescription:
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -248,11 +458,19 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 0.01
     rootMotionBoneName: 
     hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
+  avatarSetup: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  importBlendShapeDeformPercent: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

@@ -1,124 +1,317 @@
 fileFormatVersion: 2
 guid: 415afe209c83fef4480e9463ea4f78d2
 ModelImporter:
-  serializedVersion: 19
-  fileIDToRecycleName:
-    100000: Chest
-    100002: Foot_L
-    100004: Foot_R
-    100006: Hand_L
-    100008: Hand_R
-    100010: Head
-    100012: Hips
-    100014: locator_shield_L
-    100016: locator_shield_R
-    100018: locator_weapon_L
-    100020: locator_weapon_R
-    100022: LowerArm_L
-    100024: LowerArm_R
-    100026: LowerLeg_L
-    100028: LowerLeg_R
-    100030: MiddleDistal_L
-    100032: MiddleDistal_R
-    100034: MiddleIntermediate_L
-    100036: MiddleIntermediate_R
-    100038: MiddleProximal_L
-    100040: MiddleProximal_R
-    100042: Neck
-    100044: Player
-    100046: //RootNode
-    100048: Shield01
-    100050: Shoulder_L
-    100052: Shoulder_R
-    100054: Spine
-    100056: Sword01
-    100058: ThumbDistal_L
-    100060: ThumbDistal_R
-    100062: ThumbIntermediate_L
-    100064: ThumbIntermediate_R
-    100066: ThumbProximal_L
-    100068: ThumbProximal_R
-    100070: Toes_L
-    100072: Toes_R
-    100074: UpperArm_L
-    100076: UpperArm_R
-    100078: UpperLeg_L
-    100080: UpperLeg_R
-    400000: Chest
-    400002: Foot_L
-    400004: Foot_R
-    400006: Hand_L
-    400008: Hand_R
-    400010: Head
-    400012: Hips
-    400014: locator_shield_L
-    400016: locator_shield_R
-    400018: locator_weapon_L
-    400020: locator_weapon_R
-    400022: LowerArm_L
-    400024: LowerArm_R
-    400026: LowerLeg_L
-    400028: LowerLeg_R
-    400030: MiddleDistal_L
-    400032: MiddleDistal_R
-    400034: MiddleIntermediate_L
-    400036: MiddleIntermediate_R
-    400038: MiddleProximal_L
-    400040: MiddleProximal_R
-    400042: Neck
-    400044: Player
-    400046: //RootNode
-    400048: Shield01
-    400050: Shoulder_L
-    400052: Shoulder_R
-    400054: Spine
-    400056: Sword01
-    400058: ThumbDistal_L
-    400060: ThumbDistal_R
-    400062: ThumbIntermediate_L
-    400064: ThumbIntermediate_R
-    400066: ThumbProximal_L
-    400068: ThumbProximal_R
-    400070: Toes_L
-    400072: Toes_R
-    400074: UpperArm_L
-    400076: UpperArm_R
-    400078: UpperLeg_L
-    400080: UpperLeg_R
-    2300000: Shield01
-    2300002: Sword01
-    3300000: Shield01
-    3300002: Sword01
-    4300000: Shield01
-    4300002: Sword01
-    4300004: Player
-    7400000: Attack
-    9500000: //RootNode
-    13700000: Player
+  serializedVersion: 22200
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: Chest
+  - first:
+      1: 100002
+    second: Foot_L
+  - first:
+      1: 100004
+    second: Foot_R
+  - first:
+      1: 100006
+    second: Hand_L
+  - first:
+      1: 100008
+    second: Hand_R
+  - first:
+      1: 100010
+    second: Head
+  - first:
+      1: 100012
+    second: Hips
+  - first:
+      1: 100014
+    second: locator_shield_L
+  - first:
+      1: 100016
+    second: locator_shield_R
+  - first:
+      1: 100018
+    second: locator_weapon_L
+  - first:
+      1: 100020
+    second: locator_weapon_R
+  - first:
+      1: 100022
+    second: LowerArm_L
+  - first:
+      1: 100024
+    second: LowerArm_R
+  - first:
+      1: 100026
+    second: LowerLeg_L
+  - first:
+      1: 100028
+    second: LowerLeg_R
+  - first:
+      1: 100030
+    second: MiddleDistal_L
+  - first:
+      1: 100032
+    second: MiddleDistal_R
+  - first:
+      1: 100034
+    second: MiddleIntermediate_L
+  - first:
+      1: 100036
+    second: MiddleIntermediate_R
+  - first:
+      1: 100038
+    second: MiddleProximal_L
+  - first:
+      1: 100040
+    second: MiddleProximal_R
+  - first:
+      1: 100042
+    second: Neck
+  - first:
+      1: 100044
+    second: Player
+  - first:
+      1: 100046
+    second: //RootNode
+  - first:
+      1: 100048
+    second: Shield01
+  - first:
+      1: 100050
+    second: Shoulder_L
+  - first:
+      1: 100052
+    second: Shoulder_R
+  - first:
+      1: 100054
+    second: Spine
+  - first:
+      1: 100056
+    second: Sword01
+  - first:
+      1: 100058
+    second: ThumbDistal_L
+  - first:
+      1: 100060
+    second: ThumbDistal_R
+  - first:
+      1: 100062
+    second: ThumbIntermediate_L
+  - first:
+      1: 100064
+    second: ThumbIntermediate_R
+  - first:
+      1: 100066
+    second: ThumbProximal_L
+  - first:
+      1: 100068
+    second: ThumbProximal_R
+  - first:
+      1: 100070
+    second: Toes_L
+  - first:
+      1: 100072
+    second: Toes_R
+  - first:
+      1: 100074
+    second: UpperArm_L
+  - first:
+      1: 100076
+    second: UpperArm_R
+  - first:
+      1: 100078
+    second: UpperLeg_L
+  - first:
+      1: 100080
+    second: UpperLeg_R
+  - first:
+      4: 400000
+    second: Chest
+  - first:
+      4: 400002
+    second: Foot_L
+  - first:
+      4: 400004
+    second: Foot_R
+  - first:
+      4: 400006
+    second: Hand_L
+  - first:
+      4: 400008
+    second: Hand_R
+  - first:
+      4: 400010
+    second: Head
+  - first:
+      4: 400012
+    second: Hips
+  - first:
+      4: 400014
+    second: locator_shield_L
+  - first:
+      4: 400016
+    second: locator_shield_R
+  - first:
+      4: 400018
+    second: locator_weapon_L
+  - first:
+      4: 400020
+    second: locator_weapon_R
+  - first:
+      4: 400022
+    second: LowerArm_L
+  - first:
+      4: 400024
+    second: LowerArm_R
+  - first:
+      4: 400026
+    second: LowerLeg_L
+  - first:
+      4: 400028
+    second: LowerLeg_R
+  - first:
+      4: 400030
+    second: MiddleDistal_L
+  - first:
+      4: 400032
+    second: MiddleDistal_R
+  - first:
+      4: 400034
+    second: MiddleIntermediate_L
+  - first:
+      4: 400036
+    second: MiddleIntermediate_R
+  - first:
+      4: 400038
+    second: MiddleProximal_L
+  - first:
+      4: 400040
+    second: MiddleProximal_R
+  - first:
+      4: 400042
+    second: Neck
+  - first:
+      4: 400044
+    second: Player
+  - first:
+      4: 400046
+    second: //RootNode
+  - first:
+      4: 400048
+    second: Shield01
+  - first:
+      4: 400050
+    second: Shoulder_L
+  - first:
+      4: 400052
+    second: Shoulder_R
+  - first:
+      4: 400054
+    second: Spine
+  - first:
+      4: 400056
+    second: Sword01
+  - first:
+      4: 400058
+    second: ThumbDistal_L
+  - first:
+      4: 400060
+    second: ThumbDistal_R
+  - first:
+      4: 400062
+    second: ThumbIntermediate_L
+  - first:
+      4: 400064
+    second: ThumbIntermediate_R
+  - first:
+      4: 400066
+    second: ThumbProximal_L
+  - first:
+      4: 400068
+    second: ThumbProximal_R
+  - first:
+      4: 400070
+    second: Toes_L
+  - first:
+      4: 400072
+    second: Toes_R
+  - first:
+      4: 400074
+    second: UpperArm_L
+  - first:
+      4: 400076
+    second: UpperArm_R
+  - first:
+      4: 400078
+    second: UpperLeg_L
+  - first:
+      4: 400080
+    second: UpperLeg_R
+  - first:
+      23: 2300000
+    second: Shield01
+  - first:
+      23: 2300002
+    second: Sword01
+  - first:
+      33: 3300000
+    second: Shield01
+  - first:
+      33: 3300002
+    second: Sword01
+  - first:
+      43: 4300000
+    second: Shield01
+  - first:
+      43: 4300002
+    second: Sword01
+  - first:
+      43: 4300004
+    second: Player
+  - first:
+      74: 7400000
+    second: Attack
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      137: 13700000
+    second: Player
+  externalObjects: {}
   materials:
-    importMaterials: 1
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
-    resampleRotations: 1
+    resampleCurves: 1
     optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 3
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
+    extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
       name: Attack
       takeName: Take 001
+      internalID: 0
       firstFrame: 0
       lastFrame: 70
       wrapMode: 0
@@ -139,7 +332,21 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0.2947658
+        functionName: AttackStart
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.44628093
+        functionName: AttackFinish
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask:
       - path: 
         weight: 1
@@ -232,25 +439,48 @@ ModelImporter:
     globalScale: 0.01
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 0
     importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
+    nodeNameCollisionStrategy: 0
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 1
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 0
+    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 4
+    normalCalculationMode: 0
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
-  copyAvatar: 0
   humanDescription:
+    serializedVersion: 3
     human:
     - boneName: Hips
       humanName: Hips
@@ -518,216 +748,210 @@ ModelImporter:
         modified: 0
     skeleton:
     - name: Player@Attack(Clone)
+      parentName: 
       position: {x: 0, y: 0, z: 0}
       rotation: {x: 0, y: 0, z: 0, w: 1}
       scale: {x: 1, y: 1, z: 1}
-      transformModified: 1
     - name: Hips
+      parentName: 
       position: {x: -0.0000000024327582, y: 0.91661024, z: 0.0000000051701257}
       rotation: {x: -0.000000008231807, y: 0.000000008231807, z: -0.7071068, w: 0.7071068}
       scale: {x: 0.9999999, y: 1, z: 0.9999999}
-      transformModified: 1
     - name: Spine
+      parentName: 
       position: {x: -0.22400835, y: -0.00000004014883, z: -0.000000005170126}
-      rotation: {x: 0.000000011641532, y: -0.0000000116415295, z: -1.3552526e-16,
-        w: 1}
+      rotation: {x: 0.000000011641532, y: -0.0000000116415295, z: -1.3552526e-16, w: 1}
       scale: {x: 0.99999994, y: 0.9999999, z: 1}
-      transformModified: 1
     - name: Chest
+      parentName: 
       position: {x: -0.13691425, y: -0.000000043710344, z: -0.028407183}
       rotation: {x: 6.2803697e-16, y: 0.0000000116415295, z: 0, w: 1}
       scale: {x: 1.0000001, y: 1, z: 1.0000001}
-      transformModified: 1
     - name: Neck
+      parentName: 
       position: {x: -0.19987205, y: 0.000000055391453, z: 0.02311742}
       rotation: {x: 0.000000023283064, y: 0.000000011641532, z: -4.8562735e-24, w: 1}
       scale: {x: 0.99999994, y: 1, z: 0.99999994}
-      transformModified: 1
     - name: Head
+      parentName: 
       position: {x: -0.070978165, y: -0.00000007123289, z: 0.0077381264}
       rotation: {x: -0.000000004887636, y: -0.0000000048876325, z: 0.7071068, w: 0.7071068}
       scale: {x: 0.9999999, y: 0.9999999, z: 0.99999994}
-      transformModified: 1
     - name: Shoulder_L
+      parentName: 
       position: {x: -0.18091705, y: -0.0674443, z: 0.028407192}
       rotation: {x: 0.000000040266038, y: -0.00000006152574, z: 0.6284517, w: 0.77784866}
       scale: {x: 0.9999998, y: 0.99999976, z: 0.99999994}
-      transformModified: 1
     - name: UpperArm_L
+      parentName: 
       position: {x: -0.07462654, y: -0.044161107, z: 0.000000055079244}
       rotation: {x: -0.000000017553836, y: 0.00000025002169, z: 0.06264134, w: 0.9980361}
       scale: {x: 0.99999994, y: 1, z: 1}
-      transformModified: 1
     - name: LowerArm_L
+      parentName: 
       position: {x: -0.24819824, y: -0.0022802353, z: -0.00000006919345}
-      rotation: {x: -0.000000024738252, y: -0.000000023283063, z: 0.000000011641532,
-        w: 1}
+      rotation: {x: -0.000000024738252, y: -0.000000023283063, z: 0.000000011641532, w: 1}
       scale: {x: 1, y: 1.0000001, z: 1.0000002}
-      transformModified: 1
     - name: Hand_L
+      parentName: 
       position: {x: -0.30930397, y: 0.0000002530707, z: -0.000000059604645}
-      rotation: {x: 0.0000000040017736, y: -1.8809345e-15, z: 0.0000000029103828,
-        w: 1}
+      rotation: {x: 0.0000000040017736, y: -1.8809345e-15, z: 0.0000000029103828, w: 1}
       scale: {x: 0.99999994, y: 0.9999998, z: 0.99999976}
-      transformModified: 1
     - name: locator_weapon_L
+      parentName: 
       position: {x: -0.8220031, y: 1.333917, z: 0.0013239686}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
-      transformModified: 1
     - name: MiddleProximal_L
+      parentName: 
       position: {x: -0.077196896, y: -0.008210888, z: 0.0030890626}
-      rotation: {x: -0.00000000836735, y: 0.00000000873115, z: -0.0000000058207665,
-        w: 1}
+      rotation: {x: -0.00000000836735, y: 0.00000000873115, z: -0.0000000058207665, w: 1}
       scale: {x: 0.9999999, y: 1, z: 1}
-      transformModified: 1
     - name: MiddleIntermediate_L
+      parentName: 
       position: {x: -0.026511192, y: -0.0016984897, z: 0.0000000106845}
       rotation: {x: 0.00000010911385, y: -0.0000017528865, z: -0.024336757, w: 0.9997039}
       scale: {x: 1.0000001, y: 1, z: 1}
-      transformModified: 1
     - name: MiddleDistal_L
+      parentName: 
       position: {x: -0.021676183, y: -0.0042464724, z: 0.00000021980757}
-      rotation: {x: -0.0000000043655746, y: 0.000000011641532, z: -0.000000011641531,
-        w: 1}
+      rotation: {x: -0.0000000043655746, y: 0.000000011641532, z: -0.000000011641531, w: 1}
       scale: {x: 1.0000001, y: 1.0000001, z: 1}
-      transformModified: 1
     - name: ThumbProximal_L
+      parentName: 
       position: {x: -0.028740466, y: -0.014253375, z: 0.030442137}
       rotation: {x: -0.1453557, y: 0.34706405, z: 0.1337248, w: 0.9168075}
       scale: {x: 1.0000001, y: 1.0000001, z: 1.0000001}
-      transformModified: 1
     - name: ThumbIntermediate_L
+      parentName: 
       position: {x: -0.029380558, y: -0.0033631192, z: 0.0013556592}
       rotation: {x: -0.008983059, y: 0.0000043037508, z: 0.0132815065, w: 0.99987143}
       scale: {x: 0.9999998, y: 1, z: 0.99999976}
-      transformModified: 1
     - name: ThumbDistal_L
+      parentName: 
       position: {x: -0.028967839, y: -0.0015333892, z: -0.00022800546}
       rotation: {x: -0.038346186, y: -0.053307947, z: -0.027387906, w: 0.99746567}
       scale: {x: 1.0000001, y: 1.0000002, z: 1}
-      transformModified: 1
     - name: locator_shield_L
+      parentName: 
       position: {x: -0.14607213, y: 0.05649099, z: -1.3322676e-17}
       rotation: {x: 0.0049432213, y: 0.61377275, z: -0.024682956, w: 0.78908134}
       scale: {x: 1, y: 1, z: 1}
-      transformModified: 1
     - name: Shield01
+      parentName: 
       position: {x: 0.04600077, y: 0.008499788, z: -0.047266334}
       rotation: {x: -0.1748317, y: -0.6290039, z: -0.06890616, w: 0.75434744}
       scale: {x: 1, y: 1, z: 1}
-      transformModified: 1
     - name: Shoulder_R
+      parentName: 
       position: {x: -0.18091705, y: 0.067444354, z: 0.028407099}
       rotation: {x: 0.6284565, y: 0.77784485, z: -0.00000021497198, w: 0.00000016184195}
       scale: {x: 0.9999999, y: 0.99999964, z: 0.9999996}
-      transformModified: 1
     - name: UpperArm_R
+      parentName: 
       position: {x: 0.074626714, y: 0.044160094, z: -0.00000008381905}
       rotation: {x: -0.000000002212464, y: -0.000000010732043, z: 0.06263449, w: 0.9980365}
       scale: {x: 0.9999999, y: 1, z: 1.0000001}
-      transformModified: 1
     - name: LowerArm_R
+      parentName: 
       position: {x: 0.24819797, y: 0.002280295, z: -0.000000053943715}
       rotation: {x: -0.0000000101863415, y: -6.2803697e-16, z: 1.6093627e-16, w: 1}
       scale: {x: 1, y: 1, z: 0.99999994}
-      transformModified: 1
     - name: Hand_R
+      parentName: 
       position: {x: 0.3093043, y: -0.0000005438924, z: 0.00000015459956}
       rotation: {x: 0.000000043655746, y: 6.2803697e-16, z: 3.312509e-16, w: 1}
       scale: {x: 0.9999999, y: 1.0000002, z: 0.9999999}
-      transformModified: 1
     - name: locator_weapon_R
+      parentName: 
       position: {x: 0.82200307, y: -1.3339162, z: -0.0013239686}
       rotation: {x: 1, y: -0, z: 6.162976e-33, w: 6.123234e-17}
       scale: {x: 1, y: 1, z: 1}
-      transformModified: 1
     - name: Sword01
+      parentName: 
       position: {x: -0.76078606, y: -1.3587662, z: -0.0006639687}
       rotation: {x: -1.2325952e-32, y: 6.162976e-33, z: 0, w: 1}
       scale: {x: 1, y: 1, z: 1}
-      transformModified: 1
     - name: MiddleProximal_R
+      parentName: 
       position: {x: 0.077196956, y: 0.008210294, z: -0.0030893022}
-      rotation: {x: 0.000000029103829, y: 0.0000000058207643, z: -0.000000005820765,
-        w: 1}
+      rotation: {x: 0.000000029103829, y: 0.0000000058207643, z: -0.000000005820765, w: 1}
       scale: {x: 1.0000005, y: 1, z: 1.0000005}
-      transformModified: 1
     - name: MiddleIntermediate_R
+      parentName: 
       position: {x: 0.026511192, y: 0.0016998019, z: 0.000000089616655}
       rotation: {x: 0.00000017968797, y: -0.0000018843126, z: -0.024390059, w: 0.9997025}
       scale: {x: 0.99999976, y: 1.0000001, z: 0.9999999}
-      transformModified: 1
     - name: MiddleDistal_R
+      parentName: 
       position: {x: 0.021675944, y: 0.0042498107, z: -0.00000014556862}
       rotation: {x: 2.7755576e-15, y: 0.000000023283064, z: 0.000000023283063, w: 1}
       scale: {x: 0.99999994, y: 0.9999998, z: 0.9999998}
-      transformModified: 1
     - name: ThumbProximal_R
+      parentName: 
       position: {x: 0.02873993, y: 0.014250159, z: -0.030442161}
       rotation: {x: -0.14539635, y: 0.34708148, z: 0.13364385, w: 0.9168062}
       scale: {x: 1.0000004, y: 1.0000001, z: 1.0000001}
-      transformModified: 1
     - name: ThumbIntermediate_R
+      parentName: 
       position: {x: 0.029382192, y: 0.003368034, z: -0.0013534939}
       rotation: {x: -0.008999364, y: -0.000027595937, z: 0.0133438455, w: 0.99987054}
       scale: {x: 0.9999999, y: 1, z: 1}
-      transformModified: 1
     - name: ThumbDistal_R
+      parentName: 
       position: {x: 0.028968114, y: 0.0015339756, z: 0.000227992}
       rotation: {x: -0.038346227, y: -0.05330793, z: -0.027387917, w: 0.99746567}
       scale: {x: 0.9999997, y: 1, z: 1.0000001}
-      transformModified: 1
     - name: locator_shield_R
+      parentName: 
       position: {x: 0.14607215, y: -0.056490134, z: 2.0240749e-17}
       rotation: {x: 0.78907776, y: -0.024713313, z: -0.6137763, w: -0.0049196444}
       scale: {x: 1, y: 1, z: -1}
-      transformModified: 1
     - name: UpperLeg_L
+      parentName: 
       position: {x: -0.058091518, y: -0.088288404, z: 0.00000008526465}
       rotation: {x: -0.00000004656612, y: -0.000000017462298, z: 1, w: 5.5511146e-16}
       scale: {x: 1, y: 1, z: 1}
-      transformModified: 1
     - name: LowerLeg_L
+      parentName: 
       position: {x: -0.42519313, y: -0.00000002989897, z: 0.0027673168}
       rotation: {x: 0.000000017462298, y: -0.000000069849186, z: 4.065757e-16, w: 1}
       scale: {x: 1.0000001, y: 1.0000001, z: 1}
-      transformModified: 1
     - name: Foot_L
+      parentName: 
       position: {x: -0.3937959, y: 0.000000022351742, z: -0.005836532}
       rotation: {x: 0.62956023, y: 0.32195342, z: -0.32195342, w: 0.62956023}
       scale: {x: 0.99999976, y: 0.99999964, z: 0.9999994}
-      transformModified: 1
     - name: Toes_L
+      parentName: 
       position: {x: -0.17031209, y: -0.034073636, z: 0.000000021818881}
       rotation: {x: -0.000000021073419, y: -0.00000004214684, z: -0.30760685, w: 0.9515135}
       scale: {x: 1.0000004, y: 1.0000001, z: 1.0000002}
-      transformModified: 1
     - name: UpperLeg_R
+      parentName: 
       position: {x: -0.058092017, y: 0.088288456, z: 0.0000000019748654}
       rotation: {x: 1, y: 0, z: 0, w: -0.000000011641532}
       scale: {x: 1, y: 1.0000001, z: 1.0000004}
-      transformModified: 1
     - name: LowerLeg_R
+      parentName: 
       position: {x: 0.4251939, y: -0.0000000522185, z: -0.0027674285}
       rotation: {x: -0.000000011641533, y: 0, z: 0, w: -1}
       scale: {x: 1.0000001, y: 1, z: 0.9999999}
-      transformModified: 1
     - name: Foot_R
+      parentName: 
       position: {x: 0.3937959, y: 2.7178665e-10, z: 0.005836508}
       rotation: {x: -0.62956023, y: -0.32195348, z: 0.3219534, w: -0.6295602}
       scale: {x: 1.0000001, y: 1, z: 0.9999999}
-      transformModified: 1
     - name: Toes_R
+      parentName: 
       position: {x: 0.17031191, y: 0.03407341, z: 0.000000037325965}
       rotation: {x: 0.000000015534884, y: -0.00000004035634, z: -0.3076068, w: 0.95151365}
       scale: {x: 0.99999976, y: 1, z: 1.0000001}
-      transformModified: 1
     - name: Player
+      parentName: 
       position: {x: 0, y: 0, z: 0}
       rotation: {x: 0, y: -0, z: 0, w: 1}
       scale: {x: 1, y: 1, z: 1}
-      transformModified: 1
     armTwist: 0.5
     foreArmTwist: 0.5
     upperLegTwist: 0.5
@@ -735,11 +959,19 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 0.01
     rootMotionBoneName: 
     hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 3
   humanoidOversampling: 1
+  avatarSetup: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  importBlendShapeDeformPercent: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

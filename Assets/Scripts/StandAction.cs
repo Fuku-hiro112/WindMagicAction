@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem; //新Inputシステムの利用に必要
 
+// 注視点
 public class StandAction : MonoBehaviour
 {
     [SerializeField] private float _bias = 8.0f;
