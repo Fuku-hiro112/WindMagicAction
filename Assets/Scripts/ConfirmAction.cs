@@ -45,7 +45,6 @@ namespace GameInput
             if (s_Instance == null)
             {
                 s_Instance = this;
-                DontDestroyOnLoad(gameObject);
             }
             else
             {
@@ -166,6 +165,7 @@ namespace GameInput
             _btnPad[2] = Gamepad.current.dpad.left.isPressed;
             _btnPad[3] = Gamepad.current.dpad.up.isPressed;
         }
+        /*
         void OnGUI()
         {
             if (Gamepad.current == null) return;
@@ -191,7 +191,8 @@ namespace GameInput
             GUILayout.Label($"ButtonJoyL: {_btnJoyL}");
             GUILayout.Label($"ButtonJoyR: {_btnJoyR}");
             GUILayout.Label($"ButtonPad: {_btnPad[0]}, {_btnPad[1]}, {_btnPad[2]}, {_btnPad[3]}");
-            */
+            *//*
         }
+        */
     }
 }

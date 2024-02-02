@@ -60,7 +60,7 @@ public class CombatAction : MonoBehaviour
             if (_health <= 0.0f)
             { // 死亡判定
                 IsDead = true; // 死亡を指定する
-                _myUnit.StartCoroutine(_myUnit.OnDeath());
+                _myUnit.OnDeath().Forget();
             }
             //ダメージエフェクト生成
             _myUnit.OnDamage();

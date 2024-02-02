@@ -1,18 +1,30 @@
+using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Assertions;
 
 [RequireComponent(typeof(CombatAction))]
 public class UnitBase : MonoBehaviour , IAnimationAttackable// AnimationEventŠÖ”‚ğ”­¶‚³‚¹‚é‚É‚ÍŒp³Œ³‚ÉŠÖ”‚ª•K—v‚Á‚Û‚¢‚Ì‚Å•K{‚É‚µ‚½
 {
-    [SerializeField] protected GameObject[] _weapons = new GameObject[0];
-    protected WeaponAction[] _weaponActions;
+    [SerializeField] protected GameObject[] _weapons = new GameObject[0]; // •ŠíƒIƒuƒWƒFƒNƒg
+
+    protected WeaponAction[] _weaponActions; // 
+    protected CancellationToken token;
 
     public virtual void OnDamage(){}
-    public virtual IEnumerator OnDeath(){ yield return null; }
+    public virtual async UniTaskVoid OnDeath(){}
 
-    protected void OnStart()
+    protected void Start()// e‚ÌStart‚Í©“®“I‚ÉOverride‚³‚ê‚é‚½‚ßq‚©‚çbase.Start‚ÅŒÄ‚Ño‚µ‚ª•K—v
+    {
+        token = this.GetCancellationTokenOnDestroy();
+        GetWeapon();
+    }
+    /// <summary>
+    /// •Ší‚Ìæ“¾
+    /// </summary>
+    private void GetWeapon()
     {
         _weaponActions = new WeaponAction[_weapons.Length];
 
@@ -22,6 +34,7 @@ public class UnitBase : MonoBehaviour , IAnimationAttackable// AnimationEventŠÖ
             Assert.IsNotNull(_weaponActions[i], $"_weaponActions[{i}]‚ªnull‚Å‚·");
         }
     }
+
     public virtual void AttackStart()  { }
     public virtual void AttackFinish() { }
 }

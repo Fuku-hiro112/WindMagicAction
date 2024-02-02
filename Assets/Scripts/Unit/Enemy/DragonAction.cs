@@ -2,9 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using Cysharp.Threading.Tasks;
 
 public class DragonAction : EnemyActionBase 
 {
+    [SerializeField] Material _material;
     private void Reset()
     {
         _fireDistance = 5;
@@ -16,19 +18,24 @@ public class DragonAction : EnemyActionBase
     /// <summary>
     /// 死亡処理
     /// </summary>
-    public override IEnumerator OnDeath()
+    public override async UniTaskVoid OnDeath()
     {
-        //TODO: 回転して小さくなるように
         Debug.Log("ドラゴン死亡");
         _myNavi.enabled = false; // ナビメッシュ切る
+
         _myAnim.SetFloat("Speed", 0); // 移動はしない
         _myAnim.SetBool("Attack", false); // 攻撃停止
+
         _myAnim.SetTrigger("Death"); // 死亡モーション発動
+        gameObject.tag = "Untagged";
 
         DeathProduction();
-
-        yield return new WaitForSeconds(_deathTime);
-        Destroy(gameObject); // deathTime後に自身を撤去
+        Destroy(gameObject, _deathTime); // deathTime後に自身を撤去
+    }
+    protected override void DeathProduction()
+    {
+        _material.DOFade(0, _deathTime);//HACK: 出来ない
+        base.DeathProduction();
     }
 //-----------アニメーションイベント-----------------------
     /// <summary>

@@ -1,9 +1,11 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.AI; // ナビメッシュの利用に必要
+using UnityEngine.AI;
 
-[RequireComponent(typeof(Animator), typeof(NavMeshAgent))]
+[RequireComponent(typeof(Animator), typeof(NavMeshAgent))]// AnimatorとNavMeshを必須に
 public class EnemyActionBase : UnitBase
 {
     [Header("範囲")]
@@ -23,7 +25,7 @@ public class EnemyActionBase : UnitBase
 
     private void Start()
     {
-        base.OnStart();
+        base.Start();
         TryGetComponent(out _myAnim); // 自身のアニメーターを取得
         TryGetComponent(out _myNavi); // 自身のナビメッシュを取得
         TryGetComponent(out _myCA);　 // 自身のCombatActionを取得
@@ -36,66 +38,86 @@ public class EnemyActionBase : UnitBase
     }
     private void Update()
     {
-        if (!_player || _myCA.IsDead)
-        {
-            return; // プレイヤー未発見なら、何もしない
-        }
+        ActionEnemy();
+    }
+    protected void ActionEnemy()
+    {
+        if (!_player || _myCA.IsDead) return;// プレイヤー未発見時
         // プレイヤー死亡時の対応
         if (_playerCA.IsDead)
         {
-            _myAnim.SetFloat("Speed", 0); // 移動はしない
-            _myAnim.SetBool("Attack", false); // 攻撃停止
-            return; // 以降の処理は行わない
+            SomeAnimationsStopped();
+            return;
         }
         // プレイヤーとの距離を求める
         float distance = Vector3.Distance(transform.position, _player.transform.position);
+
         if (distance > _searchRange)
         {
-            // プレイヤーが_searchRange以上先
+            // 移動停止
             _myNavi.enabled = false; // ナビメッシュ切る
-            _myAnim.SetFloat("Speed", 0); // 移動はしない
-            _myAnim.SetBool("Attack", false); // 攻撃停止
+            _myAnim.SetFloat("Speed", 0); //移動はしない
+            _myAnim.SetBool("Attack", false); //攻撃停止
         }
-        else if (distance <= _fireDistance)
+        else if (distance <= _fireDistance)// プレイヤーとの距離が_fireDistance以下、
         {
-            // プレイヤーとの距離が_fireDistance以下、立ち止まって攻撃開始
+            // 立ち止まって攻撃
             _myNavi.enabled = false; // ナビメッシュ切る
-            _myAnim.SetFloat("Speed", 0); // 移動はしない　//TODO: 指定ポジションまで戻る
-            _myAnim.SetBool("Attack", true); // 攻撃開始
+            _myAnim.SetFloat("Speed", 0); //移動はしない
+            _myAnim.SetBool("Attack", true); //攻撃開始
         }
-        else
+        else // プレイヤーとの距離が_fireDistance～_searchRangeなら
         {
-            // プレイヤーとの距離が_fireDistance～_searchRangeなら、追いかける
-            _myNavi.enabled = true; // ナビメッシュで追う
+            // プレイヤーを追従
+            _myNavi.enabled = true; // ナビメッシュをオン
             _myNavi.destination = _player.transform.position; // ターゲットを指示
-            _myAnim.SetFloat("Speed", _myNavi.velocity.magnitude); // 移動モーション
-            _myAnim.SetBool("Attack", false); // 攻撃停止
+            _myAnim.SetFloat("Speed", _myNavi.velocity.magnitude); //移動モーション
+            _myAnim.SetBool("Attack", false); //攻撃停止
         }
     }
-    // ダメージ視覚処理
+    /// <summary>
+    /// ダメージ視覚処理
+    /// </summary>
+    /// <returns></returns>
     public override void OnDamage()
     {
         GameObject Fx = Instantiate(_patDamage); // ダメージエフェクトを生成
         Fx.transform.position = transform.position + _damagePos; // 位置を補正
         Destroy(Fx, 1.0f); // エフェクトを1.0秒後に破棄
     }
-    // 死亡処理
-    public override IEnumerator OnDeath()
+    /// <summary>
+    /// 死亡処理
+    /// </summary>
+    /// <returns></returns>
+    public override async UniTaskVoid OnDeath()
     {
         _myNavi.enabled = false; // ナビメッシュ切る
+        
         _myAnim.SetFloat("Speed", 0); // 移動はしない
         _myAnim.SetBool("Attack", false); // 攻撃停止
+
         _myAnim.SetTrigger("Death"); // 死亡モーション発動
-        DeathProduction();
-        yield return new WaitForSeconds(_deathTime);
-        Destroy(gameObject); // deathTime後に自身を撤去
+        gameObject.tag = "Untagged";
+        Destroy(gameObject, _deathTime); // _deathTime秒後に自身を削除
     }
-    protected void DeathProduction()
+    protected virtual void SomeAnimationsStopped()
     {
-        transform.DOScale(Vector3.zero, _deathTime).SetEase(Ease.InCirc).OnUpdate(() =>
-        {
-            transform.rotation *= Quaternion.Euler(Vector3.up * Time.deltaTime * 360);
-        });
+        _myAnim.SetFloat("Speed", 0); // 移動はしない
+        _myAnim.SetBool("Attack", false); // 攻撃停止
+    }
+    /// <summary>
+    /// 死亡演出
+    /// </summary>
+    protected virtual void DeathProduction()
+    {
+        // だんだん小さくなる
+        transform.DOScale(Vector3.zero, _deathTime)
+            .SetEase(Ease.OutCirc)
+            .OnUpdate(() =>
+            {
+                transform.rotation *= Quaternion.Euler(Vector3.up * Time.deltaTime * 360);
+            })
+            .Play();
     }
 
 //----------アニメーションイベント------------------------

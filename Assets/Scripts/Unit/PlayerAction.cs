@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem; // 新Inputシステムの利用に必要
 using GameInput;
+using Cysharp.Threading.Tasks;
+using System;
 
 [RequireComponent(typeof(Animator))]
 public class PlayerAction : UnitBase ,IAnimationAttackable
@@ -35,7 +37,7 @@ public class PlayerAction : UnitBase ,IAnimationAttackable
 
     private void Start()
     {
-        base.OnStart();
+        base.Start();
         TryGetComponent(out _myAnim);// 自身のアニメーターを取得
         TryGetComponent(out _myCA); // 自身のCombatActionを取得
         _patSmoke  = transform.Find("PatSmoke").gameObject; // 走行エフェクトを取得
@@ -106,10 +108,10 @@ public class PlayerAction : UnitBase ,IAnimationAttackable
     /// <summary>
     /// 死亡処理
     /// </summary>
-    public override IEnumerator OnDeath()
+    public override async UniTaskVoid OnDeath()
     {
         _myAnim.SetTrigger("Death"); // ダウンモーション発動
-        yield return new WaitForSeconds(_birthInterval);
+        await UniTask.Delay(TimeSpan.FromSeconds(_birthInterval));
         ReBirth(); // 再生処理を予約 //HACK: Invokeを使うとどこから呼び出されているかわからないため変更が必要
     }
     /// <summary>
@@ -120,10 +122,10 @@ public class PlayerAction : UnitBase ,IAnimationAttackable
         GameObject Fx = Instantiate(_patDamage); // ダメージエフェクトを生成
         Fx.transform.position = transform.position + _damagePos; // 位置を補正
         Destroy(Fx, 1.0f); // 1.0秒後にエフェクトを破棄
-        StartCoroutine(Vibration(0.0f, 0.7f, 0.2f)); // バイブレーション
+        Vibration(0.0f, 0.7f, 0.2f).Forget(); // バイブレーション
     }
     /// <summary>
-    /// 再生処理
+    /// 再誕処理
     /// </summary>
     private void ReBirth()
     {
@@ -137,29 +139,30 @@ public class PlayerAction : UnitBase ,IAnimationAttackable
     /// </summary>
     /// <param name="waitTime"></param>
     /// <returns></returns>
-    private IEnumerator StrongAction(float waitTime)
+    private async UniTask StrongAction(float waitTime)
     {
         _patStrong.SetActive(true); // 有効化
-        _weaponAction.ChangePower(_strongValue);
-        yield return new WaitForSeconds(_strongDuration);
+        _weaponAction.ChangePower(_strongValue);// 攻撃強化
+
+        await UniTask.Delay(TimeSpan.FromSeconds(_strongDuration));// _strongDurarion秒待機
+        
         _patStrong.SetActive(false); // 無効化
         _weaponAction.ChangePower( -_strongValue);// 見にくいですがマイナスが付いてます
     }
     /// <summary>
-    /// バイブレーション処理（大振動値,小振動値,持続秒数）
+    /// バイブレーション処理
     /// </summary>
-    /// <param name="VibL"></param>
-    /// <param name="VibR"></param>
-    /// <param name="Duration"></param>
+    /// <param name="VibL">大振動値</param>
+    /// <param name="VibR">小振動値</param>
+    /// <param name="Duration">持続秒数</param>
     /// <returns></returns>
-    private IEnumerator Vibration(float VibL, float VibR, float Duration)
+    private async UniTask Vibration(float VibL, float VibR, float Duration)
     {
-        // ゲームパットの場合振動する
-        if (Gamepad.current != null)
+        if (Gamepad.current != null)// ゲームパットの場合
         {
-            Gamepad.current.SetMotorSpeeds(VibL, VibR);
-            yield return new WaitForSeconds(Duration);
-            Gamepad.current.SetMotorSpeeds(0, 0); // バイブレーション停止
+            Gamepad.current.SetMotorSpeeds(VibL, VibR);//振動
+            await UniTask.Delay(TimeSpan.FromSeconds(Duration));//Durarion秒待機
+            Gamepad.current.SetMotorSpeeds(0, 0); // 振動停止
         }
     }
     /// <summary>

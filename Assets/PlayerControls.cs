@@ -71,6 +71,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Decision"",
+                    ""type"": ""Button"",
+                    ""id"": ""3c00003a-6927-4ffa-b6ce-984ad44011c2"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -368,6 +377,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Avoid"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8c24efe2-330a-4fe5-9ae7-0fdb0bee9a0f"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Decision"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e96ff26a-7641-4b93-bb66-6b05ba23d443"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Decision"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -960,6 +991,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
         m_Player_Magic = m_Player.FindAction("Magic", throwIfNotFound: true);
         m_Player_Avoid = m_Player.FindAction("Avoid", throwIfNotFound: true);
+        m_Player_Decision = m_Player.FindAction("Decision", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1038,6 +1070,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Fire;
     private readonly InputAction m_Player_Magic;
     private readonly InputAction m_Player_Avoid;
+    private readonly InputAction m_Player_Decision;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -1047,6 +1080,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Fire => m_Wrapper.m_Player_Fire;
         public InputAction @Magic => m_Wrapper.m_Player_Magic;
         public InputAction @Avoid => m_Wrapper.m_Player_Avoid;
+        public InputAction @Decision => m_Wrapper.m_Player_Decision;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1071,6 +1105,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Avoid.started += instance.OnAvoid;
             @Avoid.performed += instance.OnAvoid;
             @Avoid.canceled += instance.OnAvoid;
+            @Decision.started += instance.OnDecision;
+            @Decision.performed += instance.OnDecision;
+            @Decision.canceled += instance.OnDecision;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1090,6 +1127,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Avoid.started -= instance.OnAvoid;
             @Avoid.performed -= instance.OnAvoid;
             @Avoid.canceled -= instance.OnAvoid;
+            @Decision.started -= instance.OnDecision;
+            @Decision.performed -= instance.OnDecision;
+            @Decision.canceled -= instance.OnDecision;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1277,6 +1317,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnFire(InputAction.CallbackContext context);
         void OnMagic(InputAction.CallbackContext context);
         void OnAvoid(InputAction.CallbackContext context);
+        void OnDecision(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
