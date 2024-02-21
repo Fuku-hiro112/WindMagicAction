@@ -270,7 +270,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 100078, guid: 80936c9837a05964192963e010c7dbdc, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 98192843}
+      addedObject: {fileID: -7552788854894063240}
     - targetCorrespondingSourceObject: {fileID: 100078, guid: 80936c9837a05964192963e010c7dbdc, type: 3}
       insertIndex: -1
       addedObject: {fileID: 98192836}
@@ -295,7 +295,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 100078, guid: 80936c9837a05964192963e010c7dbdc, type: 3}
   m_PrefabInstance: {fileID: 2632495735666962546}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &98192843
+--- !u!114 &-7552788854894063240
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -304,7 +304,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2632495735666996892}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b56385a8e4fd08d41af5752e8a01a131, type: 3}
+  m_Script: {fileID: 11500000, guid: f3ce5c4d5ab7b6b4a8c3148514cbb5a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _weapons:
@@ -331,6 +331,7 @@ MonoBehaviour:
   _magnificationCanvasScale: 1
   _canvasPos: {x: 0, y: 2, z: 0}
   _maxHealth: 10
+  _invincibilityTimeSeconds: 1
 --- !u!54 &98192832
 Rigidbody:
   m_ObjectHideFlags: 0

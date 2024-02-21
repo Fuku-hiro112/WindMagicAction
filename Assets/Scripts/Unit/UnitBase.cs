@@ -10,7 +10,7 @@ public class UnitBase : MonoBehaviour , IAnimationAttackable// AnimationEventä÷ê
 {
     [SerializeField] protected GameObject[] _weapons = new GameObject[0]; // ïêäÌÉIÉuÉWÉFÉNÉg
 
-    protected WeaponAction[] _weaponActions; // 
+    protected WeaponAction[] _weaponActions;
     protected CancellationToken token;
 
     public virtual void OnDamage(){}

@@ -18,10 +18,13 @@ public class TestShoot : MonoBehaviour
     Vector3 _position;
     Vector3 _stopPos;
     Vector3 _targetHitPos;
-    private GameObject _target = null;
+    private Transform _target = null;
+    private Vector3 _cameraForward;
 
-    public void Shoot()
+    public void Shoot(Transform target)
     {
+        _cameraForward = Camera.main.transform.forward;
+        _target = target;
         _bulletState = State.Move;
     }
     /*
@@ -48,7 +51,7 @@ public class TestShoot : MonoBehaviour
     void Start()
     {
         _position = transform.localPosition;
-        GameObject[] targets = GameObject.FindGameObjectsWithTag("Enemy");
+        /*GameObject[] targets = GameObject.FindGameObjectsWithTag("Enemy");
         float minimumDistance = Mathf.Infinity;
         foreach (GameObject target in targets)
         {
@@ -57,9 +60,9 @@ public class TestShoot : MonoBehaviour
             if (minimumDistance > distanece)
             {
                 minimumDistance = distanece;
-                _target = target;
+                _target = target.transform;
             }
-        }
+        }*/
         _velocity = Vector3.zero;
     }
 
@@ -71,11 +74,11 @@ public class TestShoot : MonoBehaviour
                 if (_target == null)
                 {
                     float speed = 0.3f / _period;
-                    transform.position += transform.forward * speed;
+                    transform.position += _cameraForward * speed;// CameraŠp“x‚É‚·‚é‚Æ‚¨‚©‚µ‚¢
                 }
                 else
                 {
-                    var targetPosition = _target.transform.position;
+                    var targetPosition = _target.position;
                     _targetHitPos = new Vector3(targetPosition.x, targetPosition.y + _targetY, targetPosition.z);
 
                     var acceleration = Vector3.zero;

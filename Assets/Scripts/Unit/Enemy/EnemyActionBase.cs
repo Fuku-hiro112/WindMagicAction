@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Assertions;
 
 [RequireComponent(typeof(Animator), typeof(NavMeshAgent))]// AnimatorとNavMeshを必須に
 public class EnemyActionBase : UnitBase
@@ -18,23 +19,22 @@ public class EnemyActionBase : UnitBase
     [Space(20)]
     protected NavMeshAgent _myNavi; // 自身のナビメッシュ
     protected Animator _myAnim; // 自身のアニメーター
+    protected TestEnemyManager _enemyManager;
     private CombatAction _myCA;   // 自身のCombatAction
-
     private GameObject _player; // プレイヤー
     private CombatAction _playerCA; // プレイヤーのCombatAction
 
-    private void Start()
+    private new void Start()
     {
         base.Start();
         TryGetComponent(out _myAnim); // 自身のアニメーターを取得
         TryGetComponent(out _myNavi); // 自身のナビメッシュを取得
         TryGetComponent(out _myCA);　 // 自身のCombatActionを取得
+        transform.parent.TryGetComponent(out _enemyManager);
         _player = GameObject.FindGameObjectWithTag("Player"); // プレイヤーを取得
-        if (_player)
-        {
-            // プレイヤーのCombatActionを取得
-            _player.TryGetComponent(out _playerCA);
-        }
+        Assert.IsNotNull(_enemyManager, "_enemyManagerがNullです。EnemyManager配下に敵オブジェクトを生成するようにしてください。");
+        Assert.IsNotNull(_player, $"_playerがNullです");
+        _player?.TryGetComponent(out _playerCA);// プレイヤーからCombatActionを取得
     }
     private void Update()
     {
@@ -76,6 +76,14 @@ public class EnemyActionBase : UnitBase
         }
     }
     /// <summary>
+    /// アニメーションを止める (移動と攻撃)
+    /// </summary>
+    protected virtual void SomeAnimationsStopped()
+    {
+        _myAnim.SetFloat("Speed", 0); // 移動はしない
+        _myAnim.SetBool("Attack", false); // 攻撃停止
+    }
+    /// <summary>
     /// ダメージ視覚処理
     /// </summary>
     /// <returns></returns>
@@ -91,24 +99,26 @@ public class EnemyActionBase : UnitBase
     /// <returns></returns>
     public override async UniTaskVoid OnDeath()
     {
-        _myNavi.enabled = false; // ナビメッシュ切る
-        
-        _myAnim.SetFloat("Speed", 0); // 移動はしない
-        _myAnim.SetBool("Attack", false); // 攻撃停止
+        Debug.Log($"{gameObject.name}が死亡した");
 
+        SomeAnimationsStopped();
         _myAnim.SetTrigger("Death"); // 死亡モーション発動
+
+        _myNavi.enabled = false; // ナビメッシュ切る
         gameObject.tag = "Untagged";
-        Destroy(gameObject, _deathTime); // _deathTime秒後に自身を削除
-    }
-    protected virtual void SomeAnimationsStopped()
-    {
-        _myAnim.SetFloat("Speed", 0); // 移動はしない
-        _myAnim.SetBool("Attack", false); // 攻撃停止
+        _enemyManager.RemoveEnemy(this.gameObject);
     }
     /// <summary>
     /// 死亡演出
     /// </summary>
-    protected virtual void DeathProduction()
+    protected virtual void DeathPerformance()
+    {
+        SmallingWhileRotating();
+    }
+    /// <summary>
+    /// 回転しながら小さくなる
+    /// </summary>
+    protected void SmallingWhileRotating()
     {
         // だんだん小さくなる
         transform.DOScale(Vector3.zero, _deathTime)
@@ -117,6 +127,7 @@ public class EnemyActionBase : UnitBase
             {
                 transform.rotation *= Quaternion.Euler(Vector3.up * Time.deltaTime * 360);
             })
+            .OnComplete(()=>Destroy(gameObject))// 終わってから死亡
             .Play();
     }
 

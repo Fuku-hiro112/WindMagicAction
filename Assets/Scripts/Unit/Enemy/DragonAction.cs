@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using Cysharp.Threading.Tasks;
+using UnityEngine.Assertions;
 
 public class DragonAction : EnemyActionBase 
 {
@@ -29,13 +30,17 @@ public class DragonAction : EnemyActionBase
         _myAnim.SetTrigger("Death"); // 死亡モーション発動
         gameObject.tag = "Untagged";
 
-        DeathProduction();
-        Destroy(gameObject, _deathTime); // deathTime後に自身を撤去
+        DeathPerformance();// 回転しながら小さくなる
     }
-    protected override void DeathProduction()
+    /// <summary>
+    /// 死亡演出
+    /// </summary>
+    /// <param name="obj"></param>
+    protected override void DeathPerformance()
     {
-        _material.DOFade(0, _deathTime);//HACK: 出来ない
-        base.DeathProduction();
+        SmallingWhileRotating();
+        Assert.IsNotNull(_material, $"_materialがnullです");
+        //_material.DOFade(0, _deathTime);//HACK: 出来ない
     }
 //-----------アニメーションイベント-----------------------
     /// <summary>

@@ -3,6 +3,7 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class WargAction : EnemyActionBase
 {
@@ -20,19 +21,19 @@ public class WargAction : EnemyActionBase
     /// </summary>
     public override async UniTaskVoid OnDeath()
     {
-        Debug.Log("ドラゴン死亡");
-        _myNavi.enabled = false; // ナビメッシュ切る
-        SomeAnimationsStopped();
-        _myAnim.SetTrigger("Death"); // 死亡モーション発動
-        gameObject.tag = "Untagged";
-
-        DeathProduction();
-        Destroy(gameObject, _deathTime); // deathTime後に自身を撤去
+        Debug.Log("狼死亡");
+        base.OnDeath().Forget();
+        DeathPerformance();// 演出 回転しながら小さくなる
     }
-    protected override void DeathProduction()
+    /// <summary>
+    /// 死亡演出
+    /// </summary>
+    /// <param name="obj"></param>
+    protected override void DeathPerformance()
     {
-        _material.DOFade(0, _deathTime);// 出来ない
-        base.DeathProduction();
+        SmallingWhileRotating();
+        Assert.IsNotNull(_material, $"_materialがnullです");
+        //_material.DOFade(0, _deathTime);//HACK: 出来ない
     }
     //-----------アニメーションイベント-----------------------
     /// <summary>

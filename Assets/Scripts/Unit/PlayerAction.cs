@@ -5,9 +5,12 @@ using UnityEngine.InputSystem; // 新Inputシステムの利用に必要
 using GameInput;
 using Cysharp.Threading.Tasks;
 using System;
+using UnityEngine.Assertions;
+using SettingCamera;
+using System.Xml.Linq;
 
 [RequireComponent(typeof(Animator))]
-public class PlayerAction : UnitBase ,IAnimationAttackable
+public class PlayerAction : UnitBase
 {
     [Header("速度設定")]
     [SerializeField] private float _moveSpeed = 4.0f; // 移動速度
@@ -20,9 +23,11 @@ public class PlayerAction : UnitBase ,IAnimationAttackable
     [Space(20)]
     [SerializeField] private int _healValue = 50; // 回復値
     [Space(20)]
+
     [Header("アタッチ必須オブジェクト")]
     [SerializeField] private GameObject _patDamage; // ダメージエフェクト
     [SerializeField] private GameObject _swordWeapon;
+    [SerializeField] private CameraManager _cameraManager;
 
     private Animator _myAnim; // 自身のアニメーター
     private CombatAction _myCA; // 自身のCombatAction
@@ -35,9 +40,9 @@ public class PlayerAction : UnitBase ,IAnimationAttackable
     private WeaponAction _weaponAction;
     private ConfirmAction _confirmAction;
 
-    private void Start()
+    private new void Start() //NOTE: 継承元にStartがあるため自動でnewされる
     {
-        base.Start();
+        base.Start(); //NOTE: 自動でnewされ、呼び出されなくなるためここで呼び出し
         TryGetComponent(out _myAnim);// 自身のアニメーターを取得
         TryGetComponent(out _myCA); // 自身のCombatActionを取得
         _patSmoke  = transform.Find("PatSmoke").gameObject; // 走行エフェクトを取得
@@ -46,6 +51,14 @@ public class PlayerAction : UnitBase ,IAnimationAttackable
         transform.Find("PatHeal").TryGetComponent(out _patHeal); // 回復エフェクトを取得
         _smokeMain = _patSmoke.GetComponent<ParticleSystem>().main; // 走行砂煙の本体を取得
         _confirmAction = ConfirmAction.s_Instance;
+
+        Assert.IsNotNull(_myAnim, $"{this}の_myAnimがエラーです");
+        Assert.IsNotNull(_myCA, $"{this}の_myCAがエラーです");
+        Assert.IsNotNull(_patSmoke, $"{this}の_patSmokeがエラーです");
+        Assert.IsNotNull(_patStrong, $"{this}の_patStrongがエラーです");
+        Assert.IsNotNull(_weaponAction, $"{this}の_weaponActionがエラーです");
+        Assert.IsNotNull(_patHeal, $"{this}の_patHealがエラーです");
+        Assert.IsNotNull(_confirmAction, $"{this}の_confirmActionがエラーです");
 
         _patHeal.Stop(); // 回復エフェクトを停止
         _patStrong.SetActive(false); // 強化エフェクトを無効化
@@ -65,32 +78,55 @@ public class PlayerAction : UnitBase ,IAnimationAttackable
 
         // 入力方向へ移動する
         transform.position += moveDirection * _moveSpeed * Time.fixedDeltaTime;
-        // 入力方向へゆっくり回転する
-        Vector3 LookDir = Vector3.Slerp(transform.forward, moveDirection, _rotationSpeed * Time.fixedDeltaTime);
-        transform.LookAt(transform.position + LookDir);
+        float y = Terrain.activeTerrain.SampleHeight(transform.position); // Terrainの
+        transform.position = new Vector3(transform.position.x, y, transform.position.z);
+
+        // プレイヤーの向き
+        if (_cameraManager.CameraMode == CameraMode.Default)
+        {
+            // 入力方向へゆっくり回転する
+            Vector3 LookDir = Vector3.Slerp(transform.forward, moveDirection, _rotationSpeed * Time.fixedDeltaTime);
+            transform.LookAt(transform.position + LookDir);
+        }
+        else if(_cameraManager.CameraMode == CameraMode.Aim)
+        {
+            // カメラの位置から画面中央に向かってレイを飛ばす
+            Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
+            // レイの原点から方向に10m伸ばした座標
+            Vector3 targetPosition = ray.origin + ray.direction * 10f;
+
+            // ターゲットオブジェクトの向きを緩やかに追従
+            Vector3 targetDirection = targetPosition - transform.position;
+            targetDirection.y = 0f; // 高さは考慮しない場合、y軸の回転を無効にする
+
+            // 線形補間を使用して緩やかな追従を行う
+            Quaternion targetRotation = Quaternion.LookRotation(targetDirection.normalized);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10);
+        }
     }
     private void Update()
     {
-        if (_myCA.IsDead || Gamepad.current == null) return; // 自身が死んでたら & ゲームパットが無かったら何もしない
-
-        // 確認用 以下変更が必要
-        // Ｙボタン押下で、回復エフェクトが発生する
-        if (Gamepad.current.buttonNorth.wasPressedThisFrame)
+        if (_myCA.IsDead) return; // 自身が死んでたら何もしない
+ 
+        if (Gamepad.current != null)// 確認用 以下変更が必要
         {
-            _patHeal.Play();
-            _myCA.ChangeHealth(_healValue);
+            // Ｙボタン押下で、回復エフェクトが発生する
+            if (Gamepad.current.buttonNorth.wasPressedThisFrame)
+            {
+                _patHeal.Play();
+                _myCA.ChangeHealth(_healValue);
+            }
+            // Ｌバンパー押下で、ダメージエフェクトが発生する
+            if (Gamepad.current.leftShoulder.wasPressedThisFrame)
+            {
+                //OnDamage(); // ダメージエフェクト発生処理
+            }
+            // Ｒバンパー押下で、一定時間だけ強化を表現する
+            if (Gamepad.current.rightShoulder.wasPressedThisFrame && !_patStrong.activeSelf)
+            {
+                //StartCoroutine("StrongAction", _strongDuration);
+            }
         }
-        // Ｌバンパー押下で、ダメージエフェクトが発生する
-        if (Gamepad.current.leftShoulder.wasPressedThisFrame)
-        {
-            //OnDamage(); // ダメージエフェクト発生処理
-        }
-        // Ｒバンパー押下で、一定時間だけ強化を表現する
-        if (Gamepad.current.rightShoulder.wasPressedThisFrame && !_patStrong.activeSelf)
-        {
-            //StartCoroutine("StrongAction", _strongDuration);
-        }
-
 
         // 攻撃ボタンを押した時
         if (_confirmAction.InputAction.Player.Fire.WasPressedThisFrame())
@@ -99,10 +135,8 @@ public class PlayerAction : UnitBase ,IAnimationAttackable
             _myAnim.SetTrigger("Attack"); // 攻撃モーションの発動
             //_stand.Attack();// 攻撃時ズームする
         }
-        if (_confirmAction.InputAction.Player.Magic.WasPressedThisFrame())
-        {
 
-        }
+        HomingMagic();
     }
 
     /// <summary>
@@ -147,7 +181,7 @@ public class PlayerAction : UnitBase ,IAnimationAttackable
         await UniTask.Delay(TimeSpan.FromSeconds(_strongDuration));// _strongDurarion秒待機
         
         _patStrong.SetActive(false); // 無効化
-        _weaponAction.ChangePower( -_strongValue);// 見にくいですがマイナスが付いてます
+        _weaponAction.ChangePower( -_strongValue);//HACK: 見にくいですがマイナスが付いてます
     }
     /// <summary>
     /// バイブレーション処理
@@ -166,11 +200,23 @@ public class PlayerAction : UnitBase ,IAnimationAttackable
         }
     }
     /// <summary>
-    /// 魔法攻撃
+    /// ホーミング弾魔法を放つ
     /// </summary>
     public void HomingMagic()
     {
-        // ホーミング弾魔法を放つ
+        if (_confirmAction.InputAction.Player.Magic.WasPressedThisFrame())// 押した瞬間
+        {
+            _cameraManager.SwitchMode(CameraMode.Aim);
+        }
+        else if (_confirmAction.InputAction.Player.Magic.IsPressed())// 押している間
+        {
+
+        }
+        else if (_confirmAction.InputAction.Player.Magic.WasReleasedThisFrame())// 離した瞬間
+        {
+            GetComponent<TestBullet>().GenerateBullet(gameObject.transform);
+            _cameraManager.SwitchMode(CameraMode.Default);
+        }
     }
 //------------アニメーションイベント-----------------------------
     /// <summary>
