@@ -92,7 +92,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!114 &1796200750683738482
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -124,6 +124,7 @@ MonoBehaviour:
   _period: 1
   _targetY: 1
   _accelerationUpperLimit: 100
+  _speed: 1
 --- !u!114 &-547410010917083310
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -136,6 +137,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 226b1fdce9c0a4b4486503bc4863824a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxPower: 10
+  _maxPower: 5
   _weaponCollier: {fileID: 13500000}
+  _complementCollier: {fileID: 0}
   _weaponStartActive: 1
+  _isPlayer: 0

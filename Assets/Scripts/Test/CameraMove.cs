@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using GameInput;
 using UnityEngine.Assertions;
+using Unit;
 
 [RequireComponent(typeof(Camera))]// Cameraコンポーネントが必要　ない場合は自動的に追加
 public class CameraMove : MonoBehaviour
@@ -14,7 +15,7 @@ public class CameraMove : MonoBehaviour
     [SerializeField] private float _heightM = 1.2f;            // 注視点の高さ[m]
     [SerializeField] private float _rotationSensitivity = 50f;// 感度
     private ConfirmAction _confirmAction;
-    private CombatAction _combatAction;
+    private UnitStats _unitStats;
     private Vector3 _lookAt;
 
     private void Reset()
@@ -23,12 +24,12 @@ public class CameraMove : MonoBehaviour
     }
     void Start()
     {
-        _combatAction = GameObject.FindGameObjectWithTag("Player")?.GetComponent<CombatAction>();
+        _unitStats = GameObject.FindGameObjectWithTag("Player")?.GetComponent<UnitStats>();
         _confirmAction = ConfirmAction.s_Instance;
         ResetPosition();// カメラ位置リセット
 
-        Assert.IsNotNull(_target, "ターゲットが設定されていない。");
-        Assert.IsNotNull(_combatAction, "_combatActionがNullです。");
+        Assert.IsNotNull(_target,    $"{this}のターゲットが設定されていない。");
+        Assert.IsNotNull(_unitStats, $"{this}の_combatActionがNullです。");
     }
     /// <summary>
     /// カメラ位置リセット

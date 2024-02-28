@@ -4,11 +4,12 @@ using UnityEngine;
 using DG.Tweening;
 using GameInput;
 using UnityEngine.SceneManagement;
+using Unit;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private CombatAction _dragonAction;// このゲームのボス
-    [SerializeField] private CombatAction _playerAction;// プレイヤー
+    [SerializeField] private UnitStats _dragonStats;// このゲームのボス
+    [SerializeField] private UnitStats _playerStats;// プレイヤー
     [SerializeField] private Canvas _clearCanvas;　　　 
     [SerializeField] private Canvas _gameOverCanvas;
 
@@ -32,9 +33,9 @@ public class GameManager : MonoBehaviour
         }
         if (_isCanvasActive)
         {
-            if (_dragonAction.IsDead)// ボスが死んだら
+            if (_dragonStats.IsDead)// ボスが死んだら
                 ClearGame();
-            else if (_playerAction.IsDead)// プレイヤーが死んだら
+            else if (_playerStats.IsDead)// プレイヤーが死んだら
                 OverGame();
         }
     }

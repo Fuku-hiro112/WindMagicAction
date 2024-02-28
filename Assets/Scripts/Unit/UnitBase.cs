@@ -5,50 +5,53 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-[RequireComponent(typeof(CombatAction))]
-public class UnitBase : MonoBehaviour , IAnimationAttackable// AnimationEvent関数を発生させるには継承元に関数が必要っぽいので必須にした
+namespace Unit
 {
-    [SerializeField] protected GameObject[] _weapons = new GameObject[0]; // 武器オブジェクト
-
-    protected WeaponAction[] _weaponActions;
-    protected CancellationToken token;
-
-    public virtual void OnDamage(){}
-    public virtual async UniTaskVoid OnDeath(){}
-
-    protected void Start()// 親のStartは自動的にOverrideされるため子からbase.Startで呼び出しが必要
+    [RequireComponent(typeof(UnitStats))]
+    public class UnitBase : MonoBehaviour, IAnimationAttackable// AnimationEvent関数を発生させるには継承元に関数が必要っぽいので必須にした
     {
-        token = this.GetCancellationTokenOnDestroy();
-        GetWeapon();
-    }
-    /// <summary>
-    /// 武器の取得
-    /// </summary>
-    private void GetWeapon()
-    {
-        _weaponActions = new WeaponAction[_weapons.Length];
+        [SerializeField] protected GameObject[] _weapons = new GameObject[0]; // 武器オブジェクト
 
-        for (int i = 0; i < _weapons.Length; i++)
+        protected WeaponAction[] _weaponActions;
+        protected CancellationToken token;
+
+        public virtual void OnDamage() { }
+        public virtual async UniTaskVoid OnDeath() { }
+
+        protected void Start()// 親のStartは自動的にOverrideされるため子からbase.Startで呼び出しが必要
         {
-            _weapons[i].TryGetComponent(out _weaponActions[i]);
-            Assert.IsNotNull(_weaponActions[i], $"_weaponActions[{i}]がnullです");
+            token = this.GetCancellationTokenOnDestroy();
+            GetWeapon();
         }
+        /// <summary>
+        /// 武器の取得
+        /// </summary>
+        private void GetWeapon()
+        {
+            _weaponActions = new WeaponAction[_weapons.Length];
+
+            for (int i = 0; i < _weapons.Length; i++)
+            {
+                _weapons[i].TryGetComponent(out _weaponActions[i]);
+                Assert.IsNotNull(_weaponActions[i], $"{this.gameObject.name}_weaponActions[{i}]がnullです");
+            }
+        }
+
+        public virtual void AttackStart() { }
+        public virtual void AttackFinish() { }
     }
 
-    public virtual void AttackStart()  { }
-    public virtual void AttackFinish() { }
-}
-
-//HACK: AnimationEvent関数を発生させるには継承元に関数が必要っぽい
-public interface IAnimationEventer { }
-public interface IAnimationAttackable : IAnimationEventer
-{
-    /// <summary>
-    /// 攻撃有効化
-    /// </summary>
-    void AttackStart();
-    /// <summary>
-    /// 攻撃無効化
-    /// </summary>
-    void AttackFinish();
+    //HACK: AnimationEvent関数を発生させるには継承元に関数が必要っぽい
+    public interface IAnimationEventer { }
+    public interface IAnimationAttackable : IAnimationEventer
+    {
+        /// <summary>
+        /// 攻撃有効化
+        /// </summary>
+        void AttackStart();
+        /// <summary>
+        /// 攻撃無効化
+        /// </summary>
+        void AttackFinish();
+    }
 }

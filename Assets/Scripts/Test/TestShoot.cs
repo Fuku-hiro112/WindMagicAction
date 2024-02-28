@@ -13,17 +13,40 @@ public class TestShoot : MonoBehaviour
     [SerializeField] float _period = 1f;// 残り時間
     [SerializeField] private float _targetY = 1f;
     [SerializeField] float _accelerationUpperLimit = 100f;
+
+    [SerializeField] float _speed = 2;
     State _bulletState;
     Vector3 _velocity;
     Vector3 _position;
     Vector3 _stopPos;
     Vector3 _targetHitPos;
-    private Transform _target = null;
-    private Vector3 _cameraForward;
+    private Transform _target = default;
+    private Vector3 _InjectionDirection;
+    private Camera _camera;//NOTE: Camera.mainで取るとShake中カメラの切り替えでバグるので
+    private void Awake()
+    {
+        _camera = Camera.main;
+    }
+    void Start()
+    {
+        _position = transform.localPosition;
+        /*GameObject[] targets = GameObject.FindGameObjectsWithTag("Enemy");
+        float minimumDistance = Mathf.Infinity;
+        foreach (GameObject target in targets)
+        {
+            float distanece = (target.transform.position - transform.position).sqrMagnitude;
 
+            if (minimumDistance > distanece)
+            {
+                minimumDistance = distanece;
+                _target = target.transform;
+            }
+        }*/
+        _velocity = Vector3.zero;
+    }
     public void Shoot(Transform target)
     {
-        _cameraForward = Camera.main.transform.forward;
+        _InjectionDirection = _camera.transform.forward;
         _target = target;
         _bulletState = State.Move;
     }
@@ -48,33 +71,15 @@ public class TestShoot : MonoBehaviour
         }
     }
     */
-    void Start()
-    {
-        _position = transform.localPosition;
-        /*GameObject[] targets = GameObject.FindGameObjectsWithTag("Enemy");
-        float minimumDistance = Mathf.Infinity;
-        foreach (GameObject target in targets)
-        {
-            float distanece = (target.transform.position - transform.position).sqrMagnitude;
-
-            if (minimumDistance > distanece)
-            {
-                minimumDistance = distanece;
-                _target = target.transform;
-            }
-        }*/
-        _velocity = Vector3.zero;
-    }
 
     void Update()
     {
         switch (_bulletState)
         {
             case State.Move:
-                if (_target == null)
+                if (_target == default)
                 {
-                    float speed = 0.3f / _period;
-                    transform.position += _cameraForward * speed;// Camera角度にするとおかしい
+                    transform.position += _InjectionDirection * _speed;// Camera角度にするとおかしい
                 }
                 else
                 {

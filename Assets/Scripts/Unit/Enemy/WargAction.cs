@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Unit;
 
 public class WargAction : EnemyActionBase
 {
@@ -14,6 +15,12 @@ public class WargAction : EnemyActionBase
         _searchRange = 10;
         _deathTime = 3;
         _damagePos = new Vector3(0, 1.5f, 0);
+    }
+    protected new void Start()
+    {
+        GameObject.FindGameObjectWithTag("WanderingPosStorage").TryGetComponent(out WanderingManager);
+        Assert.IsNotNull(WanderingManager, $"{this}のWanderingManagerがNullです");
+        base.Start();
     }
 
     /// <summary>
@@ -32,16 +39,19 @@ public class WargAction : EnemyActionBase
     protected override void DeathPerformance()
     {
         SmallingWhileRotating();
-        Assert.IsNotNull(_material, $"_materialがnullです");
+        //Assert.IsNotNull(_material, $"_materialがnullです");
         //_material.DOFade(0, _deathTime);//HACK: 出来ない
     }
-    //-----------アニメーションイベント-----------------------
+
+#region AnimationEvent
+
     /// <summary>
     /// 攻撃有効化
     /// </summary>
     public override void AttackStart()
     {
         _weaponActions[0].WeaponActivate(true);
+        IsAttacking = true;
     }
     /// <summary>
     /// 攻撃無効化
@@ -49,6 +59,8 @@ public class WargAction : EnemyActionBase
     public override void AttackFinish()
     {
         _weaponActions[0].WeaponActivate(false);
+        IsAttacking = false;
     }
-    //----------------------------------------------------------
+
+#endregion
 }

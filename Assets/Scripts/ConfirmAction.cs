@@ -73,7 +73,6 @@ namespace GameInput
             InputAction.Player.Look.canceled -= OnLookStop;
             InputAction.Player.Fire.started -= OnFire;
             InputAction.Player.Magic.started -= OnMagic;
-
             InputAction.Player.Avoid.started -= OnAvoid;
 
             InputAction.Dispose();
