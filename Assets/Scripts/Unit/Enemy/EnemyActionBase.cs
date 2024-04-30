@@ -2,19 +2,23 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections;
+using System.Drawing;
 using UniRx;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Assertions;
+using UnityEngine.EventSystems;
 
 namespace Unit
 {
     public enum EnemyState
     {
-        Idle,     // 待機
-        Wandering,// 徘徊
-        Chase,    // 敵を追いかけ
-        Attacking,// 攻撃
+        Idle,      // 待機
+        Wandering, // 徘徊
+        Separation,// 分散
+        Chase,     // 敵を追いかけ
+        Attacking, // 攻撃
     }
 
     [RequireComponent(typeof(Animator), typeof(NavMeshAgent))]// AnimatorとNavMeshを必須に
@@ -29,22 +33,26 @@ namespace Unit
         [SerializeField] private GameObject _patDamage; // ダメージエフェクト
         [SerializeField] protected Vector3 _damagePos = new Vector3(0, 1.5f, 0); // ダメージエフェクトの位置
         [Space(20)]
-        [SerializeField] private float _WaitIdleMin;
-        [SerializeField] private float _WaitIdleMax;
-        private float WaitIdle;
+        [SerializeField] private float _waitIdleMin = 1;
+        [SerializeField] private float _waitIdleMax = 2;
+        private float _waitIdleStateTimer = 0f;
+        // 徘徊ポジションに着いたとする　到達しきい値
+        [SerializeField] private float _arrivalThreshold = 0.1f;
 
         protected NavMeshAgent _myNavi; // 自身のナビメッシュ
         protected Animator _myAnim; // 自身のアニメーター
-        protected TestEnemyManager _enemyManager;
+        protected EnemyManager _enemyManager;
         private UnitStats _myStats;   // 自身のCombatAction
         private GameObject _player; // プレイヤー
         private UnitStats _playerStats; // プレイヤーのCombatAction
 
-        protected WanderingManager WanderingManager;
         // 徘徊する
+        protected WanderingManager WanderingManager = null;
         private Wandering _wandering;
+        private Vector3 _targetWanderingPoint;
+        private float _wanderingStateDuration;
 
-        protected EnemyState EnemyState;
+        protected EnemyState State;
 
         protected bool IsAttacking = false;
         private Vector3 _targetPos;
@@ -61,17 +69,20 @@ namespace Unit
             Assert.IsNotNull(_enemyManager, $"{this}の_enemyManagerがNullです。EnemyManager配下に敵オブジェクトを生成するようにしてください。");
             Assert.IsNotNull(_player, $"{this}の_playerがNullです");
             _player?.TryGetComponent(out _playerStats);// プレイヤーからCombatActionを取得
-            EnemyState = EnemyState.Idle;
+            State = EnemyState.Idle;
+            _wanderingStateDuration = RandomSetDuration(_waitIdleMin, _waitIdleMax);
 
             if (WanderingManager != null)
             {
-                _wandering = WanderingManager.AssignNotUseWandering();
+                _wandering = WanderingManager.AssignNotUseWandering(null);
             }
         }
         private void Update()
         {
+            OnUpdate();
             ActionEnemy();
         }
+        protected virtual void OnUpdate(){}
         protected void ActionEnemy()
         {
             if (!_player || _myStats.IsDead) return;// プレイヤー未発見時
@@ -88,7 +99,7 @@ namespace Unit
             // プレイヤーの方向を向く
             if (distance <= _searchRange)// 探索範囲内なら
             {
-                if (!IsAttacking/**/)// 攻撃前のPlayerの位置を向く
+                if (State != EnemyState.Attacking)// 攻撃前のPlayerの位置を向く
                 {
                     _targetPos = _player.transform.position;
                 }
@@ -97,73 +108,124 @@ namespace Unit
                 moveVec.Normalize();
 
                 // 回転実行
-                transform.rotation = Quaternion.Slerp(
-                           transform.rotation,
-                           Quaternion.LookRotation(moveVec),
-                           Time.deltaTime * _turningSpeed // 振り向き速度
-                );
+                TrunDirection(moveVec);
             }
 
-            if (distance > _searchRange)// 探索範囲外なら
+            UpdateSwitchState(distance);
+
+            switch (State)
             {
-                // 移動停止
-                _myNavi.enabled = false; // ナビメッシュ切る
-                _myAnim.SetFloat("Speed", 0); //移動はしない
-                _myAnim.SetBool("Attack", false); //攻撃停止
-                IsAttacking = false;
-            }// 探索範囲内なら
-            else if (distance <= _fireDistance)// プレイヤーとの距離が_fireDistance以下、
-            {
-                // 立ち止まって攻撃
-                _myNavi.enabled = false; // ナビメッシュ切る
-                _myAnim.SetFloat("Speed", 0); //移動はしない
-                _myAnim.SetBool("Attack", true); //攻撃開始
-                IsAttacking = true;
+                case EnemyState.Idle:// 探索範囲外なら
+                     // 移動停止
+                    _myNavi.enabled = false; // ナビメッシュ切る
+                    _myAnim.SetFloat("Speed", 0); //移動はしない
+                    _myAnim.SetBool("Attack", false); //攻撃停止
+                    IsAttacking = false;
+
+                    break;
+                    
+                case EnemyState.Wandering:// 探索範囲外の時　一定時間（ランダム）経ったら　徘徊
+                    //徘徊地点まで移動
+                    _myNavi.enabled = true; 
+                    _myNavi.destination = _targetWanderingPoint; // ターゲットを指示
+                    _myAnim.SetFloat("Speed", _myNavi.velocity.magnitude); //移動モーション
+                    _myAnim.SetBool("Attack", false); //攻撃停止
+                    break;
+
+                case EnemyState.Chase: // 探索範囲内なら
+                    // プレイヤーを追従
+                    _myNavi.enabled = true; // ナビメッシュをオン
+                    _myNavi.destination = _player.transform.position; // ターゲットを指示
+                    _myAnim.SetFloat("Speed", _myNavi.velocity.magnitude); //移動モーション
+                    _myAnim.SetBool("Attack", false); //攻撃停止
+                    break;
+
+                case EnemyState.Attacking:// 攻撃中なら
+                    // 立ち止まって攻撃
+                    _myNavi.enabled = false; // ナビメッシュ切る
+                    _myAnim.SetFloat("Speed", 0); //移動はしない
+                    _myAnim.SetBool("Attack", true); //攻撃開始
+                    IsAttacking = true;
+                    break;
             }
-            else if (distance > _fireDistance && !IsAttacking)// プレイヤーとの距離が_fireDistance～_searchRangeなら
+        }
+
+        /// <summary>
+        /// 状態の更新をする
+        /// </summary>
+        /// <param name="distance"></param>
+        private void UpdateSwitchState(float distance)
+        {
+            if(distance < _searchRange) _waitIdleStateTimer = 0f;
+
+            if (State == EnemyState.Wandering)//NOTE: 一番前にしないと攻撃範囲内にいるのに待機状態とかになるかも？
             {
-                // プレイヤーを追従
-                _myNavi.enabled = true; // ナビメッシュをオン
-                _myNavi.destination = _player.transform.position; // ターゲットを指示
-                _myAnim.SetFloat("Speed", _myNavi.velocity.magnitude); //移動モーション
-                _myAnim.SetBool("Attack", false); //攻撃停止
+                if (HasDestinationArrived(_targetWanderingPoint, _arrivalThreshold))// 目標地点　0.1m以内に着たら
+                {
+                    State = EnemyState.Idle;
+                }
+            }
+            else if (distance > _searchRange && State != EnemyState.Separation)// 探索範囲外なら
+            {
+                State = EnemyState.Idle;
+                // タイマーを進める
+                _waitIdleStateTimer += Time.deltaTime;
+
+                // 探索範囲外の時　一定時間（ランダム）経ったら　徘徊状態へ
+                if (_waitIdleStateTimer >= _wanderingStateDuration && WanderingManager != null) // WanderingManagerがない場合は徘徊しない
+                {
+                    // 徘徊ポイントを再設定
+                    _wandering = WanderingManager.AssignNotUseWandering(_wandering.Transform);
+                    _targetWanderingPoint = WanderingManager.CircleRandomPoint.GetRandomPointInCircle(_wandering.Transform.position, this.transform);
+                    // 新しい待機時間を設定
+                    _wanderingStateDuration = RandomSetDuration(_waitIdleMin, _waitIdleMax);
+
+                    // 状態を変更
+                    State = EnemyState.Wandering;
+                    // タイマーリセット
+                    _waitIdleStateTimer = 0f;
+                }
+            }
+
+            // 探索範囲内なら
+            if (distance <= _fireDistance)// プレイヤーとの距離が_fireDistance以下、
+            {
+                State = EnemyState.Attacking;
+            }
+            else if (distance > _fireDistance && distance < _searchRange && !IsAttacking)// プレイヤーとの距離が_fireDistance～_searchRangeなら
+            {
+                State = EnemyState.Chase;
             }
             else if (distance > _fireDistance)
             {
                 IsAttacking = false;
             }
 
-            switch (EnemyState)
-            {
-                case EnemyState.Idle:// 探索範囲外なら
-                     // 移動停止
-                     /*
-                    _myNavi.enabled = false; // ナビメッシュ切る
-                    _myAnim.SetFloat("Speed", 0); //移動はしない
-                    _myAnim.SetBool("Attack", false); //攻撃停止
-                    IsAttacking = false;*/
-                    //TODO: 一定時間経ったらWanderingに以降 && WanderingManager != null
-                    break;
-
-                case EnemyState.Wandering:// 探索範囲外の時　一定時間（ランダム）経ったら　徘徊
-                    // 
-                    break;
-
-                case EnemyState.Chase: // 探索範囲内なら
-                    // 
-                    break;
-
-                case EnemyState.Attacking:// 攻撃中なら
-                    // 
-                    break;
-            }
         }
-
-        private void SwitchState()
+        /// <summary>
+        /// 間隔をランダムに返す
+        /// </summary>
+        /// <param name="min">最小</param>
+        /// <param name="max">最大</param>
+        /// <returns></returns>
+        private float RandomSetDuration(float min, float max) => UnityEngine.Random.Range(min, max);
+        protected void TrunDirection(Vector3 direction)
         {
-
+            // 回転実行
+            transform.rotation = Quaternion.Slerp
+                (
+                       transform.rotation,
+                       Quaternion.LookRotation(direction),
+                       Time.deltaTime * _turningSpeed // 振り向き速度
+                );
         }
-
+        /// <summary>
+        /// 目的地に到着したか
+        /// </summary>
+        /// <param name="destination">目的地</param>
+        /// <param name="distance">どこまで近づけばいいか</param>
+        /// <returns></returns>
+        private bool HasDestinationArrived(Vector3 destination, float distance) => (destination - transform.position).sqrMagnitude <= distance*distance;
         /// <summary>
         /// プレイヤーとの距離が指定した距離内かどうか
         /// </summary>
@@ -188,7 +250,7 @@ namespace Unit
         /// ダメージ視覚処理
         /// </summary>
         /// <returns></returns>
-        public override void OnDamage()
+        public override void VisualizationDamege()
         {
             GameObject Fx = Instantiate(_patDamage); // ダメージエフェクトを生成
             Fx.transform.position = transform.position + _damagePos; // 位置を補正
@@ -198,7 +260,7 @@ namespace Unit
         /// 死亡処理
         /// </summary>
         /// <returns></returns>
-        public override async UniTaskVoid OnDeath()
+        public override async UniTaskVoid OnDeathAsync()
         {
             Debug.Log($"{gameObject.name}が死亡した");
 
@@ -252,5 +314,9 @@ namespace Unit
         }
 
         #endregion
+        private void OnGUI()
+        {
+            //GUILayout.Label($"State: {State}");
+        }
     }
 }

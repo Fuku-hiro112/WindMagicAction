@@ -1,11 +1,7 @@
-using Cysharp.Threading.Tasks;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Assertions.Must;
 using Unit;
 
 public class WanderingManager : MonoBehaviour
@@ -16,36 +12,22 @@ public class WanderingManager : MonoBehaviour
 
     private Wandering[] _wanderings;
 
-    private void Reset()
-    {
-
-    }
     private void Awake()
     {
         CircleRandomPoint = new RandomPointInCircle();
-    }
-    void Start()
-    {
         _wanderings = new Wandering[_wanderingPosStorage.transform.childCount];
         for (int i = 0; i < _wanderings.Length; i++)
         {
-            _wanderings[i] = new Wandering(_wanderingPosStorage.transform.GetChild(i));
+            _wanderings[i] = new Wandering(i, _wanderingPosStorage.transform.GetChild(i));
             Assert.IsNotNull(_wanderings[i].Transform, $"_wandering[{i}]がNullです。");
         }
     }
-    void Update()
-    {
-        // _enemyActionに_wanderingTransformの値を割り当てる
-
-        // 条件
-        // 同じ場所を複数のEnemyに割り当てないようにする
-        // 待機時間の差(0.5～２秒)をランダムで作る
-    }
     /// <summary>
-    /// 使用しておらず、今と同じ出ない場合のWanderingをランダムに設定する
+    /// 使用していない徘徊地点をランダムに返す
     /// </summary>
-    /// <returns>使用していないWanderingを返す</returns>
-    public Wandering AssignNotUseWandering(Transform currentWanderingTrans = null)
+    /// <param name="currentWanderingTrans">現在使用中のWandering.Transformを入れる（初期化の場合はNullを入れる）</param>
+    /// <returns>徘徊地点</returns>
+    public Wandering AssignNotUseWandering(Transform currentWanderingTrans)
     {
         List<Wandering> NotUsedwanderingList = new List<Wandering>(_wanderings.Length);
         for (int index = 0; index < _wanderings.Length; index++)
@@ -65,8 +47,9 @@ public class WanderingManager : MonoBehaviour
         // 使用していない位置からランダムで選ぶ
         Wandering returnWandering =
             NotUsedwanderingList[UnityEngine.Random.Range(0, NotUsedwanderingList.Count)];
-        // 使用中に
-        returnWandering.InUse = true;
+
+        // 使用中にする
+        _wanderings[returnWandering.ID].InUse = true;
 
         return returnWandering;
     }
@@ -78,14 +61,15 @@ public class WanderingManager : MonoBehaviour
         private float _radius = 5f; // 円の半径
 
         // 円内からランダムな座標を取得する関数
-        public Vector2 GetRandomPointInCircle(Vector3 centerPoint)
+        public Vector3 GetRandomPointInCircle(Vector3 centerPoint, Transform trans)
         {
             // 円内のランダムな座標を計算
             float x = centerPoint.x + Mathf.Cos(RandomAngle()) * _radius;
             float z = centerPoint.z + Mathf.Sin(RandomAngle()) * _radius;
 
-            return new Vector3(x, 0, z);
+            return new Vector3(x, trans.position.y, z);
         }
+
         /// <summary>
         /// 0から2π(360°)までの角度をランダムに取得
         /// </summary>
@@ -96,12 +80,17 @@ public class WanderingManager : MonoBehaviour
 [Serializable]
 public struct Wandering
 {
-    public Wandering(Transform transform)
+    public Wandering(int index ,Transform transform)
     {
+        ID = index;
         Transform = transform;
         InUse = false;
     }
+    public int ID;
+    // 位置
     public Transform Transform;
+    
+    // 使用中かどうか
     [NonSerialized]
     public bool InUse;
 }

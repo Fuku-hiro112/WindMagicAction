@@ -15,8 +15,8 @@ namespace Unit
         protected WeaponAction[] _weaponActions;
         protected CancellationToken token;
 
-        public virtual void OnDamage() { }
-        public virtual async UniTaskVoid OnDeath() { }
+        public virtual void VisualizationDamege() { }
+        public virtual async UniTaskVoid OnDeathAsync() { }
 
         protected void Start()// 親のStartは自動的にOverrideされるため子からbase.Startで呼び出しが必要
         {

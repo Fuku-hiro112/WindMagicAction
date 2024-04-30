@@ -58,8 +58,10 @@ public class TestTarget : MonoBehaviour
     }
     private void OnGUI()
     {
+        /*
         GUILayout.Label($"TargetPosition : {TargetPosition}");
         GUILayout.Label($"TargetGameObject : {TargetGameObject}");
+        */
     }
 }
 /*

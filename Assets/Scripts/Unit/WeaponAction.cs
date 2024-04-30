@@ -2,26 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unit;
+using UniRx;
+using UniRx.Triggers;
+using UnityEngine.Assertions;
 
-
+[RequireComponent(typeof(AudioSource))]
 public class WeaponAction : MonoBehaviour
 {
-    [SerializeField] private int _maxPower; //最大攻撃力
-    [System.NonSerialized] public int Power; //現在の攻撃力
+    [SerializeField] private int _maxPower = 2; //最大攻撃力
     [SerializeField] private Collider _weaponCollier;
     [SerializeField] private ComplementCollider _complementCollier;
     [SerializeField] private bool _weaponStartActive = false;
+    [SerializeField] private bool _hasPlayer;
+    [SerializeField] private AudioClip _audioClip;
 
-    [SerializeField] private bool _isPlayer;
-    private LayerMask _layerMask;
+    private int _power; //現在の攻撃力
     private PlayerStats _playerStats;
     private int _healMagicPoint;
+    private AudioSource _seAudioSource;
+    //private LayerMask _layerMask;
+
+    // hitしたObjのリスト
+    private List<GameObject> _hitObjectList = new List<GameObject>(32); 
 
     private void Reset()
     {
         if (gameObject.layer == LayerMask.NameToLayer("PlayerSide"))
         {
-            _isPlayer = true;
+            _hasPlayer = true;
         }
         _weaponCollier = GetComponent<BoxCollider>();
         _complementCollier = GetComponent<ComplementCollider>();
@@ -29,26 +37,62 @@ public class WeaponAction : MonoBehaviour
 
     private void Start()
     {
-        if (_isPlayer) 
+        // Playerが持っているなら
+        if (_hasPlayer)
         {
-            _healMagicPoint = gameObject.transform.root.GetComponent<PlayerAction>().HealMagicPoint;
-            gameObject.transform.root.TryGetComponent(out _playerStats);
-            _layerMask = LayerMask.NameToLayer("EnemySide");
-        }
-        //_escTag = gameObject.tag; //開始時のタグを退避
-        Power = _maxPower; //攻撃力を最大にする
-        WeaponActivate(_weaponStartActive); //武器の無効化
-    }
+            PlayerAction playerAction = gameObject.transform.root.GetComponent<PlayerAction>();
+            Assert.IsNotNull(playerAction, "PlayerActionがNullです");
+            _healMagicPoint = playerAction.AttackHealMagicPoint;
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (_isPlayer)
-        {
-            if (other.gameObject.layer == _layerMask)
-            {
-                _playerStats.ChangeMagicPoint(_healMagicPoint);
-            }
+            gameObject.transform.root.TryGetComponent(out _playerStats);
+            //_layerMask = LayerMask.NameToLayer("EnemySide");
         }
+
+        // AudioSourceの取得
+        TryGetComponent(out _seAudioSource);
+        
+        //攻撃力を最大にする
+        ChangePower(_maxPower);
+
+        //武器を有無を決める
+        WeaponActivate(_weaponStartActive);
+
+        // 当たった時 OnTrigger
+        this.OnTriggerEnterAsObservable()
+                .Where(other => 
+                {
+                    bool isFirstHit = false;
+                    // ヒットリストに無ければリストに入れる
+                    if (!_hitObjectList.Contains(other.gameObject))
+                    {
+                        isFirstHit = true;
+                        _hitObjectList.Add(other.gameObject);
+                    }
+                    // UnitStatsがあるか
+                    bool hasUnitStats = other.GetComponent<UnitStats>() != null;
+                    
+                    return isFirstHit && hasUnitStats;//TODO: UnitStatsにするとDragonの尻尾に当たらないのでHitZoneなどのスクリプトをColliderに取り付けるようにしよう（時間あれば）
+                })
+                .Subscribe(other => 
+                {
+                    // ダメージ処理
+                    other.gameObject.GetComponent<UnitStats>().OnDamage(_power);
+
+                    if (_audioClip != null)
+                    {
+                        _seAudioSource.PlayOneShot(_audioClip);
+                    }
+
+                    // プレイヤーが持っているなら
+                    if (_hasPlayer)
+                    {
+                        // Mp回復
+                        _playerStats.ChangeMagicPoint(_healMagicPoint);
+                        Debug.Log("Playerの攻撃");
+
+                        // エフェクト発生
+                    }
+                });
     }
 
     /// <summary>
@@ -57,16 +101,24 @@ public class WeaponAction : MonoBehaviour
     /// <param name="Value"></param>
     public void ChangePower(int Value)
     {
-        Power += Value;
-        if (Power < 0) Power = 0;
+        Debug.Log($"{ this.gameObject} + {_power}");
+        _power += Value;
+        Debug.Log("パワー"+_power);
+        if (_power < 0) _power = 0;
     }
+
+#region Activate
     /// <summary>
     /// 武器の有効無効処理
     /// </summary>
     /// <param name="active"></param>
     public void WeaponActivate(bool active)
     {
-        //gameObject.tag = active ? _escTag : "Untagged"; // TriggerEnter時に攻撃判定を行っているため、tagを切り替えるだけでは常に判定内にいた場合攻撃を受けなくなる
+        // 武器有効時にListの要素を削除する
+        if (active)
+        {
+            _hitObjectList.Clear();
+        }
         _weaponCollier.enabled = active;
     }
     /// <summary>
@@ -75,7 +127,9 @@ public class WeaponAction : MonoBehaviour
     /// <param name="active"></param>
     public void PlayerWeaponActivate(bool active)
     {
+        // 当たり判定の補完　ONOFF
         _complementCollier.isAttack = active;
-        _weaponCollier.enabled = active;
+        WeaponActivate(active);
     }
+#endregion
 }

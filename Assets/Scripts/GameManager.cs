@@ -5,6 +5,7 @@ using DG.Tweening;
 using GameInput;
 using UnityEngine.SceneManagement;
 using Unit;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,7 +13,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private UnitStats _playerStats;// プレイヤー
     [SerializeField] private Canvas _clearCanvas;　　　 
     [SerializeField] private Canvas _gameOverCanvas;
+    [SerializeField] private Image _panel;
 
+    private int _duration = 1;
     private bool _isGameFinish = false; // ゲームが終了している？
     private bool _isCanvasActive = true;// キャンバス（クリア、終了時の）
 
@@ -28,7 +31,13 @@ public class GameManager : MonoBehaviour
         {
             if (ConfirmAction.s_Instance.InputAction.Player.Decision.WasPerformedThisFrame())
             {
-                SceneManager.LoadScene("TitleScene");
+                AudioManager.Instance.StopBGM(true);
+                AudioManager.Instance.PlaySE(SESoundData.SE.Decision);
+
+                _clearCanvas.gameObject.SetActive(false);
+                _gameOverCanvas.gameObject.SetActive(false);
+                _panel.DOColor(Color.black, _duration)
+                      .OnComplete(() => SceneManager.LoadScene("TitleScene"));
             }
         }
         if (_isCanvasActive)
@@ -44,6 +53,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void ClearGame()
     {
+        AudioManager.Instance.PlaySE(SESoundData.SE.GameClear);
+
         _isGameFinish = true;
         _isCanvasActive = false;
         _clearCanvas.gameObject.SetActive(true);
@@ -54,8 +65,11 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void OverGame()
     {
-        _gameOverCanvas.gameObject.SetActive(true);
+        AudioManager.Instance.PlaySE(SESoundData.SE.GameOver);
+        AudioManager.Instance.StopBGM(true);
+
         _isGameFinish = true;
         _isCanvasActive = false;
+        _gameOverCanvas.gameObject.SetActive(true);
     }
 }

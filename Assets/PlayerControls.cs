@@ -55,7 +55,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Magic"",
+                    ""name"": ""Aim"",
                     ""type"": ""Button"",
                     ""id"": ""24b4e460-d263-4eaa-b0e7-40eca7661fba"",
                     ""expectedControlType"": ""Button"",
@@ -76,6 +76,33 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""name"": ""Decision"",
                     ""type"": ""Button"",
                     ""id"": ""3c00003a-6927-4ffa-b6ce-984ad44011c2"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SerectMagic"",
+                    ""type"": ""Value"",
+                    ""id"": ""8361de15-4ae2-4342-8548-126388613f9b"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Magic"",
+                    ""type"": ""Button"",
+                    ""id"": ""4c330356-3222-4f94-a7ab-6aef711441c7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Back"",
+                    ""type"": ""Button"",
+                    ""id"": ""7126e915-4a46-4269-9388-094bcbbfb715"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -117,31 +144,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""up"",
-                    ""id"": ""8180e8bd-4097-4f4e-ab88-4523101a6ce9"",
-                    ""path"": ""<Keyboard>/upArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
                     ""name"": ""down"",
                     ""id"": ""320bffee-a40b-4347-ac70-c210eb8bc73a"",
                     ""path"": ""<Keyboard>/s"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""down"",
-                    ""id"": ""1c5327b5-f71c-4f60-99c7-4e737386f1d1"",
-                    ""path"": ""<Keyboard>/downArrow"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
@@ -161,31 +166,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""left"",
-                    ""id"": ""2e46982e-44cc-431b-9f0b-c11910bf467a"",
-                    ""path"": ""<Keyboard>/leftArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
                     ""name"": ""right"",
                     ""id"": ""fcfe95b8-67b9-4526-84b5-5d0bc98d6400"",
                     ""path"": ""<Keyboard>/d"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""right"",
-                    ""id"": ""77bff152-3580-4b21-b6de-dcd0c7e41164"",
-                    ""path"": ""<Keyboard>/rightArrow"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
@@ -327,23 +310,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""f801803e-534d-4bed-91fd-a84563874464"",
-                    ""path"": ""<Gamepad>/leftShoulder"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""Magic"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""fe3b036b-a0d2-404d-8a0a-15a341b1a21f"",
                     ""path"": ""<Gamepad>/rightShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Magic"",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Aim"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -354,7 +326,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""Magic"",
+                    ""action"": ""Aim"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -399,6 +371,226 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Decision"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cb7918db-6af9-4dab-bf67-affdc0c8d5d4"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Decision"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""CrossKey"",
+                    ""id"": ""430f6b53-de58-4fe5-b544-ddc5f2fe66f4"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SerectMagic"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""9c16d6a1-e93b-44e6-bfaa-7d2cd954bf43"",
+                    ""path"": ""<Gamepad>/dpad/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SerectMagic"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""8adf1e43-e228-4f7b-aa8a-6ff66213751a"",
+                    ""path"": ""<Gamepad>/dpad/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SerectMagic"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""02ef13d2-e643-4f95-b11c-3e598d758546"",
+                    ""path"": ""<Gamepad>/dpad/left"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SerectMagic"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""ed0582a7-ae6a-4b4d-9933-cc99c49bf792"",
+                    ""path"": ""<Gamepad>/dpad/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SerectMagic"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""CrossKey"",
+                    ""id"": ""d9719cb1-fc3a-4f4b-ad6b-6e1b10824193"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SerectMagic"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""624c2a20-f6c2-47f8-b577-97f79af9ba80"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SerectMagic"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""928955d1-ef95-4f2d-b5bb-54bf3bf2f082"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SerectMagic"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""00bdd770-a891-4b1e-9086-36dac3f1af09"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SerectMagic"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""28e4cebc-6fa5-4569-af1e-08123b1c42fa"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SerectMagic"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""DirectionKey"",
+                    ""id"": ""060303c7-ae49-4fe8-a573-66bee195ae65"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SerectMagic"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""d7481284-9dd3-4201-9967-a4896708107a"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""SerectMagic"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""a07a6ce4-65c2-4657-8a5c-afbe645daccd"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""SerectMagic"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""baf52eb2-3e08-4e01-b274-0197f392f4dd"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""SerectMagic"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""de6be7fc-e3d4-4c8c-8087-ca6399036d69"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""SerectMagic"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""364cbeda-f1d8-46f9-8fc9-66670dd6dc09"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Magic"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e68a487b-7cea-4646-8e70-ff73668bb6ea"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Magic"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0f70b0c2-104f-4792-9c2e-a4cc4644f1e1"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Back"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e9ae01f6-fe57-4567-bba2-50d71ebafe22"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Back"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -989,9 +1181,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
-        m_Player_Magic = m_Player.FindAction("Magic", throwIfNotFound: true);
+        m_Player_Aim = m_Player.FindAction("Aim", throwIfNotFound: true);
         m_Player_Avoid = m_Player.FindAction("Avoid", throwIfNotFound: true);
         m_Player_Decision = m_Player.FindAction("Decision", throwIfNotFound: true);
+        m_Player_SerectMagic = m_Player.FindAction("SerectMagic", throwIfNotFound: true);
+        m_Player_Magic = m_Player.FindAction("Magic", throwIfNotFound: true);
+        m_Player_Back = m_Player.FindAction("Back", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1068,9 +1263,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_Fire;
-    private readonly InputAction m_Player_Magic;
+    private readonly InputAction m_Player_Aim;
     private readonly InputAction m_Player_Avoid;
     private readonly InputAction m_Player_Decision;
+    private readonly InputAction m_Player_SerectMagic;
+    private readonly InputAction m_Player_Magic;
+    private readonly InputAction m_Player_Back;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -1078,9 +1276,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @Look => m_Wrapper.m_Player_Look;
         public InputAction @Fire => m_Wrapper.m_Player_Fire;
-        public InputAction @Magic => m_Wrapper.m_Player_Magic;
+        public InputAction @Aim => m_Wrapper.m_Player_Aim;
         public InputAction @Avoid => m_Wrapper.m_Player_Avoid;
         public InputAction @Decision => m_Wrapper.m_Player_Decision;
+        public InputAction @SerectMagic => m_Wrapper.m_Player_SerectMagic;
+        public InputAction @Magic => m_Wrapper.m_Player_Magic;
+        public InputAction @Back => m_Wrapper.m_Player_Back;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1099,15 +1300,24 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Fire.started += instance.OnFire;
             @Fire.performed += instance.OnFire;
             @Fire.canceled += instance.OnFire;
-            @Magic.started += instance.OnMagic;
-            @Magic.performed += instance.OnMagic;
-            @Magic.canceled += instance.OnMagic;
+            @Aim.started += instance.OnAim;
+            @Aim.performed += instance.OnAim;
+            @Aim.canceled += instance.OnAim;
             @Avoid.started += instance.OnAvoid;
             @Avoid.performed += instance.OnAvoid;
             @Avoid.canceled += instance.OnAvoid;
             @Decision.started += instance.OnDecision;
             @Decision.performed += instance.OnDecision;
             @Decision.canceled += instance.OnDecision;
+            @SerectMagic.started += instance.OnSerectMagic;
+            @SerectMagic.performed += instance.OnSerectMagic;
+            @SerectMagic.canceled += instance.OnSerectMagic;
+            @Magic.started += instance.OnMagic;
+            @Magic.performed += instance.OnMagic;
+            @Magic.canceled += instance.OnMagic;
+            @Back.started += instance.OnBack;
+            @Back.performed += instance.OnBack;
+            @Back.canceled += instance.OnBack;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1121,15 +1331,24 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Fire.started -= instance.OnFire;
             @Fire.performed -= instance.OnFire;
             @Fire.canceled -= instance.OnFire;
-            @Magic.started -= instance.OnMagic;
-            @Magic.performed -= instance.OnMagic;
-            @Magic.canceled -= instance.OnMagic;
+            @Aim.started -= instance.OnAim;
+            @Aim.performed -= instance.OnAim;
+            @Aim.canceled -= instance.OnAim;
             @Avoid.started -= instance.OnAvoid;
             @Avoid.performed -= instance.OnAvoid;
             @Avoid.canceled -= instance.OnAvoid;
             @Decision.started -= instance.OnDecision;
             @Decision.performed -= instance.OnDecision;
             @Decision.canceled -= instance.OnDecision;
+            @SerectMagic.started -= instance.OnSerectMagic;
+            @SerectMagic.performed -= instance.OnSerectMagic;
+            @SerectMagic.canceled -= instance.OnSerectMagic;
+            @Magic.started -= instance.OnMagic;
+            @Magic.performed -= instance.OnMagic;
+            @Magic.canceled -= instance.OnMagic;
+            @Back.started -= instance.OnBack;
+            @Back.performed -= instance.OnBack;
+            @Back.canceled -= instance.OnBack;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1315,9 +1534,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
         void OnFire(InputAction.CallbackContext context);
-        void OnMagic(InputAction.CallbackContext context);
+        void OnAim(InputAction.CallbackContext context);
         void OnAvoid(InputAction.CallbackContext context);
         void OnDecision(InputAction.CallbackContext context);
+        void OnSerectMagic(InputAction.CallbackContext context);
+        void OnMagic(InputAction.CallbackContext context);
+        void OnBack(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

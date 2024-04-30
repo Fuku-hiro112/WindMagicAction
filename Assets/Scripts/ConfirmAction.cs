@@ -36,6 +36,7 @@ namespace GameInput
         //TODO: 移動値　視点操作値　といった変数名にしよう
         public Vector3 MoveDirection { get; private set; }
         public Vector2 LookDirection { get; private set; }
+        public Vector2 CurrentMagic  { get; private set; }
 
         public PlayerControls InputAction;
         public InputSystemUIInputModule InputModuleUI;// UI操作になった場合はenable=falseにする
@@ -55,25 +56,27 @@ namespace GameInput
         {
             InputAction = new PlayerControls();
 
-            InputAction.Player.Move.performed += OnMove;
-            InputAction.Player.Move.canceled += OnMoveStop;
-            InputAction.Player.Look.performed += OnLook;
-            InputAction.Player.Look.canceled += OnLook;
-            InputAction.Player.Fire.started += OnFire;
-            InputAction.Player.Magic.started += OnMagic;
-            InputAction.Player.Avoid.started += OnAvoid;
+            InputAction.Player.Move.performed      += OnMove;
+            InputAction.Player.Move.canceled       += OnMoveStop;
+            InputAction.Player.Look.performed      += OnLook;
+            InputAction.Player.Look.canceled       += OnLook;
+            InputAction.Player.Fire.started        += OnFire;
+            InputAction.Player.Aim.started         += OnMagic;
+            InputAction.Player.Avoid.started       += OnAvoid;
+            InputAction.Player.SerectMagic.started += OnSerectMagic;
 
             InputAction.Enable();
         }
         private void OnDisable()
         {
-            InputAction.Player.Move.performed -= OnMove;
-            InputAction.Player.Move.canceled -= OnMoveStop;
-            InputAction.Player.Look.performed -= OnLook;
-            InputAction.Player.Look.canceled -= OnLookStop;
-            InputAction.Player.Fire.started -= OnFire;
-            InputAction.Player.Magic.started -= OnMagic;
-            InputAction.Player.Avoid.started -= OnAvoid;
+            InputAction.Player.Move.performed      -= OnMove;
+            InputAction.Player.Move.canceled       -= OnMoveStop;
+            InputAction.Player.Look.performed      -= OnLook;
+            InputAction.Player.Look.canceled       -= OnLookStop;
+            InputAction.Player.Fire.started        -= OnFire;
+            InputAction.Player.Aim.started         -= OnMagic;
+            InputAction.Player.Avoid.started       -= OnAvoid;
+            InputAction.Player.SerectMagic.started -= OnSerectMagic;
 
             InputAction.Dispose();
         }
@@ -106,6 +109,12 @@ namespace GameInput
             LookDirection = context.ReadValue<Vector2>();
         }
         private void OnLookStop(InputAction.CallbackContext context) => LookDirection = Vector2.zero;
+
+        private void OnSerectMagic(InputAction.CallbackContext context)
+        {
+            CurrentMagic = context.ReadValue<Vector2>();
+        }
+
         /// <summary>
         /// 攻撃ボタン
         /// </summary>

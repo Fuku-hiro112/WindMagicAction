@@ -1,18 +1,21 @@
-using System.Collections.Generic;
 using System.Linq;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Assertions;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class TargetDeterminationModel : MonoBehaviour
 {
     // 自分自身
     [SerializeField] private Transform _player;
 
+    /*
     // ターゲット
-    private List<Transform> _targetPositionList;
+    //private List<Transform> _targetPositionList;
 
     // 視野角（度数法）
     //[SerializeField] private float _sightAngle;
+    */
 
     // 視界の最大距離
     [SerializeField] private float _maxDistance = float.PositiveInfinity;
@@ -21,7 +24,7 @@ public class TargetDeterminationModel : MonoBehaviour
     [SerializeField, Tooltip("視界の円錐の頂角")] private float _viewConeApexAngle = 155f;
 
     // 敵
-    [SerializeField] private TestEnemyManager _enemyManager;
+    [SerializeField] private EnemyManager _enemyManager;
     // 評価点の満点
     private const float c_maxPoint = 100;
     [SerializeField, Tooltip("標準からの距離点数の割合"), Range(0, c_maxPoint)] private int _aimDistanceRatio;
@@ -29,10 +32,6 @@ public class TargetDeterminationModel : MonoBehaviour
     // ターゲット
     private ReactiveProperty<GameObject> _targetObj = new ReactiveProperty<GameObject>();
     public IReadOnlyReactiveProperty<GameObject> TargetObj => _targetObj;
-
-    // 見えているか
-    private bool isVisible = false;
-
     private Camera _camera;//NOTE: Camera.mainで取るとShake中カメラの切り替えでバグるので
 
     private void Awake()
@@ -41,11 +40,16 @@ public class TargetDeterminationModel : MonoBehaviour
     }
     private void Start()
     {
+        //NOTE: 振動時カメラ切り替えが起こるため事前に取得していないとエラーが出る
         _camera = Camera.main;
+    }
+    public void NullTarget()
+    {
+        _targetObj.Value = null;
     }
     public void OnUpdate()
     {
-        if (_enemyManager.EnemyList.Count <= 1) return;// Listに要素がないなら以下を処理しない
+        if (!HasExistsEnemy()) return;// Listに要素がないなら以下を処理しない
 
         //全ての敵のリストからターゲットを決める
         GameObject target = null;
@@ -61,44 +65,64 @@ public class TargetDeterminationModel : MonoBehaviour
         {
             //ターゲットからカメラの方向へ正規化したベクトルを作成
             Vector3 targetToCameraDirection = (_camera.transform.position - obj.transform.position).normalized;
-            float cos153 = -0.89f;// 約cos153°
+            float cos153 = -0.89f;// 約cos153
 
             // カメラの視界にいるかどうか
             if (Vector3.Dot(targetToCameraDirection, _camera.transform.forward.normalized) < cos153)//NOTE: .normalizedを付けることにより、内積の計算で|a||b|ベクトルが1になりcosθのみの計算で良くなる
-            {//TODO: 本番はターゲットCanvasを表示にする
-                //Debug.Log("見えた");
-                isVisible = true;
+            {
+                // TODO: ポイント計算がおかしい　満点・最小の時の距離を出す必要がありそう
+                float totalPoint = 0;
 
-                float point = 0;
-                // 敵との距離から点数を出す
+#region 距離ポイント計算
+                // 敵との距離から点数を出す TODO: Rayを使ってEnemyに当たった時にhit.distanceで距離を取って敵との距離を取った方が敵のモデルの大きさに左右されずに住むのでは？
                 float distanceMaxPoint = c_maxPoint - _aimDistanceRatio;
-                var cameraDistance = obj.transform.position - _camera.transform.position;
+                var playerDistance = obj.transform.position - _player.transform.position;
+                float proximityScore = _maxDistance - playerDistance.magnitude;// 近いほど点数が高い　最高はMaxDistance値
+                // 接近スコアが0未満の時エラーを出す。　マイナス値の場合得点計算がおかしくなるため
+                Debug.Assert(proximityScore >= 0, "接近スコアが0未満になっています！(proximityScore : "+ proximityScore +")");
+
                 // 距離ポイント合計
-                float distancePoint = distanceMaxPoint - cameraDistance.magnitude * (distanceMaxPoint / _maxDistance); // 最大点数 - カメラとの距離×(最大点数/最大視野距離) = 近ければ点数高い
+                float distancePoint = proximityScore * (distanceMaxPoint / _maxDistance); // 近さスコア×(最大点数/最大視野距離) = 近ければ点数高い
+#endregion
 
-                // スクリーン座標
-                Vector3 objScreen = new Vector3(
-                    _camera.WorldToViewportPoint(obj.transform.position).x
-                  , _camera.WorldToViewportPoint(obj.transform.position).y * 2 - 0.5f // 横が短いので補正　NOTE:２倍(縦横比大体２倍だから)するとセンターに照準が合わなくなるので2倍してから-0.5fしている
-                  , 1f);
-                // スクリーン座標画面中央
-                Vector3 senter = new Vector3(0.5f, 0.5f, 1f);
+
+#region スクリーンポイント計算
+                // オブジェクトの位置をスクリーン座標へ
+                Vector3 objToScreenPoint = _camera.WorldToScreenPoint(obj.transform.position);
+                /*
+                Vector2 objViewport = new Vector2
+                (
+                    _camera.WorldToScreenPoint(obj.transform.position).x
+                  , _camera.WorldToScreenPoint(obj.transform.position).y //* 2 - 0.5f
+                ); // 横が短いので補正　NOTE:２倍(縦横比大体２倍だから)するとセンターに照準が合わなくなるので2倍してから-0.5fしている
+                */  
+                // スクリーン座標座標 画面中央
+                Vector3 senterToScreenPoint = new Vector3(Screen.width/2, Screen.height/2, 1);
+                float maxDistance = Screen.width / 2;
+                float proximityScoreFromSenter = maxDistance - (senterToScreenPoint - objToScreenPoint).magnitude;// 接近スコア
+                
+                // 接近スコアが0未満の時エラーを出す。　マイナス値の場合得点計算がおかしくなるため
+                Debug.Assert(proximityScoreFromSenter >= 0, "接近スコアが0未満になっています！(proximityScoreFromSenter : " + proximityScore + ")");
+
                 // スクリーンポイント合計
-                float screenPoint = _aimDistanceRatio - (senter - objScreen).magnitude * 100;
-                // 合計ポイント
-                point = distancePoint + screenPoint;
+                float screenPoint = proximityScoreFromSenter * (_aimDistanceRatio / maxDistance);
+#endregion
 
-                if (maxPoint < point)
+                // 合計ポイント
+                totalPoint = distancePoint + screenPoint;
+                Debug.Assert(totalPoint <= 100, "トータルスコアが想定外の数値になっています。(totalPoint("+totalPoint+") = distancePoint("+distancePoint+") + screenPoint("+screenPoint+ "))");
+                Debug.Log($"{totalPoint} = 距離{distancePoint} + スクリーン{screenPoint}");
+                
+                if (maxPoint < totalPoint)
                 {
                     if (!IsObjectsDuringObstacle(obj.transform, _camera.transform))// カメラとオブジェクトの間に障害物があるか
                     {
                         // 代入
-                        maxPoint = point;      // 合計ポイント
+                        maxPoint = totalPoint; // 合計ポイント
                         target = obj;// ターゲットオブジェクト
-
-                        Debug.Log(obj.name);
-                        //NOTE: 確認用すぐ消そう
                         /*
+                        //Debug.Log(obj.name);
+                        //NOTE: 確認用すぐ消そう
                         _maxPoint = maxPoint;
                         _maxdis = distancePoint;
                         _maxscr = screenPoint;
@@ -106,21 +130,12 @@ public class TargetDeterminationModel : MonoBehaviour
                     }
                 }
             }
-            else isVisible = false;
         });
 
         // 見た目確認用　targetは青　それ以外白
         if (_targetObj.Value != target && target != null)
         {
             _targetObj.Value = target;
-            /*
-            _enemyManager.EnemyList.ForEach(obj =>
-            {
-                Material material = new Material(Shader.Find("Standard"));
-                // マテリアルの色は、targetと同じであれば　青色　違う場合は　白色
-                material.color = (obj.transform == target) ? Color.blue : Color.white;
-                obj.GetComponent<Renderer>().material = material;
-            });*/
         }// target反映
         else if (_targetObj.Value != null && target == null)
         {
@@ -141,6 +156,7 @@ public class TargetDeterminationModel : MonoBehaviour
         Vector3 targetPoint = targetTransform.position + heightCorrection; //NOTE: Rayが地面に衝突するため高さを補正
         Vector3 objDirection = targetPoint - startTransform.position;
         RaycastHit hit;
+
         // PlayerSide以外に当たるLayerMask
         int layerMask = 1 << LayerMask.NameToLayer("PlayerSide");
         layerMask = ~layerMask;
@@ -166,17 +182,37 @@ public class TargetDeterminationModel : MonoBehaviour
         return result;
     }
 
-    #region Debug
-
-    // 視界判定の結果をGUI出力
-    private void OnGUI()
+    /// <summary>
+    /// 敵が存在しているか
+    /// </summary>
+    /// <returns></returns>
+    public bool HasExistsEnemy() => _enemyManager.EnemyList.Count > 0;
+    /// <summary>
+    /// プレイヤーから近くの敵を返す
+    /// </summary>
+    /// <returns>近くの敵のTransformを返す</returns>
+    public Transform NearEnemy() 
     {
-        // 視界判定
-        //var isVisible = IsVisible();
+        Transform minEnemy = null;
+        
+        // 最小距離を記録
+        float minDistance = 999999;
 
-        // 結果表示
-        GUI.Box(new Rect(20, 20, 150, 23), $"isVisible = {isVisible}");
+        foreach (var enemy in _enemyManager.EnemyList)
+        {
+            // プレイヤーと敵の距離
+            float distance = Vector3.Distance(enemy.transform.position, _player.transform.position);
+            
+            // 距離が短いなら
+            if (minDistance > distance)
+            {
+                // 最小距離,Transformの上書き
+                minDistance = distance;
+                minEnemy = enemy.transform;
+            }
+        }
+
+        Assert.IsNotNull(minEnemy, $"{this}のminEnemyがNUllです。");
+        return minEnemy;
     }
-
-    #endregion
 }

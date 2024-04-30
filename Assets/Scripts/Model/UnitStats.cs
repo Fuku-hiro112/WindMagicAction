@@ -1,11 +1,14 @@
+using DG.Tweening;
 using System;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.UI;
 
 namespace Unit
 {
+    [RequireComponent(typeof(UnitBase))]
     public class UnitStats : MonoBehaviour
     {
         [NonSerialized] public bool IsDead; // 死亡の真偽値
@@ -18,18 +21,21 @@ namespace Unit
         [SerializeField] private int _magnificationCanvasScale = 1;// Canvasの大きさ　何倍するか
         [SerializeField] private Vector3 _canvasPos = new Vector3(0, 2, 0); // Canvas の位置
         [SerializeField] private int _maxHealth; // 自身の最大ヘルス値
+        [SerializeField] private float _decreaseDuration = 0.5f;
         [SerializeField, Tooltip("無敵時間(秒)")]
-        private float _invincibilityTimeSeconds = 1;
+        private float _invincibilityTimeSeconds = 0.2f;
 
         [NonSerialized] public GameObject MyCanvas; // 自身のCanvas
         private UnitBase _myUnit;
         private Image _imgHealth; // ヘルスバー
+        private Image _imgDamage;
         private Text _txtHealth; // ヘルス文字
         private Camera _camera;//NOTE: Camera.mainで取るとShake中カメラの切り替えでバグるので
 
         private void Awake()
         {
             MyCanvas = Instantiate(_healthCanvasPrefab);
+            Assert.IsNotNull(MyCanvas, "MyCanvasがNullです。");
         }
         private void Start()
         {
@@ -37,28 +43,40 @@ namespace Unit
             MyCanvas.transform.localScale *= _magnificationCanvasScale;
             MyCanvas.transform.SetParent(gameObject.transform); // Canvasを自身の子構造に
             MyCanvas.transform.position = transform.position + _canvasPos; // キャンバスの位置補正
+
             MyCanvas.transform.Find("imgHealth").TryGetComponent(out _imgHealth);
+            MyCanvas.transform.Find("imgDamage").TryGetComponent(out _imgDamage);
             MyCanvas.transform.Find("txtHealth").TryGetComponent(out _txtHealth);
             TryGetComponent(out _myUnit);
+            Assert.IsNotNull(_imgHealth);
+            Assert.IsNotNull(_imgDamage);
+            Assert.IsNotNull(_txtHealth);
+            Assert.IsNotNull(_myUnit);
             _camera = Camera.main;
+            Assert.IsNotNull(_camera, "CameraがNullです");
             Ready();// 初期化
 
-
-            // Weaponタグに当たったらダメージをくらう
-            this.OnTriggerEnterAsObservable()
-                .Where(other => other.gameObject.CompareTag("Weapon") && !IsDead)
-                .ThrottleFirst(TimeSpan.FromSeconds(_invincibilityTimeSeconds)) // ２回目以降,設定秒間攻撃処理を受け付けない (１回目は通過)
-                .Subscribe(other => TriggerEnter(other));
+            // ドラゴン出ないEnemyなら
+            if (gameObject.CompareTag("Enemy") && gameObject.name != "Dragon")
+            {
+                // キャンバスをカメラの方に向ける
+                this.UpdateAsObservable()
+                    .Subscribe(_ => MyCanvas.transform.forward = _camera.transform.forward);
+            }
 
             // オブジェクトストリーム停止
             _health.AddTo(this);
             // View healthBarの更新
             _health.Subscribe(health =>
                 {
+                    float currentFillAmount = health / (float)_maxHealth;
                     // HPBarの変更
-                    UpdateHealthBar(health);
+                    UpdateBarFillAmount(currentFillAmount, _imgHealth, _imgDamage);
+
                     // HPテキストの変更
-                    UpdateHealthText(health);
+                    UpdateBarText(_txtHealth, _maxHealth, health);
+
+                    // ボス（ドラゴン）で無いなら
                     if (gameObject.name != "Dragon")
                         // HPBarの色変更
                         ChangeHealthImageColor();
@@ -70,17 +88,20 @@ namespace Unit
                 {
                     // 死亡処理
                     IsDead = true; // 死亡を指定する
-                    _myUnit.OnDeath().Forget();
+                    _myUnit.OnDeathAsync().Forget();
                 },
                 er => { Debug.Log("エラー"); }
                 );
 
         }
+        /*
         private void Update()
         {
             // キャンバスをカメラに向ける
+            if (gameObject.CompareTag(""))
             MyCanvas.transform.forward = _camera.transform.forward;
         }
+        */
         /// <summary>
         /// HP画像を現在のHP割合で変更する
         /// </summary>
@@ -90,53 +111,48 @@ namespace Unit
             else if (_imgHealth.fillAmount > 0.2f) _imgHealth.color = Color.yellow;
             else _imgHealth.color = Color.red;
         }
+
         /// <summary>
-        /// HPBarの更新
+        /// ImageのFillAmount値を滑らかに更新
         /// </summary>
-        /// <param name="health">現在のHP</param>
-        private void UpdateHealthBar(int health)
+        /// <param name="currentFillAmount"></param>
+        /// <param name="frontImage">手前の減らしたい画像</param>
+        /// <param name="backImage">後ろの減らしたい画像</param>
+        public void UpdateBarFillAmount(float currentFillAmount, Image frontImage, Image backImage)
         {
-            _imgHealth.fillAmount = health / (float)_maxHealth;
+            // frontを徐々に減らす
+            frontImage
+                .DOFillAmount(currentFillAmount, _decreaseDuration)
+                .OnComplete(() =>
+                {
+                    float waitTime = 0.5f;
+                    // 0.5秒待ってから徐々に減らす
+                    backImage
+                        .DOFillAmount(currentFillAmount, _decreaseDuration / 2)
+                        .SetDelay(waitTime);
+                });
         }
         /// <summary>
-        /// HPテキストの更新
+        /// Barのテキストを更新
         /// </summary>
-        /// <param name="health">現在のHP</param>
-        private void UpdateHealthText(int health)
+        /// <param name="barText">変更したいText</param>
+        /// <param name="maxValue">最大の値</param>
+        /// <param name="currentValue">現在の値</param>
+        public void UpdateBarText(Text barText, int maxValue, int currentValue)
         {
-            _txtHealth.text = health.ToString("f0") + "/" + _maxHealth.ToString("f0");
+            barText.text = currentValue.ToString("f0") + "/" + maxValue.ToString("f0");
         }
 
-        /*
-        private void OnTriggerEnter(Collider other)
-        {
-            // 死んでなくて、タグWeaponが侵入した時
-            if (other.gameObject.CompareTag("Weapon") && !IsDead)
-            {
-                // 武器の現在の攻撃力Powerを照会し、自身のヘルス値を減らす
-                ReactivePropertyHealth.Value -= other.gameObject.GetComponent<WeaponAction>().Power;
-                Debug.Log($"{this.gameObject.name}は、{other.gameObject.transform.root.name}から{other.gameObject.GetComponent<WeaponAction>().Power}ダメージを受けた");
-                ReactivePropertyHealth.Value = Mathf.Clamp(ReactivePropertyHealth.Value, 0, _maxHealth); // ヘルス値を一定範囲内に収める
-                //ダメージエフェクト生成
-                _myUnit.OnDamage();
-
-                if (ReactivePropertyHealth.Value <= 0.0f)
-                { // 死亡判定
-                    IsDead = true; // 死亡を指定する
-                    _myUnit.OnDeath().Forget();
-                }
-            }
-        }
-        */
-        private void TriggerEnter(Collider other)
+        /// <summary>
+        /// ダメージ処理
+        /// </summary>
+        /// <param name="power"></param>
+        public void OnDamage(int power)
         {
             // 武器の現在の攻撃力Powerを照会し、自身のヘルス値を減らす
-            _health.Value -= other.gameObject.GetComponent<WeaponAction>().Power;
-            Debug.Log($"{this.gameObject.name}は、{other.gameObject.transform.root.name}から{other.gameObject.GetComponent<WeaponAction>().Power}ダメージを受けた");
-            _health.Value = Mathf.Clamp(_health.Value, 0, _maxHealth); // ヘルス値を一定範囲内に収める
-
+            ChangeHealth(- power);
             //ダメージ処理（エフェクトやバイブなど）　HACK: ダサいから点滅もさせたいな
-            _myUnit.OnDamage();
+            _myUnit.VisualizationDamege();
         }
 
         /// <summary>

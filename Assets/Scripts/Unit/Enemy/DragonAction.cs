@@ -23,6 +23,8 @@ namespace Unit
         }
         protected new void Start()
         {
+            TryGetComponent(out WanderingManager);
+            Assert.IsNotNull(WanderingManager, $"{this}‚ÌWanderingManager‚ªNull‚Å‚·");
             base.Start();
             _canvas = GetComponent<UnitStats>().MyCanvas;
         }
@@ -42,10 +44,10 @@ namespace Unit
         /// <summary>
         /// €–Sˆ—
         /// </summary>
-        public override async UniTaskVoid OnDeath()
+        public override async UniTaskVoid OnDeathAsync()
         {
             Debug.Log("ƒhƒ‰ƒSƒ“€–S");
-            base.OnDeath().Forget();
+            base.OnDeathAsync().Forget();
             DeathPerformance();// ‰‰o ‰ñ“]‚µ‚È‚ª‚ç¬‚³‚­‚È‚é
         }
         /// <summary>

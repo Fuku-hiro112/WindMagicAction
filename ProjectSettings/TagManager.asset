@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Target
   - WanderingPosStorage
+  - AudioManager
   layers:
   - Default
   - TransparentFX
