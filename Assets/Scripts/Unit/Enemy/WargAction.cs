@@ -29,6 +29,8 @@ public class WargAction : EnemyActionBase
         //WanderingStateSwitch();
         //UpdateSeparation();
     }
+
+    #region ŠJ”­“r’†ˆ—
     /*
     private void WanderingStateSwitch()
     {
@@ -71,6 +73,8 @@ public class WargAction : EnemyActionBase
 
     }
     */
+    #endregion
+
     /// <summary>
     /// €–Sˆ—
     /// </summary>

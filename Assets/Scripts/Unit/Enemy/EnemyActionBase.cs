@@ -1,14 +1,8 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using System;
-using System.Collections;
-using System.Drawing;
-using UniRx;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Assertions;
-using UnityEngine.EventSystems;
 
 namespace Unit
 {
@@ -18,7 +12,7 @@ namespace Unit
         Wandering, // œpœj
         Separation,// •ªU
         Chase,     // “G‚ğ’Ç‚¢‚©‚¯
-        Attacking, // UŒ‚
+        Attack, @ // UŒ‚
     }
 
     [RequireComponent(typeof(Animator), typeof(NavMeshAgent))]// Animator‚ÆNavMesh‚ğ•K{‚É
@@ -83,6 +77,7 @@ namespace Unit
             ActionEnemy();
         }
         protected virtual void OnUpdate(){}
+
         protected void ActionEnemy()
         {
             if (!_player || _myStats.IsDead) return;// ƒvƒŒƒCƒ„[–¢”­Œ©
@@ -99,10 +94,20 @@ namespace Unit
             // ƒvƒŒƒCƒ„[‚Ì•ûŒü‚ğŒü‚­
             if (distance <= _searchRange)// ’Tõ”ÍˆÍ“à‚È‚ç
             {
-                if (State != EnemyState.Attacking)// UŒ‚‘O‚ÌPlayer‚ÌˆÊ’u‚ğŒü‚­
+                if (State != EnemyState.Attack)// UŒ‚StateˆÈŠO‚È‚ç
+                {
+                    // UŒ‚‘O‚ÌPlayer‚ÌˆÊ’u‚ğ•Û‘¶
+                    _targetPos = _player.transform.position;
+                }// UŒ‚State
+                else if (IsAttacking)// UŒ‚’†‚È‚ç
                 {
                     _targetPos = _player.transform.position;
                 }
+                else // UŒ‚’†‚¶‚á‚È‚¢‚È‚ç
+                {
+                    Debug.Log($"{this.gameObject.name}UŒ‚‚µ‚Ä‚È‚¢");
+                }
+                
                 // “G‚©‚çPlayer‚ÌƒxƒNƒgƒ‹
                 var moveVec = _targetPos - transform.position;
                 moveVec.Normalize();
@@ -129,7 +134,10 @@ namespace Unit
                     _myNavi.enabled = true; 
                     _myNavi.destination = _targetWanderingPoint; // ƒ^[ƒQƒbƒg‚ğw¦
                     _myAnim.SetFloat("Speed", _myNavi.velocity.magnitude); //ˆÚ“®ƒ‚[ƒVƒ‡ƒ“
-                    _myAnim.SetBool("Attack", false); //UŒ‚’â~
+                    
+                    //UŒ‚’â~
+                    _myAnim.SetBool("Attack", false); 
+                    IsAttacking = false;
                     break;
 
                 case EnemyState.Chase: // ’Tõ”ÍˆÍ“à‚È‚ç
@@ -137,15 +145,23 @@ namespace Unit
                     _myNavi.enabled = true; // ƒiƒrƒƒbƒVƒ…‚ğƒIƒ“
                     _myNavi.destination = _player.transform.position; // ƒ^[ƒQƒbƒg‚ğw¦
                     _myAnim.SetFloat("Speed", _myNavi.velocity.magnitude); //ˆÚ“®ƒ‚[ƒVƒ‡ƒ“
-                    _myAnim.SetBool("Attack", false); //UŒ‚’â~
+
+                    Debug.Log($"{this.gameObject.name}‚ÌState‚Í{State}");
+                    //UŒ‚’â~
+                    _myAnim.SetBool("Attack", false);
+                    IsAttacking = false;
                     break;
 
-                case EnemyState.Attacking:// UŒ‚’†‚È‚ç
+                case EnemyState.Attack:// UŒ‚’†‚È‚ç
                     // —§‚¿~‚Ü‚Á‚ÄUŒ‚
                     _myNavi.enabled = false; // ƒiƒrƒƒbƒVƒ…Ø‚é
                     _myAnim.SetFloat("Speed", 0); //ˆÚ“®‚Í‚µ‚È‚¢
                     _myAnim.SetBool("Attack", true); //UŒ‚ŠJn
-                    IsAttacking = true;
+                    Debug.Log($"<color=red>{this.gameObject.name}‚ÌState‚Í{State}</color>"); 
+                    break;
+
+                default:
+
                     break;
             }
         }
@@ -187,19 +203,28 @@ namespace Unit
                 }
             }
 
+
             // ’Tõ”ÍˆÍ“à‚È‚ç
-            if (distance <= _fireDistance)// ƒvƒŒƒCƒ„[‚Æ‚Ì‹——£‚ª_fireDistanceˆÈ‰ºA
+            if (distance <= _fireDistance)// UŒ‚”ÍˆÍ
             {
-                State = EnemyState.Attacking;
-            }
-            else if (distance > _fireDistance && distance < _searchRange && !IsAttacking)// ƒvƒŒƒCƒ„[‚Æ‚Ì‹——£‚ª_fireDistance`_searchRange‚È‚ç
+                State = EnemyState.Attack;
+            }// UŒ‚”ÍˆÍŠO
+            else if (distance > _fireDistance && distance < _searchRange)// ƒvƒŒƒCƒ„[‚Æ‚Ì‹——£‚ªUŒ‚”ÍˆÍ`õ“G”ÍˆÍ“à‚È‚ç
             {
+                if (IsAttacking) 
+                {
+                    //IsAttacking = false;
+                    return;// UŒ‚’†‚È‚ç‰½‚às‚í‚È‚¢
+                }
+                    
                 State = EnemyState.Chase;
             }
+            /*@//HACK:IsAttacking‚ğfalse‚É‚·‚éˆÓ–¡–³‚­‚È‚¢‚©H
             else if (distance > _fireDistance)
             {
                 IsAttacking = false;
             }
+            */
 
         }
         /// <summary>

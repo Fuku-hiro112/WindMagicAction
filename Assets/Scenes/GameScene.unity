@@ -337,7 +337,6 @@ GameObject:
   m_Component:
   - component: {fileID: 115740622}
   - component: {fileID: 115740625}
-  - component: {fileID: 115740624}
   - component: {fileID: 115740623}
   m_Layer: 0
   m_Name: CameraForShake
@@ -373,14 +372,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ba0c377d636d78458fd410e827d9a60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!81 &115740624
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 115740621}
-  m_Enabled: 1
 --- !u!20 &115740625
 Camera:
   m_ObjectHideFlags: 0

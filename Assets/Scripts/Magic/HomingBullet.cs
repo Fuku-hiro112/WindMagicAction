@@ -50,8 +50,9 @@ public class HomingBullet : MonoBehaviour
             _bulletPrefab
             , _bulletPopPos
             ,Quaternion.FromToRotation(Vector3.forward, transform.forward));
-        Debug.Log(_bulletPopPos);
-        Debug.Log(bullet.transform.position);//
+        
+        //Debug.Log(_bulletPopPos);
+        //Debug.Log(bullet.transform.position);
         
         //NOTE: nullの場合エラーが出るため、その場合はdefault値を渡すようにしている
         if(_targetDeterminationModel.TargetObj.Value == null) 

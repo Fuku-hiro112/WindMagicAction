@@ -32,7 +32,6 @@ public class HomingShoot : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(transform.position);
         if (_target == default)
         {
             transform.position += _InjectionDirection * _speed;// Camera角度にするとおかしい
@@ -61,7 +60,7 @@ public class HomingShoot : MonoBehaviour
             _position += _velocity * Time.deltaTime;   // 位置m   = 速度m/s　   * deltaTime
 
             transform.position = _position;
-            Debug.Log("加速度 "+ Pythagorean(acceleration)+" ");
+            //Debug.Log("加速度 "+ Pythagorean(acceleration)+" ");
         }
     }
 
