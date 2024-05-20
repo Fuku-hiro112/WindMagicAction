@@ -5,17 +5,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Unit;
+using static UnityEngine.GraphicsBuffer;
+using System.Drawing;
 
 public class WargAction : EnemyActionBase
 {
     private List<Transform> _nearbyEnemieList = new List<Transform>();
+    [SerializeField] private float _targetPriority = 2;
 
     private void Reset()
     {
-        _fireDistance = 2;
-        _searchRange = 10;
-        _deathTime = 3;
-        _damagePos = new Vector3(0, 1.5f, 0);
+        FireDistance = 2;
+        SearchRange = 10;
+        DeathTime = 3;
+        DamagePos = new Vector3(0, 1.5f, 0);
+        _targetPriority = 2;
     }
     protected new void Start()
     {
@@ -26,53 +30,56 @@ public class WargAction : EnemyActionBase
 
     protected override void OnUpdate() 
     {
-        //WanderingStateSwitch();
-        //UpdateSeparation();
+        WanderingStateSwitch();
+        UpdateSeparation();
     }
 
     #region 開発途中処理
-    /*
+    /// <summary>
+    /// 
+    /// </summary>
     private void WanderingStateSwitch()
     {
-        if (State == EnemyState.Wandering)
+        if (State == EnemyState.Wandering || State == EnemyState.Separation)
         {
+            _nearbyEnemieList.Clear();
+
             // 近くにいる敵を格納
-            _nearbyEnemieList = _enemyManager.GetAllNearbyEnemies(this.transform, 2);
+            _nearbyEnemieList = EnemyManager.GetAllNearbyEnemies(this.transform, 20);
 
             // 近くに敵がいるか
             if (_nearbyEnemieList.Count > 0)
             {
                 State = EnemyState.Separation;
             }
-        }
-        else
-        {
-            State = EnemyState.Separation;
+            else
+            {
+                State = EnemyState.Wandering;
+            }
         }
     }
+    /// <summary>
+    /// 離れる状態の処理
+    /// </summary>
     private void UpdateSeparation()
     {
-        // 離れるモードを作る OK
-        // 敵と一定距離まで近づいたら離れるモードに
         if (State == EnemyState.Separation)
         {
-            // 目的地の方向と敵が居る位置と逆の方向に合成
-            // 敵と逆の位置に合成するか　どちらか
-            _myNavi.enabled = true;
-
-            Vector3 force = new();// これは何？
-            // 逆ベクトルを保存
+            Vector3 force = new();
+            // 敵の方向とは逆のベクトルを保存
             foreach (Transform enemyTransform in _nearbyEnemieList)
             {
                 force += (transform.position - enemyTransform.position).normalized;
-                         //vec / Mathf.Sqrt(vec.x * vec.x + vec.y * vec.y)
             }
 
-            _myNavi.destination = default/*移動方向*//*; // ターゲットを指示
+            MyAnim.SetFloat("Speed", MyNavi.velocity.magnitude); //移動モーション オン
+            MyNavi.enabled = true;
+            // 目標地点の方向
+            Vector3 directionOfWanderingPoint = (TargetWanderingPoint - transform.position).normalized;
+            MyNavi.destination = // 移動する目的場所
+                transform.position + force.normalized + (directionOfWanderingPoint * _targetPriority); 
         }
-
     }
-    */
     #endregion
 
     /// <summary>

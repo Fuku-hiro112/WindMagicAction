@@ -16,10 +16,10 @@ namespace Unit
 
         private void Reset()
         {
-            _fireDistance = 5;
-            _searchRange = 10;
-            _deathTime = 3;
-            _damagePos = new Vector3(0, 1.5f, 0);
+            FireDistance = 5;
+            SearchRange = 10;
+            DeathTime = 3;
+            DamagePos = new Vector3(0, 1.5f, 0);
         }
         protected new void Start()
         {

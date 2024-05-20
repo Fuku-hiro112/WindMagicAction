@@ -73,7 +73,7 @@ public class TargetDeterminationModel : MonoBehaviour
                 // TODO: ポイント計算がおかしい　満点・最小の時の距離を出す必要がありそう
                 float totalPoint = 0;
 
-#region 距離ポイント計算
+                #region 距離ポイント計算
                 // 敵との距離から点数を出す TODO: Rayを使ってEnemyに当たった時にhit.distanceで距離を取って敵との距離を取った方が敵のモデルの大きさに左右されずに住むのでは？
                 float distanceMaxPoint = c_maxPoint - _aimDistanceRatio;
                 var playerDistance = obj.transform.position - _player.transform.position;
@@ -83,19 +83,12 @@ public class TargetDeterminationModel : MonoBehaviour
 
                 // 距離ポイント合計
                 float distancePoint = proximityScore * (distanceMaxPoint / _maxDistance); // 近さスコア×(最大点数/最大視野距離) = 近ければ点数高い
-#endregion
+                #endregion
 
 
-#region スクリーンポイント計算
+                #region スクリーンポイント計算
                 // オブジェクトの位置をスクリーン座標へ
-                Vector3 objToScreenPoint = _camera.WorldToScreenPoint(obj.transform.position);
-                /*
-                Vector2 objViewport = new Vector2
-                (
-                    _camera.WorldToScreenPoint(obj.transform.position).x
-                  , _camera.WorldToScreenPoint(obj.transform.position).y //* 2 - 0.5f
-                ); // 横が短いので補正　NOTE:２倍(縦横比大体２倍だから)するとセンターに照準が合わなくなるので2倍してから-0.5fしている
-                */  
+                Vector3 objToScreenPoint = _camera.WorldToScreenPoint(obj.transform.position); 
                 // スクリーン座標座標 画面中央
                 Vector3 senterToScreenPoint = new Vector3(Screen.width/2, Screen.height/2, 1);
                 float maxDistance = Screen.width / 2;
@@ -106,7 +99,7 @@ public class TargetDeterminationModel : MonoBehaviour
 
                 // スクリーンポイント合計
                 float screenPoint = proximityScoreFromSenter * (_aimDistanceRatio / maxDistance);
-#endregion
+                #endregion
 
                 // 合計ポイント
                 totalPoint = distancePoint + screenPoint;

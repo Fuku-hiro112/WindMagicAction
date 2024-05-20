@@ -75,6 +75,9 @@ public class EnemyManager : MonoBehaviour
 
         foreach (var enemy in EnemyList)
         {
+            //NOTE: 自分自身をリストに入れないために確認
+            if (enemy.transform == objTransform) continue;
+            
             // Objと敵の距離
             float distance = Vector3.Distance(enemy.transform.position, objTransform.position);
 
