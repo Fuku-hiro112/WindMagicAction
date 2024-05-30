@@ -17,7 +17,7 @@ namespace Unit
         private void Reset()
         {
             FireDistance = 5;
-            SearchRange = 10;
+            SearchRange = 30;
             DeathTime = 3;
             DamagePos = new Vector3(0, 1.5f, 0);
         }

@@ -312,15 +312,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _weapons:
   - {fileID: 2632495735666996920}
-  _fireDistance: 2
-  _searchRange: 10
-  _deathTime: 3
-  _turningSpeed: 5
+  FireDistance: 3
+  SearchRange: 10
+  DeathTime: 3
+  TurningSpeed: 5
   _patDamage: {fileID: 274666779774703836, guid: 607564f4d21d9564ab0c5d8b421a2241, type: 3}
-  _damagePos: {x: 0, y: 1.5, z: 0}
+  DamagePos: {x: 0, y: 1.5, z: 0}
   _waitIdleMin: 1
   _waitIdleMax: 2
   _arrivalThreshold: 0.1
+  _targetPriority: 0
 --- !u!114 &98192836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -432,7 +433,6 @@ MonoBehaviour:
   _weaponStartActive: 0
   _hasPlayer: 0
   _audioClip: {fileID: 8300000, guid: f59001b23b69740489454fda6fb6b979, type: 3}
-  _power: 0
 --- !u!65 &1142582868
 BoxCollider:
   m_ObjectHideFlags: 0

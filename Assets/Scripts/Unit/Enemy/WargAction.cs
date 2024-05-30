@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Unit;
-using static UnityEngine.GraphicsBuffer;
-using System.Drawing;
 
 public class WargAction : EnemyActionBase
 {
@@ -34,9 +32,8 @@ public class WargAction : EnemyActionBase
         UpdateSeparation();
     }
 
-    #region ŠJ”­“r’†ˆ—
     /// <summary>
-    /// 
+    /// œpœjƒXƒe[ƒg“ü‚ê‘Ö‚¦
     /// </summary>
     private void WanderingStateSwitch()
     {
@@ -80,7 +77,6 @@ public class WargAction : EnemyActionBase
                 transform.position + force.normalized + (directionOfWanderingPoint * _targetPriority); 
         }
     }
-    #endregion
 
     /// <summary>
     /// €–Sˆ—

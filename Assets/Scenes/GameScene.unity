@@ -1936,6 +1936,14 @@ PrefabInstance:
     m_TransformParent: {fileID: 727702723}
     m_Modifications:
     - target: {fileID: -7552788854894063240, guid: 0d1a6fd90c565a948a2466db501a76e9, type: 3}
+      propertyPath: SearchRange
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: -7552788854894063240, guid: 0d1a6fd90c565a948a2466db501a76e9, type: 3}
+      propertyPath: FireDistance
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -7552788854894063240, guid: 0d1a6fd90c565a948a2466db501a76e9, type: 3}
       propertyPath: _waitIdleMax
       value: 6
       objectReference: {fileID: 0}
@@ -2566,7 +2574,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
@@ -2590,7 +2598,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.26512113, y: 0.65, z: 1.0846913}
+  m_Size: {x: 0.5, y: 0.65, z: 1.0846913}
   m_Center: {x: 0.00000059604645, y: 0.00000043399635, z: 0.39582688}
 --- !u!114 &776490361
 MonoBehaviour:
@@ -2599,7 +2607,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 776490357}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d872ac48040387a4cb17c10b29b7705b, type: 3}
   m_Name: 
@@ -3696,6 +3704,14 @@ PrefabInstance:
     m_TransformParent: {fileID: 727702723}
     m_Modifications:
     - target: {fileID: -7552788854894063240, guid: 0d1a6fd90c565a948a2466db501a76e9, type: 3}
+      propertyPath: SearchRange
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: -7552788854894063240, guid: 0d1a6fd90c565a948a2466db501a76e9, type: 3}
+      propertyPath: FireDistance
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -7552788854894063240, guid: 0d1a6fd90c565a948a2466db501a76e9, type: 3}
       propertyPath: _waitIdleMax
       value: 6
       objectReference: {fileID: 0}
@@ -4046,6 +4062,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 727702723}
     m_Modifications:
+    - target: {fileID: -7552788854894063240, guid: 0d1a6fd90c565a948a2466db501a76e9, type: 3}
+      propertyPath: SearchRange
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: -7552788854894063240, guid: 0d1a6fd90c565a948a2466db501a76e9, type: 3}
+      propertyPath: FireDistance
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: -7552788854894063240, guid: 0d1a6fd90c565a948a2466db501a76e9, type: 3}
       propertyPath: _waitIdleMax
       value: 6
@@ -4528,6 +4552,14 @@ PrefabInstance:
     - target: {fileID: -7552788854894063240, guid: 0d1a6fd90c565a948a2466db501a76e9, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -7552788854894063240, guid: 0d1a6fd90c565a948a2466db501a76e9, type: 3}
+      propertyPath: SearchRange
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: -7552788854894063240, guid: 0d1a6fd90c565a948a2466db501a76e9, type: 3}
+      propertyPath: FireDistance
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: -7552788854894063240, guid: 0d1a6fd90c565a948a2466db501a76e9, type: 3}
       propertyPath: _waitIdleMax
@@ -9438,6 +9470,14 @@ PrefabInstance:
       value: 1.6651132
       objectReference: {fileID: 0}
     - target: {fileID: 2121474085, guid: fba76046ba2744844af2c304215b9815, type: 3}
+      propertyPath: SearchRange
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2121474085, guid: fba76046ba2744844af2c304215b9815, type: 3}
+      propertyPath: FireDistance
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2121474085, guid: fba76046ba2744844af2c304215b9815, type: 3}
       propertyPath: _waitIdleMax
       value: 10
       objectReference: {fileID: 0}
@@ -9551,6 +9591,11 @@ MonoBehaviour:
   amplitude: 0.25
   phase: 0
   frequency: 1.25
+  originalColor:
+    r: 0
+    g: 0
+    b: 0
+    a: 0
 --- !u!108 &7862179514336202580
 Light:
   m_ObjectHideFlags: 0

@@ -14,7 +14,27 @@ namespace Unit
         Chase,     // 敵を追いかけ
         Attack, 　 // 攻撃
     }
-
+    /*
+    public enum Enemy
+    {
+        Discovery, // 発見
+           //TODO: 索敵範囲内だと以降　一時的発見状態 吠えた場所に向かう
+        Default    // 通常
+    }
+    // 警戒状態
+    public enum DiscoveryState
+    {
+        Approach,       // 接近
+        SituationCheck, // 様子を見る
+        Attack          // 攻撃
+    }
+    // 普通の状態
+    public enum DefaultState
+    {
+        Idle,      // 待機
+        Wandering, // 徘徊
+    }
+    */
     [RequireComponent(typeof(Animator), typeof(NavMeshAgent))]// AnimatorとNavMeshを必須に
     public class EnemyActionBase : UnitBase
     {
@@ -54,6 +74,7 @@ namespace Unit
         protected new void Start()
         {
             base.Start();
+
             TryGetComponent(out MyAnim); // 自身のアニメーターを取得
             TryGetComponent(out MyNavi); // 自身のナビメッシュを取得
             TryGetComponent(out _myStats);  // 自身のCombatActionを取得
@@ -62,6 +83,7 @@ namespace Unit
 
             Assert.IsNotNull(EnemyManager, $"{this}の_enemyManagerがNullです。EnemyManager配下に敵オブジェクトを生成するようにしてください。");
             Assert.IsNotNull(_player, $"{this}の_playerがNullです");
+            
             _player?.TryGetComponent(out _playerStats);// プレイヤーからCombatActionを取得
             State = EnemyState.Idle;
             _wanderingStateDuration = RandomSetDuration(_waitIdleMin, _waitIdleMax);
@@ -204,22 +226,23 @@ namespace Unit
             }
 
 
-            // 探索範囲内なら
-            if (distance <= FireDistance)// 攻撃範囲
+            
+            // 攻撃範囲内
+            if (distance <= FireDistance)
             {
                 State = EnemyState.Attack;
             }// 攻撃範囲外
-            else if (distance > FireDistance && distance < SearchRange)// プレイヤーとの距離が攻撃範囲～索敵範囲内なら
+            else if (distance <= SearchRange)// プレイヤーとの距離が索敵範囲内なら
             {
                 if (IsAttacking) 
                 {
-                    //IsAttacking = false;
                     return;// 攻撃中なら何も行わない
                 }
                     
                 State = EnemyState.Chase;
             }
             /*　//HACK:IsAttackingをfalseにする意味無くないか？
+             *　//HACK:アニメーションが終了しなかったらIsAttackingがFalseにならない
             else if (distance > _fireDistance)
             {
                 IsAttacking = false;

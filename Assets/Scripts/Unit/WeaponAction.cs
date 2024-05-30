@@ -32,7 +32,8 @@ public class WeaponAction : MonoBehaviour
             _hasPlayer = true;
         }
         _weaponCollier = GetComponent<BoxCollider>();
-        _complementCollier = GetComponent<ComplementCollider>();
+        //_complementCollier = GetComponent<ComplementCollider>();
+        TryGetComponent(out _complementCollier);
     }
 
     private void Start()
@@ -128,7 +129,10 @@ public class WeaponAction : MonoBehaviour
     public void PlayerWeaponActivate(bool active)
     {
         // 当たり判定の補完　ONOFF
-        _complementCollier.isAttack = active;
+        if (_complementCollier != null) //NOTE: 不具合があるのでデバックの為にもNullチェックを入れている
+        { 
+            _complementCollier.isAttack = active; 
+        }
         WeaponActivate(active);
     }
 #endregion
