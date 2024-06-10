@@ -1296,6 +1296,7 @@ MonoBehaviour:
   - {fileID: 776490357}
   _moveSpeed: 10
   _rotationSpeed: 8
+  _hitStopTime: 0.2
   _birthInterval: 5
   _requiredMagicPoints: 14000000320000000a0000000a000000
   AttackHealMagicPoint: 10
@@ -1433,6 +1434,7 @@ MonoBehaviour:
   _hitEffectDestroyTime: 1
   _flameMoveSpeed: 10
   _slashMoveSpeed: 30
+  _destroyTime: 3
 --- !u!1 &446280555 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2632495735666996920, guid: 0d1a6fd90c565a948a2466db501a76e9, type: 3}
@@ -2017,6 +2019,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2632495735667354300, guid: 0d1a6fd90c565a948a2466db501a76e9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2632495735676339474, guid: 0d1a6fd90c565a948a2466db501a76e9, type: 3}
+      propertyPath: m_ApplyRootMotion
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -3787,6 +3793,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2632495735676339474, guid: 0d1a6fd90c565a948a2466db501a76e9, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4144,6 +4154,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2632495735667354300, guid: 0d1a6fd90c565a948a2466db501a76e9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2632495735676339474, guid: 0d1a6fd90c565a948a2466db501a76e9, type: 3}
+      propertyPath: m_ApplyRootMotion
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -4635,6 +4649,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2632495735667354300, guid: 0d1a6fd90c565a948a2466db501a76e9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2632495735676339474, guid: 0d1a6fd90c565a948a2466db501a76e9, type: 3}
+      propertyPath: m_ApplyRootMotion
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
@@ -9586,16 +9604,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8888ebf0a65efac498f925a91cfd8ff8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waveFunction: sin
-  startValue: 1
-  amplitude: 0.25
-  phase: 0
-  frequency: 1.25
-  originalColor:
-    r: 0
-    g: 0
-    b: 0
-    a: 0
 --- !u!108 &7862179514336202580
 Light:
   m_ObjectHideFlags: 0

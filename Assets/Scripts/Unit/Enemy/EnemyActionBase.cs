@@ -224,8 +224,6 @@ namespace Unit
                     _waitIdleStateTimer = 0f;
                 }
             }
-
-
             
             // 攻撃範囲内
             if (distance <= FireDistance)
@@ -241,14 +239,6 @@ namespace Unit
                     
                 State = EnemyState.Chase;
             }
-            /*　//HACK:IsAttackingをfalseにする意味無くないか？
-             *　//HACK:アニメーションが終了しなかったらIsAttackingがFalseにならない
-            else if (distance > _fireDistance)
-            {
-                IsAttacking = false;
-            }
-            */
-
         }
         /// <summary>
         /// 間隔をランダムに返す
@@ -294,6 +284,16 @@ namespace Unit
             MyAnim.SetFloat("Speed", 0); // 移動はしない
             MyAnim.SetBool("Attack", false); // 攻撃停止
         }
+        public void OnDamage(float hitStopTime)
+        {
+            // ヒットストップアニメーションを指定秒数止める
+            MyAnim.speed = 0;
+            var sequence = DOTween.Sequence();
+            sequence.SetDelay(hitStopTime);
+            sequence.AppendCallback(() => MyAnim.speed = 1);
+
+            VisualizationDamege();
+        }
         /// <summary>
         /// ダメージ視覚処理
         /// </summary>
@@ -314,7 +314,7 @@ namespace Unit
 
             SomeAnimationsStopped();
             MyAnim.SetTrigger("Death"); // 死亡モーション発動
-            _weaponActions[0].WeaponActivate(false);//NOTE: 攻撃中に死ぬと攻撃当たり判定が残ったまま死んでダメージを受けるので消しておる
+            _weaponActions[0].WeaponActivate(false);//NOTE: 攻撃中に死ぬと攻撃当たり判定が残ったまま死んでダメージを受けるので消しておる //TODO: 発動してない？死んだ敵の判定が残っている
             MyNavi.enabled = false; // ナビメッシュ切る
             gameObject.tag = "Untagged";
             EnemyManager.RemoveEnemy(this.gameObject);
@@ -362,9 +362,5 @@ namespace Unit
         }
 
         #endregion
-        private void OnGUI()
-        {
-            //GUILayout.Label($"State: {State}");
-        }
     }
 }

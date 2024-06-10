@@ -20,6 +20,7 @@ public class MagicShoot : MonoBehaviour
     [SerializeField] private float _hitEffectDestroyTime = 1f;
     [SerializeField] private float _flameMoveSpeed = 10f;
     [SerializeField] private float _slashMoveSpeed = 30f;
+    [SerializeField] private float _destroyTime = 3f;
 
     private Camera _camera;
 
@@ -74,7 +75,7 @@ public class MagicShoot : MonoBehaviour
     /// <param name="targetTransform"></param>
     public void InstanceSlash(Transform targetTransform)
     {
-        // 火の弾のインスタンスを生成
+        // 斬撃のインスタンスを生成
         float forwardCorrection = 1.85f;
         float heightCorrection = 1f;
         // プレイヤーの正面に生成
@@ -87,6 +88,9 @@ public class MagicShoot : MonoBehaviour
 
         // 魔法にこのスクリプトを渡す
         slashObj.GetComponent<Slash>().OnStart(this, disposable);
+
+        // 斬撃を2秒後に消す
+        Destroy(slashObj, _destroyTime);
     }
     /// <summary>
     /// 魔法を放つ

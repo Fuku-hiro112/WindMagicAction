@@ -7,6 +7,7 @@ using System;
 using UnityEngine.Assertions;
 using SettingCamera;
 using UniRx;
+using DG.Tweening;
 
 namespace Unit
 {
@@ -24,15 +25,11 @@ namespace Unit
         [Header("速度設定")]
         [SerializeField]                          private float _moveSpeed = 4.0f; // 移動速度
         [SerializeField, Tooltip("回転速度")]     private float _rotationSpeed = 8.0f; // 回転速度
+        [SerializeField, Tooltip("ヒット秒数")]   private float _hitStopTime = 0.2f; // ヒットストップ時間
         [SerializeField, Tooltip("再誕する時間")] private float _birthInterval = 5.0f; // 再誕生までの時間
 
         [Header("魔法-----------------------------------------------------------")]
-        /*
-        [SerializeField, Tooltip("誘導弾魔法")] private int _homingMagicPoint = 20;
-        [SerializeField, Tooltip("範囲魔法")]   private int _burstMagicPoint = 10;
-        [SerializeField, Tooltip("斬撃魔法")]   private int _srashMagicPoint = 10;
-        [SerializeField, Tooltip("強化魔法")]   private int _enhanceMagicPoint = 10;
-        */
+
         // 0:誘導弾　1:範囲魔法 2:斬撃魔法 3:強化魔法
         [SerializeField, Tooltip("0:誘導弾　1:範囲魔法 2:斬撃魔法 3:強化魔法")]
         private int[] _requiredMagicPoints = new int[4];
@@ -76,11 +73,16 @@ namespace Unit
         private ConfirmAction _confirmAction;
         private Camera _camera;//NOTE: Camera.mainで取るとShake中カメラの切り替えでバグるので
 
-        
         private ReactiveProperty<SerectMagic> _currentMagic = new ReactiveProperty<SerectMagic>();
+        
+        // パブリック
         public IReadOnlyReactiveProperty<SerectMagic> CurrentMagic => _currentMagic;
         public bool CanMove { get; private set; } = true;
 
+
+        // プロパティ
+        public bool Avoiding { get; private set; } = false; // 回避中,ダメージを受けない状態にTrueにする
+        public float HitStopTime => _hitStopTime;
         public Dictionary<SerectMagic, int> RequiredMagicDictionary { get; private set; }
             = new Dictionary<SerectMagic, int>(4);
 
@@ -238,7 +240,7 @@ namespace Unit
         public override async UniTaskVoid OnDeathAsync()
         {
             _myAnim.SetTrigger("Death"); // ダウンモーション発動
-            await UniTask.Delay(TimeSpan.FromSeconds(_birthInterval), cancellationToken:token);
+            //await UniTask.Delay(TimeSpan.FromSeconds(_birthInterval), cancellationToken:token);
             //ReBirth(); // 再生処理を予約
         }
         /// <summary>
@@ -250,7 +252,8 @@ namespace Unit
             Fx.transform.position = transform.position + _damagePos; // 位置を補正
             Destroy(Fx, 1.0f); // 1.0秒後にエフェクトを破棄
             VibrationAsync(0.0f, 0.7f, 0.2f).Forget(); // バイブレーション
-                                                  //TODO: 画面をシェイク
+            
+            // 画面をシェイク
             _shakeCamera.Shake(_positionStrengthDamage, _rotationStrengthDamage, _shakeDurationDamage);
         }
         /// <summary>
@@ -291,6 +294,16 @@ namespace Unit
                 // 攻撃モーションの発動
                 _myAnim.SetTrigger("Attack");//NOTE: アニメーションイベントで攻撃処理をしている
             }
+        }
+
+        public void AttackHit(float hitStopTime)
+        {
+            // ヒットストップアニメーションを指定秒数止める
+            _myAnim.speed = 0;
+            var sequence = DOTween.Sequence();
+            sequence.SetDelay(hitStopTime);
+            sequence.AppendCallback(() => _myAnim.speed = 1);
+
         }
 
         /// <summary>

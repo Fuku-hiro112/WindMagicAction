@@ -18,9 +18,10 @@ public class WeaponAction : MonoBehaviour
 
     private int _power; //現在の攻撃力
     private PlayerStats _playerStats;
+    private PlayerAction playerAction;
     private int _healMagicPoint;
+    private float _hitStopTime;
     private AudioSource _seAudioSource;
-    //private LayerMask _layerMask;
 
     // hitしたObjのリスト
     private List<GameObject> _hitObjectList = new List<GameObject>(32); 
@@ -32,7 +33,6 @@ public class WeaponAction : MonoBehaviour
             _hasPlayer = true;
         }
         _weaponCollier = GetComponent<BoxCollider>();
-        //_complementCollier = GetComponent<ComplementCollider>();
         TryGetComponent(out _complementCollier);
     }
 
@@ -41,12 +41,12 @@ public class WeaponAction : MonoBehaviour
         // Playerが持っているなら
         if (_hasPlayer)
         {
-            PlayerAction playerAction = gameObject.transform.root.GetComponent<PlayerAction>();
+            playerAction = gameObject.transform.root.GetComponent<PlayerAction>();
             Assert.IsNotNull(playerAction, "PlayerActionがNullです");
             _healMagicPoint = playerAction.AttackHealMagicPoint;
+            _hitStopTime = playerAction.HitStopTime;
 
             gameObject.transform.root.TryGetComponent(out _playerStats);
-            //_layerMask = LayerMask.NameToLayer("EnemySide");
         }
 
         // AudioSourceの取得
@@ -78,6 +78,7 @@ public class WeaponAction : MonoBehaviour
                 {
                     // ダメージ処理
                     other.gameObject.GetComponent<UnitStats>().OnDamage(_power);
+                    //other.gameObject.GetComponent<UnitStats>().ChangeHealth(-_power);
 
                     if (_audioClip != null)
                     {
@@ -87,11 +88,17 @@ public class WeaponAction : MonoBehaviour
                     // プレイヤーが持っているなら
                     if (_hasPlayer)
                     {
+                        //TODO:　ヒットストップ実装　攻撃者、被攻撃者のアニメーションを少し止める
+                        // プレイヤーの攻撃ヒット処理　
+                        playerAction.AttackHit(_hitStopTime);
+                        // 敵の被弾処理 enemyActionBase.OnDamage();
+                        other.gameObject.GetComponent<EnemyActionBase>().OnDamage(_hitStopTime);
+
                         // Mp回復
                         _playerStats.ChangeMagicPoint(_healMagicPoint);
                         Debug.Log("Playerの攻撃");
 
-                        // エフェクト発生
+                        //TODO: MP回復エフェクト発生
                     }
                 });
     }
