@@ -222,19 +222,8 @@
                 },
                 {
                     "name": "",
-                    "id": "143bb1cd-cc10-4eca-a2f0-a3664166fe91",
-                    "path": "<Gamepad>/rightTrigger",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Gamepad",
-                    "action": "Fire",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "ef792401-db42-4335-81e1-f873fbc54be9",
-                    "path": "<Gamepad>/leftTrigger",
+                    "path": "<Gamepad>/buttonWest",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -290,6 +279,17 @@
                     "name": "",
                     "id": "fe3b036b-a0d2-404d-8a0a-15a341b1a21f",
                     "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Aim",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6d81ae88-3a49-4c2c-8a3a-dcb06b6038e1",
+                    "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -419,61 +419,6 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "CrossKey",
-                    "id": "d9719cb1-fc3a-4f4b-ad6b-6e1b10824193",
-                    "path": "2DVector",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SerectMagic",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "up",
-                    "id": "624c2a20-f6c2-47f8-b577-97f79af9ba80",
-                    "path": "<Gamepad>/buttonNorth",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "SerectMagic",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "down",
-                    "id": "928955d1-ef95-4f2d-b5bb-54bf3bf2f082",
-                    "path": "<Gamepad>/buttonSouth",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "SerectMagic",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "left",
-                    "id": "00bdd770-a891-4b1e-9086-36dac3f1af09",
-                    "path": "<Gamepad>/buttonWest",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "SerectMagic",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "right",
-                    "id": "28e4cebc-6fa5-4569-af1e-08123b1c42fa",
-                    "path": "<Gamepad>/buttonEast",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "SerectMagic",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
                     "name": "DirectionKey",
                     "id": "060303c7-ae49-4fe8-a573-66bee195ae65",
                     "path": "2DVector",
@@ -531,7 +476,18 @@
                 {
                     "name": "",
                     "id": "364cbeda-f1d8-46f9-8fc9-66670dd6dc09",
-                    "path": "<Gamepad>/leftShoulder",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Magic",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5397c786-7e5b-4d14-a7cc-f9043611ca3e",
+                    "path": "<Gamepad>/leftTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",

@@ -168,7 +168,6 @@ namespace Unit
                     MyNavi.destination = _player.transform.position; // ターゲットを指示
                     MyAnim.SetFloat("Speed", MyNavi.velocity.magnitude); //移動モーション
 
-                    Debug.Log($"{this.gameObject.name}のStateは{State}");
                     //攻撃停止
                     MyAnim.SetBool("Attack", false);
                     IsAttacking = false;
@@ -179,7 +178,6 @@ namespace Unit
                     MyNavi.enabled = false; // ナビメッシュ切る
                     MyAnim.SetFloat("Speed", 0); //移動はしない
                     MyAnim.SetBool("Attack", true); //攻撃開始
-                    Debug.Log($"<color=red>{this.gameObject.name}のStateは{State}</color>"); 
                     break;
 
                 default:
@@ -283,6 +281,7 @@ namespace Unit
         {
             MyAnim.SetFloat("Speed", 0); // 移動はしない
             MyAnim.SetBool("Attack", false); // 攻撃停止
+            MyNavi.enabled = false; // ナビメッシュ切る
         }
         public void OnDamage(float hitStopTime)
         {

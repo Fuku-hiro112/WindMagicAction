@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using GameInput;
+using UniRx;
+using UniRx.Triggers;
 using UnityEngine.SceneManagement;
 using Unit;
 using UnityEngine.UI;
@@ -17,19 +19,20 @@ public class GameManager : MonoBehaviour
 
     private int _duration = 1;
     private bool _isGameFinish = false; // ゲームが終了している？
-    private bool _isCanvasActive = true;// キャンバス（クリア、終了時の）
 
     void Start()
     {
         // キャンバスを非表示にする
         _clearCanvas.gameObject.SetActive(false);
         _gameOverCanvas.gameObject.SetActive(false);
-    }
-    void Update()
-    {
-        if (_isGameFinish)// ゲームが終了したか
-        {
-            if (ConfirmAction.s_Instance.InputAction.Player.Decision.WasPerformedThisFrame())
+
+
+        // 以下UpdateAsObservable()
+        // ゲームが終了した後、決定ボタンが押されたら,1度だけ実行
+        this.UpdateAsObservable()
+            .Where(_ => _isGameFinish)
+            .First(_ => ConfirmAction.s_Instance.InputAction.Player.Decision.WasPerformedThisFrame())
+            .Subscribe(_ =>
             {
                 AudioManager.Instance.StopBGM(true);
                 AudioManager.Instance.PlaySE(SESoundData.SE.Decision);
@@ -38,16 +41,23 @@ public class GameManager : MonoBehaviour
                 _gameOverCanvas.gameObject.SetActive(false);
                 _panel.DOColor(Color.black, _duration)
                       .OnComplete(() => SceneManager.LoadScene("TitleScene"));
-            }
-        }
-        if (_isCanvasActive)
-        {
-            if (_dragonStats.IsDead)// ボスが死んだら
-                ClearGame();
-            else if (_playerStats.IsDead)// プレイヤーが死んだら
-                OverGame();
-        }
+            }).AddTo(this);
+
+        // ゲーム中、ボスとプレイヤーの生死を監視
+        this.UpdateAsObservable()
+            .Where(_ => !_isGameFinish)
+            .First(_ => _dragonStats.IsDead || _playerStats.IsDead)//NOTE: 先にやられた方を優先するため
+            .Subscribe(_ =>
+            {
+                // ボスが死んだら
+                if (_dragonStats.IsDead) ClearGame();
+                // プレイヤーが死んだら
+                if (_playerStats.IsDead) OverGame();
+
+            }).AddTo(this);
+
     }
+
     /// <summary>
     /// ゲームクリア時処理
     /// </summary>
@@ -56,7 +66,6 @@ public class GameManager : MonoBehaviour
         AudioManager.Instance.PlaySE(SESoundData.SE.GameClear);
 
         _isGameFinish = true;
-        _isCanvasActive = false;
         _clearCanvas.gameObject.SetActive(true);
     }
 
@@ -69,7 +78,6 @@ public class GameManager : MonoBehaviour
         AudioManager.Instance.StopBGM(true);
 
         _isGameFinish = true;
-        _isCanvasActive = false;
         _gameOverCanvas.gameObject.SetActive(true);
     }
 }

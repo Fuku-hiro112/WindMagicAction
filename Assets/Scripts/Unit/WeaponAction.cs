@@ -70,9 +70,17 @@ public class WeaponAction : MonoBehaviour
                         _hitObjectList.Add(other.gameObject);
                     }
                     // UnitStatsがあるか
-                    bool hasUnitStats = other.GetComponent<UnitStats>() != null;
+                    bool hasUnitStats = other.gameObject.GetComponent<UnitStats>() != null;
+
+                    bool isAvoiding = false;
+                    // Playerに当たったら
+                    if (other.gameObject.CompareTag("Player"))
+                    {
+                        // プレイヤーが回避中か取得
+                        isAvoiding = other.gameObject.GetComponent<PlayerAction>().IsAvoiding;
+                    }
                     
-                    return isFirstHit && hasUnitStats;//TODO: UnitStatsにするとDragonの尻尾に当たらないのでHitZoneなどのスクリプトをColliderに取り付けるようにしよう（時間あれば）
+                    return isFirstHit && hasUnitStats && !isAvoiding;//TODO: UnitStatsにするとDragonの尻尾に当たらないのでHitZoneなどのスクリプトをColliderに取り付けるようにしよう（時間あれば）
                 })
                 .Subscribe(other => 
                 {
@@ -109,9 +117,7 @@ public class WeaponAction : MonoBehaviour
     /// <param name="Value"></param>
     public void ChangePower(int Value)
     {
-        Debug.Log($"{ this.gameObject} + {_power}");
         _power += Value;
-        Debug.Log("パワー"+_power);
         if (_power < 0) _power = 0;
     }
 

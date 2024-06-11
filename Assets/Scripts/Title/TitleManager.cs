@@ -29,8 +29,8 @@ public class TitleManager : MonoBehaviour
         sequenceButton.Append(_txtButton.DOFade(1, _duration))
                       .SetLoops(-1, LoopType.Yoyo);
 
-        this.UpdateAsObservable()// 決定ボタンが押されたら
-            .Where(_ => ConfirmAction.s_Instance.InputAction.Player.Decision.WasPerformedThisFrame())
+        this.UpdateAsObservable()// 決定ボタンが押されたら,1度だけ実行
+            .First(_ => ConfirmAction.s_Instance.InputAction.Player.Decision.WasPerformedThisFrame())
             .Subscribe(_ => 
             {
                 AudioManager.Instance.PlaySE(SESoundData.SE.Decision);
@@ -40,7 +40,7 @@ public class TitleManager : MonoBehaviour
                 Sequence sequence = DOTween.Sequence();
                 sequence.Append(_imgTitle.DOColor(Color.black, _duration))
                         .Join  (_txtButton.DOColor(Color.black, _duration))
-                        .OnComplete(() => SceneManager.LoadScene("GameScene"));
-            }).AddTo(this);// GameSceneへ
+                        .OnComplete(() => SceneManager.LoadScene("GameScene"));// GameSceneへ
+            }).AddTo(this);
     }
 }

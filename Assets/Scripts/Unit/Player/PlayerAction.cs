@@ -64,6 +64,7 @@ namespace Unit
         private Animator _myAnim; // 自身のアニメーター
         private UnitStats _myStats; // 自身のCombatAction
         private PlayerStats _myPlayerStats;
+        private Rigidbody _myRigidbody;
 
         private Vector3 _damagePos = new Vector3(0, 1.5f, 0); // ダメージエフェクトの位置
         private GameObject _patSmoke; // 走行エフェクト
@@ -81,7 +82,7 @@ namespace Unit
 
 
         // プロパティ
-        public bool Avoiding { get; private set; } = false; // 回避中,ダメージを受けない状態にTrueにする
+        public bool IsAvoiding { get; private set; } = false; // 回避中,ダメージを受けない状態にTrueにする
         public float HitStopTime => _hitStopTime;
         public Dictionary<SerectMagic, int> RequiredMagicDictionary { get; private set; }
             = new Dictionary<SerectMagic, int>(4);
@@ -110,6 +111,7 @@ namespace Unit
             TryGetComponent(out _myAnim);// 自身のアニメーターを取得
             TryGetComponent(out _myStats); // 自身のCombatActionを取得
             TryGetComponent(out _myPlayerStats);
+            TryGetComponent(out _myRigidbody);
             TryGetComponent(out _testBullet);
             _camera.transform.GetChild(0).TryGetComponent(out _shakeCamera);
             _patSmoke = transform.Find("PatSmoke").gameObject; // 走行エフェクトを取得
@@ -231,6 +233,7 @@ namespace Unit
             {
                 OnAttack();
                 OnMagic();
+                OnAvoid();
             }
         }
 
@@ -240,8 +243,6 @@ namespace Unit
         public override async UniTaskVoid OnDeathAsync()
         {
             _myAnim.SetTrigger("Death"); // ダウンモーション発動
-            //await UniTask.Delay(TimeSpan.FromSeconds(_birthInterval), cancellationToken:token);
-            //ReBirth(); // 再生処理を予約
         }
         /// <summary>
         /// ダメージ発生処理
@@ -290,12 +291,15 @@ namespace Unit
             // 攻撃ボタンを押した時
             if (_confirmAction.InputAction.Player.Fire.WasPressedThisFrame())
             {
-                //TODO: 攻撃モーション中に攻撃ボタンを受け付けないようにする　連打すると２回出るから
                 // 攻撃モーションの発動
                 _myAnim.SetTrigger("Attack");//NOTE: アニメーションイベントで攻撃処理をしている
+                CanMove = false;
             }
         }
-
+        /// <summary>
+        /// 攻撃ヒット処理
+        /// </summary>
+        /// <param name="hitStopTime"></param>
         public void AttackHit(float hitStopTime)
         {
             // ヒットストップアニメーションを指定秒数止める
@@ -303,9 +307,43 @@ namespace Unit
             var sequence = DOTween.Sequence();
             sequence.SetDelay(hitStopTime);
             sequence.AppendCallback(() => _myAnim.speed = 1);
-
         }
 
+        /// <summary>
+        /// 回避処理
+        /// </summary>
+        private void OnAvoid()
+        {
+            if (_confirmAction.InputAction.Player.Avoid.WasPressedThisFrame())
+            {
+
+                // 無敵になる
+                CanMove = false;
+                _myAnim.SetTrigger("Avoid");
+                //IsAvoiding = true;
+                //Vector3 move = transform.forward * 300;
+                //_myRigidbody.AddForce(move,ForceMode.Impulse);
+
+                //// 前方に移動 
+                //Vector3 forward = transform.forward;
+                //Vector3 move = forward * 4;
+                //// 回避移動用のシーケンス作成
+                //Sequence sequence = DOTween.Sequence();
+                //sequence.SetEase(Ease.OutExpo);
+                //sequence.OnStart(() => {
+                //    _myAnim.SetTrigger("Avoid");
+                //});
+                //sequence.Append(
+                //    DOTween.To(
+                //        () => transform.position,    // 位置を
+                //        v => transform.position = v, // 移動(更新)
+                //        transform.position + move,   // 前方に移動
+                //        0.7f // アニメーションの時間
+                //    )
+                //).OnComplete(()=> CanMove = true);
+                //sequence.Play();
+            }
+        }
         /// <summary>
         /// カメラモードのAim状態の切り替え
         /// </summary>
@@ -341,6 +379,9 @@ namespace Unit
         }
         #region Magic
 
+        /// <summary>
+        /// 魔法選択
+        /// </summary>
         private void SerectMagic()
         {
             if (_confirmAction.CurrentMagic.x > 0)// 右ボタン
@@ -361,6 +402,9 @@ namespace Unit
             }
         }
 
+        /// <summary>
+        /// 魔法を発動する
+        /// </summary>
         private void OnMagic()
         {
             // 魔法ボタンを押したら
@@ -497,8 +541,6 @@ namespace Unit
         }
 
 
-        
-
 #endregion
 
         #region AnimationEvent
@@ -516,7 +558,27 @@ namespace Unit
         public override void AttackFinish()
         {
             _weaponActions[0].PlayerWeaponActivate(false);
+            CanMove = true;
         }
+        public void AvoidStart()
+        {
+            IsAvoiding = true;
+            Vector3 move = transform.forward * 300;
+            _myRigidbody.AddForce(move, ForceMode.Impulse);
+        }
+        /// <summary>
+        /// 回避終了処理
+        /// </summary>
+        public void AvoidFinish()
+        {
+            // 無敵時間を終了
+            IsAvoiding = false;
+        }
+        public void MakeMovable()
+        {
+            CanMove = true;
+        }
+
         /// <summary>
         /// Burst攻撃：貯め開始
         /// </summary>
@@ -531,6 +593,7 @@ namespace Unit
         {
             _testEffectShoot.StopParticle();
         }
+
         /// <summary>
         /// 斬撃を飛ばす
         /// </summary>

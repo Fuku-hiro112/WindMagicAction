@@ -83,8 +83,7 @@ namespace GameInput
         private void Start()
         {
             GameObject.FindGameObjectsWithTag("GameController")? // tagを検索しその中から名前を見つけ指定の型を渡す
-                .FirstOrDefault(obj => obj.name == "EventSystem")?.TryGetComponent(out InputModuleUI);
-
+                .FirstOrDefault(obj => obj.name == "EventSystem")?.TryGetComponent(out InputModuleUI);// 一番最初に見つかったEventSystemを取得
         }
         /// <summary>
         /// 移動ボタン
@@ -95,7 +94,6 @@ namespace GameInput
             //方向を取る　Vecter2
             Vector2 direction2 = context.ReadValue<Vector2>().normalized;// 斜め移動が早くならないよう正規化している
             MoveDirection = new Vector3(direction2.x, 0, direction2.y);
-            //Debug.Log(MoveDirection);
         }
         private void OnMoveStop(InputAction.CallbackContext context) => MoveDirection = Vector3.zero;
 
@@ -157,7 +155,6 @@ namespace GameInput
             Gamepad.current.leftTrigger.ReadValue(),
             Gamepad.current.rightTrigger.ReadValue());
 
-            //Gamepad.current.SetMotorSpeeds(Trigger.x, Trigger.y); //トリガーをバイブレーションに転用
             _btnDown = Gamepad.current.buttonSouth.isPressed;
             _btnRight = Gamepad.current.buttonEast.isPressed;
             _btnLeft = Gamepad.current.buttonWest.isPressed;
@@ -173,34 +170,5 @@ namespace GameInput
             _btnPad[2] = Gamepad.current.dpad.left.isPressed;
             _btnPad[3] = Gamepad.current.dpad.up.isPressed;
         }
-        /*
-        void OnGUI()
-        {
-            if (Gamepad.current == null) return;
-
-            GUILayout.Label($"Move: {MoveDirection}");
-            GUILayout.Label($"Look: {LookDirection}");
-            GUILayout.Label($"Fire: {InputAction.Player.Fire.IsPressed()}");
-            GUILayout.Label($"Magic: {InputAction.Player.Magic.IsPressed()}");
-            GUILayout.Label($"Avoid: {InputAction.Player.Avoid.IsPressed()}");
-            /*
-            GUILayout.Label($"leftStick: {_stickL}");
-            GUILayout.Label($"RightStick: {_stickR}");
-            GUILayout.Label($"Pad: {_pad}");
-            GUILayout.Label($"Trigger: {_trigger}");
-            GUILayout.Label($"ButtonA: {_btnDown}");
-            GUILayout.Label($"ButtonB: {_btnRight}");
-            GUILayout.Label($"ButtonX: {_btnLeft}");
-            GUILayout.Label($"ButtonY: {_btnUp}");
-            GUILayout.Label($"BumperL: {_bumperL}");
-            GUILayout.Label($"BumperR: {_bumperR}");
-            GUILayout.Label($"ButtonBack: {_btnBack}");
-            GUILayout.Label($"ButtonStart: {_btnStart}");
-            GUILayout.Label($"ButtonJoyL: {_btnJoyL}");
-            GUILayout.Label($"ButtonJoyR: {_btnJoyR}");
-            GUILayout.Label($"ButtonPad: {_btnPad[0]}, {_btnPad[1]}, {_btnPad[2]}, {_btnPad[3]}");
-            *//*
-        }
-        */
     }
 }
