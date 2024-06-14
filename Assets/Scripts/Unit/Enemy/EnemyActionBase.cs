@@ -283,6 +283,10 @@ namespace Unit
             MyAnim.SetBool("Attack", false); // 攻撃停止
             MyNavi.enabled = false; // ナビメッシュ切る
         }
+        /// <summary>
+        /// ダメージを受けた時の処理
+        /// </summary>
+        /// <param name="hitStopTime"></param>
         public void OnDamage(float hitStopTime)
         {
             // ヒットストップアニメーションを指定秒数止める
@@ -291,6 +295,7 @@ namespace Unit
             sequence.SetDelay(hitStopTime);
             sequence.AppendCallback(() => MyAnim.speed = 1);
 
+            // ダメージを視覚化
             VisualizationDamege();
         }
         /// <summary>
@@ -314,8 +319,6 @@ namespace Unit
             SomeAnimationsStopped();
             MyAnim.SetTrigger("Death"); // 死亡モーション発動
             _weaponActions[0].WeaponActivate(false);//NOTE: 攻撃中に死ぬと攻撃当たり判定が残ったまま死んでダメージを受けるので消しておる //TODO: 発動してない？死んだ敵の判定が残っている
-            MyNavi.enabled = false; // ナビメッシュ切る
-            gameObject.tag = "Untagged";
             EnemyManager.RemoveEnemy(this.gameObject);
         }
         /// <summary>

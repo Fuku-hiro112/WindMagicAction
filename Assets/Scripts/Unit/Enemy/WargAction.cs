@@ -94,8 +94,6 @@ public class WargAction : EnemyActionBase
     protected override void DeathPerformance()
     {
         SmallingWhileRotating();
-        //Assert.IsNotNull(_material, $"_material‚ªnull‚Å‚·");
-        //_material.DOFade(0, _deathTime);//HACK: o—ˆ‚È‚¢
     }
 
 #region AnimationEvent

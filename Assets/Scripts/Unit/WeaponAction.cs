@@ -139,7 +139,7 @@ public class WeaponAction : MonoBehaviour
     /// プレイヤーの武器の有効無効処理
     /// </summary>
     /// <param name="active"></param>
-    public void PlayerWeaponActivate(bool active)
+    public void PlayerWeaponActivate(bool active, int attackPower)
     {
         // 当たり判定の補完　ONOFF
         if (_complementCollier != null) //NOTE: 不具合があるのでデバックの為にもNullチェックを入れている
@@ -147,6 +147,7 @@ public class WeaponAction : MonoBehaviour
             _complementCollier.isAttack = active; 
         }
         WeaponActivate(active);
+        ChangePower(attackPower - _power);
     }
 #endregion
 }

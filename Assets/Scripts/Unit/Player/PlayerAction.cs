@@ -23,10 +23,19 @@ namespace Unit
     public class PlayerAction : UnitBase
     {
         [Header("速度設定")]
-        [SerializeField]                          private float _moveSpeed = 4.0f; // 移動速度
+        [SerializeField]                          private float _moveSpeed = 4.0f;     // 移動速度
         [SerializeField, Tooltip("回転速度")]     private float _rotationSpeed = 8.0f; // 回転速度
-        [SerializeField, Tooltip("ヒット秒数")]   private float _hitStopTime = 0.2f; // ヒットストップ時間
+        [SerializeField, Tooltip("ヒット秒数")]   private float _hitStopTime = 0.2f;   // ヒットストップ時間
         [SerializeField, Tooltip("再誕する時間")] private float _birthInterval = 5.0f; // 再誕生までの時間
+        [SerializeField, Tooltip("回避する力")]   private float _avoidPower = 300.0f;  // 回避する力
+        [Header("剣攻撃-----------------------------------------------------------")]
+
+        [SerializeField, Tooltip("攻撃力")]   public int AttackPower       = 2; // 通常攻撃の攻撃力
+        [SerializeField, Tooltip("強攻撃力")] public int StrongAttackPower = 4; // 強攻撃の攻撃力
+
+        [Tooltip("攻撃時回復MP量")] public int AttackHealMagicPoint = 10;
+
+        [Header("-------------------------------------------------------------------------------")]
 
         [Header("魔法-----------------------------------------------------------")]
 
@@ -36,7 +45,6 @@ namespace Unit
 
         [Header("-------------------------------------------------------------------------------")]
 
-        [Tooltip("攻撃時回復MP量")] public int AttackHealMagicPoint = 10;
 
         [Header("強化時設定")]
         [SerializeField, Tooltip("強化時間")] private float _strongDuration = 10.0f; // 強化時間
@@ -50,6 +58,10 @@ namespace Unit
         [SerializeField] private Vector3 _positionStrengthDamage = new Vector3(0.2f, 0.2f, 0.2f);
         [SerializeField] private Vector3 _rotationStrengthDamage = new Vector3(2, 2, 2);
         [SerializeField] private float _shakeDurationDamage = 0.3f;
+        [Header(" 攻撃ヒット時")]
+        [SerializeField] private Vector3 _positionHitAttack = new Vector3(0.1f, 0.2f, 0.2f);
+        [SerializeField] private Vector3 _rotationHitAttack = new Vector3(2, 2, 2);
+        [SerializeField] private float _shakeDurationHitAttack = 0.15f;
         [Header("-------------------------------------------------------------------------------")]
 
         [Header("アタッチ必須オブジェクト")]
@@ -131,13 +143,14 @@ namespace Unit
 
             _patHeal.Stop(); // 回復エフェクトを停止
             _patStrong.SetActive(false); // 強化エフェクトを無効化
+            _myAnim.SetFloat("Speed", 0);
         }
 
         private void FixedUpdate()
         {
             if (_myStats.IsDead || !CanMove) // 自身が死んでいる、動けない時は何もしない
             {
-                _myAnim.SetFloat("Speed", 0);
+                //_myAnim.SetFloat("Speed", 0);
                 return;
             }
 
@@ -295,6 +308,12 @@ namespace Unit
                 _myAnim.SetTrigger("Attack");//NOTE: アニメーションイベントで攻撃処理をしている
                 CanMove = false;
             }
+            // 強攻撃ボタンを押した時
+            if (_confirmAction.InputAction.Player.StrongAttack.WasPressedThisFrame())
+            {
+                _myAnim.SetTrigger("StrongAttack");
+                CanMove = false;
+            }
         }
         /// <summary>
         /// 攻撃ヒット処理
@@ -302,6 +321,8 @@ namespace Unit
         /// <param name="hitStopTime"></param>
         public void AttackHit(float hitStopTime)
         {
+            // 画面をシェイク
+            _shakeCamera.Shake(_positionHitAttack, _rotationHitAttack, _shakeDurationHitAttack);
             // ヒットストップアニメーションを指定秒数止める
             _myAnim.speed = 0;
             var sequence = DOTween.Sequence();
@@ -316,32 +337,9 @@ namespace Unit
         {
             if (_confirmAction.InputAction.Player.Avoid.WasPressedThisFrame())
             {
-
                 // 無敵になる
                 CanMove = false;
                 _myAnim.SetTrigger("Avoid");
-                //IsAvoiding = true;
-                //Vector3 move = transform.forward * 300;
-                //_myRigidbody.AddForce(move,ForceMode.Impulse);
-
-                //// 前方に移動 
-                //Vector3 forward = transform.forward;
-                //Vector3 move = forward * 4;
-                //// 回避移動用のシーケンス作成
-                //Sequence sequence = DOTween.Sequence();
-                //sequence.SetEase(Ease.OutExpo);
-                //sequence.OnStart(() => {
-                //    _myAnim.SetTrigger("Avoid");
-                //});
-                //sequence.Append(
-                //    DOTween.To(
-                //        () => transform.position,    // 位置を
-                //        v => transform.position = v, // 移動(更新)
-                //        transform.position + move,   // 前方に移動
-                //        0.7f // アニメーションの時間
-                //    )
-                //).OnComplete(()=> CanMove = true);
-                //sequence.Play();
             }
         }
         /// <summary>
@@ -550,20 +548,34 @@ namespace Unit
         /// </summary>
         public override void AttackStart()
         {
-            _weaponActions[0].PlayerWeaponActivate(true);// nullが出る
+            _weaponActions[0].PlayerWeaponActivate(true, AttackPower);// nullが出る
         }
         /// <summary>
         /// 攻撃無効化
         /// </summary>
         public override void AttackFinish()
         {
-            _weaponActions[0].PlayerWeaponActivate(false);
-            CanMove = true;
+            _weaponActions[0].PlayerWeaponActivate(false, 0);
         }
+        /// <summary>
+        /// 強攻撃有効化
+        /// </summary>
+        public void StrongAttackStart()
+        {
+            _weaponActions[0].PlayerWeaponActivate(true, StrongAttackPower);
+        }
+        /// <summary>
+        /// 強攻撃無効化
+        /// </summary>
+        public void StrongAttackFinish()
+        {
+            _weaponActions[0].PlayerWeaponActivate(false, 0);
+        }
+
         public void AvoidStart()
         {
             IsAvoiding = true;
-            Vector3 move = transform.forward * 300;
+            Vector3 move = transform.forward * _avoidPower;
             _myRigidbody.AddForce(move, ForceMode.Impulse);
         }
         /// <summary>

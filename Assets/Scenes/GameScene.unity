@@ -1322,14 +1322,20 @@ MonoBehaviour:
   _rotationSpeed: 8
   _hitStopTime: 0.2
   _birthInterval: 5
-  _requiredMagicPoints: 14000000320000000a0000000a000000
+  _avoidPower: 300
+  AttackPower: 2
+  StrongAttackPower: 4
   AttackHealMagicPoint: 10
+  _requiredMagicPoints: 14000000320000000a0000000a000000
   _strongDuration: 10
   _strongValue: 2
   _healValue: 50
   _positionStrengthDamage: {x: 0.2, y: 0.2, z: 0.2}
   _rotationStrengthDamage: {x: 2, y: 2, z: 2}
   _shakeDurationDamage: 0.3
+  _positionHitAttack: {x: 0.1, y: 0.2, z: 0.2}
+  _rotationHitAttack: {x: 2, y: 2, z: 2}
+  _shakeDurationHitAttack: 0.1
   _patDamage: {fileID: 274666779774703836, guid: 607564f4d21d9564ab0c5d8b421a2241, type: 3}
   _cameraManager: {fileID: 1985659116}
   _targetDeterminationModel: {fileID: 1985659120}
@@ -2623,8 +2629,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.5, y: 0.65, z: 1.0846913}
-  m_Center: {x: 0.00000059604645, y: 0.00000043399635, z: 0.39582688}
+  m_Size: {x: 0.5, y: 0.65, z: 1.4571664}
+  m_Center: {x: 0.0000005466784, y: 0.00000044703472, z: 0.58206457}
 --- !u!114 &776490361
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2651,7 +2657,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 226b1fdce9c0a4b4486503bc4863824a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxPower: 2
+  _maxPower: 0
   _weaponCollier: {fileID: 776490360}
   _complementCollier: {fileID: 776490361}
   _weaponStartActive: 0

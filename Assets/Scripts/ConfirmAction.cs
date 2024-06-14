@@ -56,27 +56,29 @@ namespace GameInput
         {
             InputAction = new PlayerControls();
 
-            InputAction.Player.Move.performed      += OnMove;
-            InputAction.Player.Move.canceled       += OnMoveStop;
-            InputAction.Player.Look.performed      += OnLook;
-            InputAction.Player.Look.canceled       += OnLook;
-            InputAction.Player.Fire.started        += OnFire;
-            InputAction.Player.Aim.started         += OnMagic;
-            InputAction.Player.Avoid.started       += OnAvoid;
-            InputAction.Player.SerectMagic.started += OnSerectMagic;
+            InputAction.Player.Move.performed       += OnMove;
+            InputAction.Player.Move.canceled        += OnMoveStop;
+            InputAction.Player.Look.performed       += OnLook;
+            InputAction.Player.Look.canceled        += OnLook;
+            InputAction.Player.Fire.started         += OnFire;
+            InputAction.Player.StrongAttack.started += OnStrongAttack;
+            InputAction.Player.Aim.started          += OnMagic;
+            InputAction.Player.Avoid.started        += OnAvoid;
+            InputAction.Player.SerectMagic.started  += OnSerectMagic;
 
             InputAction.Enable();
         }
         private void OnDisable()
         {
-            InputAction.Player.Move.performed      -= OnMove;
-            InputAction.Player.Move.canceled       -= OnMoveStop;
-            InputAction.Player.Look.performed      -= OnLook;
-            InputAction.Player.Look.canceled       -= OnLookStop;
-            InputAction.Player.Fire.started        -= OnFire;
-            InputAction.Player.Aim.started         -= OnMagic;
-            InputAction.Player.Avoid.started       -= OnAvoid;
-            InputAction.Player.SerectMagic.started -= OnSerectMagic;
+            InputAction.Player.Move.performed       -= OnMove;
+            InputAction.Player.Move.canceled        -= OnMoveStop;
+            InputAction.Player.Look.performed       -= OnLook;
+            InputAction.Player.Look.canceled        -= OnLookStop;
+            InputAction.Player.Fire.started         -= OnFire;
+            InputAction.Player.StrongAttack.started -= OnStrongAttack;
+            InputAction.Player.Aim.started          -= OnMagic;
+            InputAction.Player.Avoid.started        -= OnAvoid;
+            InputAction.Player.SerectMagic.started  -= OnSerectMagic;
 
             InputAction.Dispose();
         }
@@ -118,6 +120,14 @@ namespace GameInput
         /// </summary>
         /// <param name="context"></param>
         private void OnFire(InputAction.CallbackContext context)
+        {
+            //BoolÇ≈éÊÇÈ
+        }
+        /// <summary>
+        /// çUåÇÉ{É^Éì
+        /// </summary>
+        /// <param name="context"></param>
+        private void OnStrongAttack(InputAction.CallbackContext context)
         {
             //BoolÇ≈éÊÇÈ
         }
