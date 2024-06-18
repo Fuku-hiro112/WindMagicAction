@@ -14,29 +14,9 @@ namespace Unit
         Chase,     // 敵を追いかけ
         Attack, 　 // 攻撃
     }
-    /*
-    public enum Enemy
-    {
-        Discovery, // 発見
-           //TODO: 索敵範囲内だと以降　一時的発見状態 吠えた場所に向かう
-        Default    // 通常
-    }
-    // 警戒状態
-    public enum DiscoveryState
-    {
-        Approach,       // 接近
-        SituationCheck, // 様子を見る
-        Attack          // 攻撃
-    }
-    // 普通の状態
-    public enum DefaultState
-    {
-        Idle,      // 待機
-        Wandering, // 徘徊
-    }
-    */
+
     [RequireComponent(typeof(Animator), typeof(NavMeshAgent))]// AnimatorとNavMeshを必須に
-    public class EnemyActionBase : UnitBase
+    public class EnemyControllerBase : UnitBase
     {
         [Header("範囲")]
         [SerializeField, Tooltip("攻撃開始距離")] protected float FireDistance = 1.0f;
@@ -100,6 +80,9 @@ namespace Unit
         }
         protected virtual void OnUpdate(){}
 
+        /// <summary>
+        /// 敵の行動
+        /// </summary>
         protected void ActionEnemy()
         {
             if (!_player || _myStats.IsDead) return;// プレイヤー未発見時
@@ -121,13 +104,13 @@ namespace Unit
                     // 攻撃前のPlayerの位置を保存
                     _targetPos = _player.transform.position;
                 }// 攻撃State
-                else if (IsAttacking)// 攻撃中なら
+                else if (!IsAttacking)// 攻撃してないなら
                 {
                     _targetPos = _player.transform.position;
                 }
-                else // 攻撃中じゃないなら
+                else // 攻撃中なら
                 {
-                    Debug.Log($"{this.gameObject.name}攻撃してない");
+                    //Debug.Log($"{this.gameObject.name}攻撃中");
                 }
                 
                 // 敵からPlayerのベクトル
@@ -196,19 +179,20 @@ namespace Unit
 
             if (State == EnemyState.Wandering || State == EnemyState.Separation)//NOTE: 一番前にしないと攻撃範囲内にいるのに待機状態とかになるかも？
             {
-                if (HasDestinationArrived(TargetWanderingPoint, _arrivalThreshold))// 目標地点　0.1m以内に着たら
+                // 目標地点　0.1m以内に着たら
+                if (HasDestinationArrived(TargetWanderingPoint, _arrivalThreshold))
                 {
                     State = EnemyState.Idle;
                 }
-            }
-            else if (distance > SearchRange && State != EnemyState.Separation)// 探索範囲外なら
+            }// 探索範囲外なら
+            else if (distance > SearchRange && State != EnemyState.Separation)
             {
                 State = EnemyState.Idle;
                 // タイマーを進める
                 _waitIdleStateTimer += Time.deltaTime;
 
-                // 探索範囲外の時　一定時間（ランダム）経ったら　徘徊状態へ
-                if (_waitIdleStateTimer >= _wanderingStateDuration && WanderingManager != null) // WanderingManagerがない場合は徘徊しない
+                // 探索範囲外の時、一定時間（ランダム）経ったら徘徊状態へ　WanderingManagerがない場合は徘徊しない
+                if (_waitIdleStateTimer >= _wanderingStateDuration && WanderingManager != null) 
                 {
                     // 徘徊ポイントを再設定
                     _wandering = WanderingManager.AssignNotUseWandering(_wandering.Transform);
@@ -230,12 +214,10 @@ namespace Unit
             }// 攻撃範囲外
             else if (distance <= SearchRange)// プレイヤーとの距離が索敵範囲内なら
             {
-                if (IsAttacking) 
+                if (!IsAttacking) 
                 {
-                    return;// 攻撃中なら何も行わない
+                    State = EnemyState.Chase;// 攻撃中でないなら追いかける
                 }
-                    
-                State = EnemyState.Chase;
             }
         }
         /// <summary>
@@ -255,6 +237,7 @@ namespace Unit
                        Time.deltaTime * TurningSpeed // 振り向き速度
                 );
         }
+
         /// <summary>
         /// 目的地に到着したか
         /// </summary>
@@ -262,6 +245,7 @@ namespace Unit
         /// <param name="distance">どこまで近づけばいいか</param>
         /// <returns></returns>
         private bool HasDestinationArrived(Vector3 destination, float distance) => (destination - transform.position).sqrMagnitude <= distance*distance;
+
         /// <summary>
         /// プレイヤーとの距離が指定した距離内かどうか
         /// </summary>
@@ -274,6 +258,7 @@ namespace Unit
             if (distance < specifiedDistance) return true;
             else return false;
         }
+
         /// <summary>
         /// アニメーションを止める (移動と攻撃)
         /// </summary>
@@ -283,6 +268,7 @@ namespace Unit
             MyAnim.SetBool("Attack", false); // 攻撃停止
             MyNavi.enabled = false; // ナビメッシュ切る
         }
+
         /// <summary>
         /// ダメージを受けた時の処理
         /// </summary>
@@ -298,6 +284,7 @@ namespace Unit
             // ダメージを視覚化
             VisualizationDamege();
         }
+
         /// <summary>
         /// ダメージ視覚処理
         /// </summary>
@@ -308,6 +295,7 @@ namespace Unit
             Fx.transform.position = transform.position + DamagePos; // 位置を補正
             Destroy(Fx, 1.0f); // エフェクトを1.0秒後に破棄
         }
+
         /// <summary>
         /// 死亡処理
         /// </summary>
@@ -315,12 +303,18 @@ namespace Unit
         public override async UniTaskVoid OnDeathAsync()
         {
             Debug.Log($"{gameObject.name}が死亡した");
+            // 当たり判定を消す
+            GetComponent<Collider>().enabled = false; // コライダーを切る　NOTE:↓で攻撃判定を消していても残っていたので消すようにした
+            _weaponActions[0].WeaponActivate(false);//NOTE: 攻撃中に死ぬと攻撃当たり判定が残ったまま死んでダメージを受けるので消しておる
 
+            // 死亡時演出
             SomeAnimationsStopped();
             MyAnim.SetTrigger("Death"); // 死亡モーション発動
-            _weaponActions[0].WeaponActivate(false);//NOTE: 攻撃中に死ぬと攻撃当たり判定が残ったまま死んでダメージを受けるので消しておる //TODO: 発動してない？死んだ敵の判定が残っている
+
+            // 死亡処理
             EnemyManager.RemoveEnemy(this.gameObject);
         }
+
         /// <summary>
         /// 死亡演出
         /// </summary>
@@ -328,6 +322,7 @@ namespace Unit
         {
             SmallingWhileRotating();
         }
+
         /// <summary>
         /// 回転しながら小さくなる
         /// </summary>
@@ -352,7 +347,6 @@ namespace Unit
         public override void AttackStart()
         {
             _weaponActions[0].WeaponActivate(true);
-            IsAttacking = true;
         }
         /// <summary>
         /// 攻撃無効化
@@ -360,6 +354,19 @@ namespace Unit
         public override void AttackFinish()
         {
             _weaponActions[0].WeaponActivate(false);
+        }
+        /// <summary>
+        /// 攻撃アニメーション開始
+        /// </summary>
+        public void AttackAnimationStart()
+        {
+            IsAttacking = true;
+        }
+        /// <summary>
+        /// 攻撃アニメーション終了
+        /// </summary>
+        public void AttackAnimationEnd()
+        {
             IsAttacking = false;
         }
 

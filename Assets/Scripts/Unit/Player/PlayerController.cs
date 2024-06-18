@@ -20,7 +20,7 @@ namespace Unit
     }
 
     [RequireComponent(typeof(Animator))]
-    public class PlayerAction : UnitBase
+    public class PlayerController : UnitBase
     {
         [Header("速度設定")]
         [SerializeField]                          private float _moveSpeed = 4.0f;     // 移動速度
@@ -71,6 +71,7 @@ namespace Unit
         [SerializeField] private MagicShoot _testEffectShoot;
         [SerializeField] private EnemyManager _enemyManager;
 
+        private bool _isEnhance = false; // 強化中か
         private HomingBullet _testBullet;
         private ShakeCamera _shakeCamera;
         private Animator _myAnim; // 自身のアニメーター
@@ -150,50 +151,27 @@ namespace Unit
         {
             if (_myStats.IsDead || !CanMove) // 自身が死んでいる、動けない時は何もしない
             {
-                //_myAnim.SetFloat("Speed", 0);
+                if(_myStats.IsDead)
+                {
+                    CanMove = false;
+                    _myAnim.SetFloat("Speed", 0);
+                }
                 return;
             }
 
             // 移動方向のベクトルを作成
             Vector3 direction = _confirmAction.MoveDirection;
             Quaternion horizontalRotation = Quaternion.AngleAxis(_camera.transform.eulerAngles.y, Vector3.up);
-            Vector3 moveDirection = horizontalRotation * direction;
+            Vector3 horizontalMoveDirection = horizontalRotation * direction;// 水平方向の向きに変換
 
             // 移動方向への量に応じて砂煙サイズを制御
-            _smokeMain.startSize = 1.5f * moveDirection.sqrMagnitude;
+            _smokeMain.startSize = 1.5f * horizontalMoveDirection.sqrMagnitude;
 
             // 移動指示のベクトル長をアニメーターに渡す                                                          
-            _myAnim.SetFloat("Speed", moveDirection.magnitude);
+            _myAnim.SetFloat("Speed", horizontalMoveDirection.magnitude);
 
-            // 入力方向へ移動する
-            transform.position += moveDirection * _moveSpeed * Time.fixedDeltaTime;
-            float y = Terrain.activeTerrain.SampleHeight(transform.position); // Terrainに高さを合わせる
-            transform.position = new Vector3(transform.position.x, y, transform.position.z);
-
-
-            // カメラモードが通常（Default）なら
-            if (_cameraManager.CameraModeType.Value == CameraMode.Default)
-            {
-                // プレイヤーを入力方向へゆっくり回転する
-                Vector3 LookDir = Vector3.Slerp(transform.forward, moveDirection, _rotationSpeed * Time.fixedDeltaTime);
-                transform.LookAt(transform.position + LookDir);
-            }// エイム状態なら
-            else if (_cameraManager.CameraModeType.Value == CameraMode.Aim)
-            {
-                // カメラの位置から画面中央に向かってレイを飛ばす
-                Ray ray = _camera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
-
-                // レイの原点から方向に10m伸ばした座標
-                Vector3 targetPosition = ray.origin + ray.direction * 10f;
-
-                // ターゲットオブジェクトの向きを緩やかに追従
-                Vector3 targetDirection = targetPosition - transform.position;
-                targetDirection.y = 0f; // 高さは考慮しない場合、y軸の回転を無効にする
-
-                // 線形補間を使用して緩やかな回転を行う
-                Quaternion targetRotation = Quaternion.LookRotation(targetDirection.normalized);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10);
-            }
+            ControlMove(horizontalMoveDirection);
+            ControlRotate(horizontalMoveDirection);
         }
 
         private void Update()
@@ -212,33 +190,6 @@ namespace Unit
                     break;
             }
 
-            #region Debug
-            /*
-            if (Gamepad.current != null)// 確認用 以下変更が必要
-            {
-                // Ｙボタン押下で、回復エフェクトが発生する
-                if (Gamepad.current.buttonEast.wasPressedThisFrame)
-                {
-                    _patHeal.Play();
-                    _myStats.ChangeHealth(_healValue);
-                    _myPlayerStats.ChangeMagicPoint(_healValue);
-                }
-                // 上ボタンでカメラシェイク
-                if (Gamepad.current.buttonNorth.wasPressedThisFrame)
-                {
-                    //OnDamage(); // ダメージエフェクト発生処理
-                    _shakeCamera.Shake(_positionStrengthDamage, _rotationStrengthDamage, _shakeDurationDamage);
-                }
-                // Ｒバンパー押下で、一定時間だけ強化を表現する
-                if (Gamepad.current.rightShoulder.wasPressedThisFrame && !_patStrong.activeSelf)
-                {
-                    //StartCoroutine("StrongAction", _strongDuration);
-                    //Time.timeScale = 0;
-                }
-            }
-            */
-            #endregion
-
             SwitchAim();
             SerectMagic();
 
@@ -247,6 +198,49 @@ namespace Unit
                 OnAttack();
                 OnMagic();
                 OnAvoid();
+            }
+        }
+
+        /// <summary>
+        /// 移動制御
+        /// </summary>
+        /// <param name="moveDirection">移動方向</param>
+        private void ControlMove(Vector3 moveDirection)
+        {
+            // 入力方向へ移動する
+            transform.position += moveDirection * _moveSpeed * Time.fixedDeltaTime;
+            float y = Terrain.activeTerrain.SampleHeight(transform.position); // Terrainに高さを合わせる
+            transform.position = new Vector3(transform.position.x, y, transform.position.z);
+        }
+        /// <summary>
+        /// 回転制御
+        /// </summary>
+        /// <param name="moveDirection">移動方向</param>
+        private void ControlRotate(Vector3 moveDirection)
+        {
+            // カメラモードが通常（Default）なら
+            if (_cameraManager.CameraModeType.Value == CameraMode.Default)
+            {
+                // プレイヤーを移動方向へゆっくり回転する
+                Vector3 LookDir = Vector3.Slerp(transform.forward, moveDirection, _rotationSpeed * Time.fixedDeltaTime);
+                transform.LookAt(transform.position + LookDir);
+            }// エイム状態なら
+            else if (_cameraManager.CameraModeType.Value == CameraMode.Aim)
+            {
+                //NOTE: カメラの向きにプレイヤーを回転する
+                // カメラの位置から画面中央に向かってレイを飛ばす
+                Ray ray = _camera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
+
+                // レイの原点から方向に10m伸ばした座標
+                Vector3 targetPosition = ray.origin + ray.direction * 10f;
+
+                // ターゲットオブジェクトの向きを緩やかに追従
+                Vector3 targetDirection = targetPosition - transform.position;
+                targetDirection.y = 0f; // 高さは考慮しない場合、y軸の回転を無効にする
+
+                // 線形補間を使用して緩やかな回転を行う
+                Quaternion targetRotation = Quaternion.LookRotation(targetDirection.normalized);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10);
             }
         }
 
@@ -269,16 +263,6 @@ namespace Unit
             
             // 画面をシェイク
             _shakeCamera.Shake(_positionStrengthDamage, _rotationStrengthDamage, _shakeDurationDamage);
-        }
-        /// <summary>
-        /// 再誕処理
-        /// </summary>
-        private void ReBirth()
-        {
-            _myAnim.Rebind(); // アニメーターの初期化
-            transform.position = Vector3.zero; // 原点にリスポーン
-            transform.rotation = Quaternion.identity; // 回転も初期状態
-            _myStats.Ready();
         }
         /// <summary>
         /// バイブレーション処理
@@ -468,6 +452,9 @@ namespace Unit
         {
             int burst = (int)Unit.SerectMagic.Burst;
 
+            // 立ち止まって放つので、移動アニメーションを止める
+            _myAnim.SetFloat("Speed", 0);
+            
             PlayMagic(burst, "BurstMagic", false);
         }
         /// <summary>
@@ -516,9 +503,10 @@ namespace Unit
         {
             int enhance = (int)Unit.SerectMagic.Enhance;
             // MPが足りるか
-            if (_myPlayerStats.IsMagicPointEnough(_requiredMagicPoints[enhance]))
+            if (_myPlayerStats.IsMagicPointEnough(_requiredMagicPoints[enhance]) && !_isEnhance)
             {
                 // 強化開始
+                _isEnhance = true;
                 _patStrong.SetActive(true); // エフェクト有効化
                 _weaponActions[0].ChangePower(_strongValue);// 攻撃強化
 
@@ -529,6 +517,7 @@ namespace Unit
                 await UniTask.Delay(TimeSpan.FromSeconds(_strongDuration), cancellationToken: token);// _strongDurarion秒待機
 
                 // 強化終了
+                _isEnhance = false;
                 _patStrong.SetActive(false); // エフェクト無効化
                 _weaponActions[0].ChangePower( -_strongValue);//HACK: 見にくいですがマイナスが付いてます
             }
@@ -551,13 +540,6 @@ namespace Unit
             _weaponActions[0].PlayerWeaponActivate(true, AttackPower);// nullが出る
         }
         /// <summary>
-        /// 攻撃無効化
-        /// </summary>
-        public override void AttackFinish()
-        {
-            _weaponActions[0].PlayerWeaponActivate(false, 0);
-        }
-        /// <summary>
         /// 強攻撃有効化
         /// </summary>
         public void StrongAttackStart()
@@ -565,11 +547,18 @@ namespace Unit
             _weaponActions[0].PlayerWeaponActivate(true, StrongAttackPower);
         }
         /// <summary>
+        /// 攻撃無効化
+        /// </summary>
+        public override void AttackFinish()
+        {
+            _weaponActions[0].PlayerWeaponActivate(false, -AttackPower);
+        }
+        /// <summary>
         /// 強攻撃無効化
         /// </summary>
         public void StrongAttackFinish()
         {
-            _weaponActions[0].PlayerWeaponActivate(false, 0);
+            _weaponActions[0].PlayerWeaponActivate(false, -StrongAttackPower);
         }
 
         public void AvoidStart()
@@ -647,7 +636,7 @@ namespace Unit
 
             // 火を飛ばす
             _testEffectShoot.InstanceFlame(targetTransform);
-            CanMove = true;
+            //CanMove = true;
             Assert.AreNotEqual(targetTransform, default);
         }
 

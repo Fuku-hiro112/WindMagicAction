@@ -7,7 +7,7 @@ using Unit;
 public class WanderingManager : MonoBehaviour
 {
     [SerializeField] private GameObject _wanderingPosStorage;
-    [SerializeField] private EnemyActionBase[] _enemyActions;
+    [SerializeField] private EnemyControllerBase[] _enemyActions;
     public RandomPointInCircle CircleRandomPoint;
 
     private Wandering[] _wanderings;

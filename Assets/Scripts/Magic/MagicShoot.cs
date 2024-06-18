@@ -1,12 +1,7 @@
 using Cysharp.Threading.Tasks;
-using DG.Tweening;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UniRx;
-using UniRx.Triggers;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 public class MagicShoot : MonoBehaviour
 {
@@ -28,23 +23,26 @@ public class MagicShoot : MonoBehaviour
     {
         _camera = Camera.main;
         OnReset();
-
-        //TEST: Á‚·
-        //ShootFlame(_target);
     }
-    // ‰Šú‰»
+    /// <summary>
+    /// åˆæœŸåŒ–
+    /// </summary>
     private void OnReset()
     {
         _burstEffectObjs[0].SetActive(false);
     }
 
-    // ’™‚ß
+    /// <summary>
+    /// è²¯ã‚
+    /// </summary>
     public void Charge()
     {
         _burstEffectObjs[0].SetActive(true);
     }
 
-    // ƒp[ƒeƒBƒNƒ‹‚ğƒXƒgƒbƒv
+    /// <summary>
+    /// ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã‚’ã‚¹ãƒˆãƒƒãƒ—
+    /// </summary>
     public void StopParticle()
     {
         _burstEffectObjs[0].SetActive(false);
@@ -52,65 +50,65 @@ public class MagicShoot : MonoBehaviour
 
     #region Shoot
     /// <summary>
-    /// ‰Î‚ğ¶¬
+    /// ç«ã‚’ç”Ÿæˆ
     /// </summary>
     /// <param name="targetTransform"></param>
     public void InstanceFlame(Transform targetTransform)
     {
-        // ‰Î‚Ì’e‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğ¶¬
+        // ç«ã®å¼¾ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ç”Ÿæˆ
         float forwardCorrection = 1.5f;
         float heightCorrection = 1.5f;
-        Vector3 instancePos = transform.position + new Vector3( -forwardCorrection, heightCorrection, 0);//HACK: ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌŠÖŒW‚Å‚˜²‚É-forward‚Ì•â³‚ğ‚©‚¯‚Ä‚¢‚é
+        Vector3 instancePos = transform.position + new Vector3( -forwardCorrection, heightCorrection, 0);//HACK: ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®é–¢ä¿‚ã§ï½˜è»¸ã«-forwardã®è£œæ­£ã‚’ã‹ã‘ã¦ã„ã‚‹
         
         GameObject flameObj = Instantiate(_burstEffectObjs[1], instancePos, Quaternion.identity);
 
         IDisposable disposable = ShootMagic(targetTransform, flameObj, _flameMoveSpeed);
 
-        // –‚–@‚É‚±‚ÌƒXƒNƒŠƒvƒg‚ğ“n‚·
+        // é­”æ³•ã«ã“ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆã‚’æ¸¡ã™
         flameObj.GetComponent<Flame>().OnStart(this, disposable);
     }
     /// <summary>
-    /// aŒ‚‚ğ¶¬
+    /// æ–¬æ’ƒã‚’ç”Ÿæˆ
     /// </summary>
     /// <param name="targetTransform"></param>
     public void InstanceSlash(Transform targetTransform)
     {
-        // aŒ‚‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğ¶¬
+        // æ–¬æ’ƒã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ç”Ÿæˆ
         float forwardCorrection = 1.85f;
         float heightCorrection = 1f;
-        // ƒvƒŒƒCƒ„[‚Ì³–Ê‚É¶¬
-        Vector3 instancePos = transform.position + new Vector3(0, heightCorrection, forwardCorrection);//HACK: ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌŠÖŒW‚Å‚˜²‚É-forward‚Ì•â³‚ğ‚©‚¯‚Ä‚¢‚é
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ­£é¢ã«ç”Ÿæˆ
+        Vector3 instancePos = transform.position + new Vector3(0, heightCorrection, forwardCorrection);//HACK: ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®é–¢ä¿‚ã§ï½˜è»¸ã«-forwardã®è£œæ­£ã‚’ã‹ã‘ã¦ã„ã‚‹
         Quaternion instanceRotation = transform.rotation;
 
         GameObject slashObj = Instantiate(_slashObj, instancePos, instanceRotation);
 
         IDisposable disposable = ShootMagic(targetTransform, slashObj, _slashMoveSpeed);
 
-        // –‚–@‚É‚±‚ÌƒXƒNƒŠƒvƒg‚ğ“n‚·
+        // é­”æ³•ã«ã“ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆã‚’æ¸¡ã™
         slashObj.GetComponent<Slash>().OnStart(this, disposable);
 
-        // aŒ‚‚ğ2•bŒã‚ÉÁ‚·
+        // æ–¬æ’ƒã‚’2ç§’å¾Œã«æ¶ˆã™
         Destroy(slashObj, _destroyTime);
     }
     /// <summary>
-    /// –‚–@‚ğ•ú‚Â
+    /// é­”æ³•ã‚’æ”¾ã¤
     /// </summary>
-    /// <param name="targetTransform">–Ú•W’n“_</param>
-    /// <param name="magicObj">•ú‚Â–‚–@</param>
+    /// <param name="targetTransform">ç›®æ¨™åœ°ç‚¹</param>
+    /// <param name="magicObj">æ”¾ã¤é­”æ³•</param>
     /// <returns>IDisposable</returns>
     private IDisposable ShootMagic(Transform targetTransform, GameObject magicObj, float moveSpeed)
     {
-        // ‰Î‚Ì’e‚ğƒ^[ƒQƒbƒg‚Ü‚ÅˆÚ“®
+        // ç«ã®å¼¾ã‚’ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¾ã§ç§»å‹•
         IDisposable disposable = Observable.EveryUpdate()
             .Subscribe(_ =>
             {
-                // ƒ^[ƒQƒbƒg‚Ì•ûŒü‚ğ‹‚ß‚é
+                // ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®æ–¹å‘ã‚’æ±‚ã‚ã‚‹
                 Vector3 direction = targetTransform.position - magicObj.transform.position;
 
-                // ƒ^[ƒQƒbƒg‚ÉŒü‚©‚¤ˆÚ“®—Ê‚ğ‹‚ß‚é
+                // ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã«å‘ã‹ã†ç§»å‹•é‡ã‚’æ±‚ã‚ã‚‹
                 Vector3 moveAmount = direction.normalized * moveSpeed * Time.deltaTime;
 
-                // ˆÚ“®
+                // ç§»å‹•
                 magicObj.transform.position += moveAmount;
 
             }).AddTo(magicObj);
@@ -120,26 +118,26 @@ public class MagicShoot : MonoBehaviour
     #endregion
 
     /// <summary>
-    /// ‰æ–Ê’†‰›‚©‚çRay‚ğ”ò‚Î‚µ“–‚½‚Á‚½À•W‚ğ•Ô‚·@
+    /// ç”»é¢ä¸­å¤®ã‹ã‚‰Rayã‚’é£›ã°ã—å½“ãŸã£ãŸåº§æ¨™ã‚’è¿”ã™ã€€
     /// </summary>
     /// <returns></returns>
     public Vector3 ToScreenCenter()
     {
         Vector3 shootPosition;
-        // ƒJƒƒ‰‚©‚ç’¼ü“I‚ÉRay‚ğ”ò‚Î‚µA“–‚½‚Á‚½ˆÊ’u‚É”ò‚Î‚·
-        // ƒJƒƒ‰‚ÌˆÊ’u‚©‚ç‰æ–Ê’†‰›‚ÉŒü‚©‚Á‚ÄƒŒƒC‚ğ”ò‚Î‚·
+        // ã‚«ãƒ¡ãƒ©ã‹ã‚‰ç›´ç·šçš„ã«Rayã‚’é£›ã°ã—ã€å½“ãŸã£ãŸä½ç½®ã«é£›ã°ã™
+        // ã‚«ãƒ¡ãƒ©ã®ä½ç½®ã‹ã‚‰ç”»é¢ä¸­å¤®ã«å‘ã‹ã£ã¦ãƒ¬ã‚¤ã‚’é£›ã°ã™
         Ray ray = _camera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
         RaycastHit hit;
 
-        // Ray‚ªƒIƒuƒWƒFƒNƒg‚É“–‚½‚Á‚½‚©‚Ç‚¤‚©
+        // RayãŒã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«å½“ãŸã£ãŸã‹ã©ã†ã‹
         if (Physics.Raycast(ray, out hit))
         {
-            // Ray‚ª“–‚½‚Á‚½ˆÊ’u‚ğæ“¾‚µ‚Ä•\¦
+            // RayãŒå½“ãŸã£ãŸä½ç½®ã‚’å–å¾—ã—ã¦è¡¨ç¤º
             shootPosition = hit.point;
         }
         else
         {
-            // ƒŒƒC‚ÌŒ´“_‚©‚ç•ûŒü‚É100mL‚Î‚µ‚½À•W
+            // ãƒ¬ã‚¤ã®åŸç‚¹ã‹ã‚‰æ–¹å‘ã«100mä¼¸ã°ã—ãŸåº§æ¨™
             shootPosition = ray.origin + ray.direction * 100f;
         }
 
@@ -147,18 +145,18 @@ public class MagicShoot : MonoBehaviour
     }
 
     /// <summary>
-    /// ‰Î‚Ì‹Ê’…’eˆ—  ƒo[ƒXƒgUŒ‚‚Ì’…’eƒGƒtƒFƒNƒg
+    /// ç«ã®ç‰ç€å¼¾å‡¦ç†  ãƒãƒ¼ã‚¹ãƒˆæ”»æ’ƒã®ç€å¼¾ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
     /// </summary>
     /// <param name="bullet"></param>
     public async UniTaskVoid HitFlameEffect(Vector3 arrivedPos)
     {
-        // ¶¬ƒ|ƒWƒVƒ‡ƒ“
+        // ç”Ÿæˆãƒã‚¸ã‚·ãƒ§ãƒ³
         Vector3 instancePos = new Vector3(arrivedPos.x, -1, arrivedPos.z);
 
-        // ƒGƒtƒFƒNƒg‚ÌƒCƒ“ƒXƒ^ƒ“ƒX¶¬
+        // ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ç”Ÿæˆ
         GameObject burst = Instantiate(_burstEffectObjs[2], instancePos, Quaternion.identity);
         
-        // burstDestroyTime•bŒãburst‚ğ”j‰ó
+        // burstDestroyTimeç§’å¾Œburstã‚’ç ´å£Š
         Destroy(burst, _burstDestroyTime);
 
         await UniTask.Delay(100);
@@ -167,11 +165,11 @@ public class MagicShoot : MonoBehaviour
     }
 
     /// <summary>
-    /// aŒ‚’…’eˆ—
+    /// æ–¬æ’ƒç€å¼¾å‡¦ç†
     /// </summary>
     public void HitSlashEffect(Vector3 impactPosition)
     {
-        //TODO: ƒqƒbƒgƒGƒtƒFƒNƒg”­¶
+        //TODO: ãƒ’ãƒƒãƒˆæ™‚ã‚¨ãƒ•ã‚§ã‚¯ãƒˆç™ºç”Ÿ
         GameObject slash = Instantiate(_hitEffectObj, impactPosition, Quaternion.identity);
         
         Destroy(slash, _hitEffectDestroyTime);

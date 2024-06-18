@@ -7,7 +7,7 @@ using UnityEngine.Assertions;
 
 namespace Unit
 {
-    public class DragonAction : EnemyActionBase
+    public class DragonAction : EnemyControllerBase
     {
         [SerializeField] Material _material;
         [SerializeField] float _canvasDisplayDistance = 30;
@@ -69,7 +69,6 @@ namespace Unit
         public override void AttackStart()
         {
             _weaponActions[0].WeaponActivate(true);
-            IsAttacking = true;
         }
         /// <summary>
         /// çUåÇñ≥å¯âª
@@ -77,7 +76,6 @@ namespace Unit
         public override void AttackFinish()
         {
             _weaponActions[0].WeaponActivate(false);
-            IsAttacking = false;
         }
 
         #endregion

@@ -28,21 +28,21 @@ namespace SettingCamera
         [SerializeField]
         private Camera _camera;
 
-        [SerializeField]
+        [SerializeField, Tooltip("照準画像")]
         private Image _cursor;
-        [SerializeField, Range(0,10)]
+        [SerializeField, Range(0,10), Tooltip("カメラ感度")]
         private float _cameraSensitivity = 5;
-        [SerializeField]
-        private float _switchingSeconds = 2.0f;
-        [SerializeField]
+        [SerializeField, Tooltip("通常状態への切り替え秒数")]
+        private float _switchingSeconds = 0.5f;
+        [SerializeField, Tooltip("Aim状態への切り替え秒数")]
         private float _aimSwitchingSeconds = 0.3f;
 
-        [SerializeField]
+        [SerializeField, Tooltip("現在のカメラ値")]
         private Parameter _currentParameter;
 
-        [SerializeField]
+        [SerializeField, Tooltip("通常時のカメラ値")]
         private Parameter _defaultParameter;
-        [SerializeField]
+        [SerializeField, Tooltip("Aim時のカメラ値")]
         private Parameter _aimParameter;
 
         private Sequence _cameraSequence;
@@ -123,7 +123,6 @@ namespace SettingCamera
                 _currentParameter.Angles += differenceAngle;
             }
         }
-        // 被写体などの移動更新が済んだ後にカメラを更新したいので、LateUpdateを使う
         private void FixedUpdate()
         {
             if (_parent == null || _child == null || _camera == null)// これらがnullの場合以降が処理されないようにする
@@ -169,15 +168,15 @@ namespace SettingCamera
         /// <summary>
         /// カメラのモードを変える
         /// </summary>
-        /// <param name="mode">何のモードに変えるか</param>
+        /// <param name="modeChange">何のモードに変えるか</param>
         /// <param name="lookParameter">LookTargetモードに変える場合はそのパラメーターを</param>
-        public void SwitchMode(CameraMode mode ,Parameter lookParameter = null)
+        public void SwitchMode(CameraMode modeChange ,Parameter lookParameter = null)
         {
             float duration = _switchingSeconds; 
             // エイムモードが絡む切り替え時は素早くカメラを遷移させる
-            if (mode == CameraMode.Aim || _cameraModeType.Value == CameraMode.Aim) duration = _aimSwitchingSeconds;
+            if (modeChange == CameraMode.Aim || _cameraModeType.Value == CameraMode.Aim) duration = _aimSwitchingSeconds;
 
-            switch (mode)// 変更後のモードが
+            switch (modeChange)
             {
                 case CameraMode.Default:
                     _defaultParameter.Position = _defaultParameter.TrackTarget.position;
@@ -187,46 +186,47 @@ namespace SettingCamera
                             _defaultParameter.Angles = new Vector3(15f, transform.eulerAngles.y, 0f);
                             break;
                         default:
-                            _defaultParameter.Angles = CurrentParameter.Angles;
+                            _defaultParameter.Angles = _currentParameter.Angles;
                             break;
                     }
                     break;
                 case CameraMode.Aim:
                     _aimParameter.Position = _aimParameter.TrackTarget.position;
-                    _aimParameter.Angles = CurrentParameter.Angles;
-                    transform.eulerAngles = new Vector3(0f, CurrentParameter.Angles.y, 0f);
+                    _aimParameter.Angles = _currentParameter.Angles;
+                    transform.eulerAngles = new Vector3(0f, _currentParameter.Angles.y, 0f);
                     break;
             }
 
-            _cameraModeType.Value = mode;// mode反映
+            _cameraModeType.Value = modeChange;// mode反映
             // カーソルの表示非表示
             _cursor.enabled = _cameraModeType.Value == CameraMode.Aim;
 
-            CurrentParameter.TrackTarget = null;
+            _currentParameter.TrackTarget = null;
 
-            Parameter startParameter = CurrentParameter;
-            Parameter endParameter = GetParameter(lookParameter);
+            Parameter startParameter = _currentParameter.Clone();
+            Parameter endParameter = GetParameter(lookParameter);//HACK: ここは参照渡し
 
             // シーケンス
             _cameraSequence?.Kill();
             _cameraSequence = DOTween.Sequence();
+            // StartParameterからEndParameterに変更 //HACK: 角度も変更しているのでdurationの間は視点移動出来ない
             _cameraSequence.Append(DOTween
                 .To(() => 0f
-                   , t => Parameter.Lerp(startParameter, endParameter, t, CurrentParameter)
+                   , t => Parameter.Lerp(startParameter, endParameter, t, _currentParameter)
                    , 1f
                    , duration)
                 .SetEase(Ease.OutQuart));
+
             switch (_cameraModeType.Value) 
             {
                 case CameraMode.Default:
                     _cameraSequence.OnUpdate(()=> UpdateTrackTargetBlend(_defaultParameter));
                     break;
                 case CameraMode.Aim:
-                    _cameraSequence.SetUpdate(UpdateType.Fixed, true);//NOTE: FixedUpdateでPlayerの移動を行っているためFixedに合わせないと描画ががくがくする
-                    _cameraSequence.OnUpdate(()=> _aimParameter.Position = _aimParameter.TrackTarget.position);
+                    _cameraSequence.SetUpdate(UpdateType.Fixed, true).OnUpdate(()=> _aimParameter.Position = _aimParameter.TrackTarget.position);
                     break;
             }
-            _cameraSequence.AppendCallback(() => CurrentParameter.TrackTarget = endParameter.TrackTarget);
+            _cameraSequence.AppendCallback(() => _currentParameter.TrackTarget = endParameter.TrackTarget);
         }
         /// <summary>
         /// 現在のモードからパラメーターを取得
@@ -268,20 +268,26 @@ namespace SettingCamera
             public bool IsLimitAngleY;
             public LimitAngle LimitAngleY;
 
-            public static Parameter Lerp(Parameter a, Parameter b, float t, Parameter ret)//TODO: 引数適当過ぎるので変えましょう　Vecter3.Lerpと同じ風にしてる
+            // 参照しない場合のコピーを作成
+            public Parameter Clone()
             {
-                ret.Position = Vector3.Lerp(a.Position, b.Position, t);
-                ret.Angles = LerpAngles(a.Angles, b.Angles, t);
-                ret.Distance = Mathf.Lerp(a.Distance, b.Distance, t);
-                ret.FieldOfView = Mathf.Lerp(a.FieldOfView, b.FieldOfView, t);
-                ret.OffsetPosition = Vector3.Lerp(a.OffsetPosition, b.OffsetPosition, t);
-                ret.OffsetAngles = LerpAngles(a.OffsetAngles, b.OffsetAngles, t);
+                return (Parameter)MemberwiseClone();//NOTE: MemberwiseCloneはobject型を返すのでキャストが必要
+            }
+
+            public static Parameter Lerp(Parameter before, Parameter after, float t, Parameter ret)//TODO: 引数適当過ぎるので変えましょう　Vecter3.Lerpと同じ風にしてる
+            {
+                ret.Position = Vector3.Lerp(before.Position, after.Position, t);
+                ret.Angles = LerpAngles(before.Angles, after.Angles, t);
+                ret.Distance = Mathf.Lerp(before.Distance, after.Distance, t);
+                ret.FieldOfView = Mathf.Lerp(before.FieldOfView, after.FieldOfView, t);
+                ret.OffsetPosition = Vector3.Lerp(before.OffsetPosition, after.OffsetPosition, t);
+                ret.OffsetAngles = LerpAngles(before.OffsetAngles, after.OffsetAngles, t);
 
                 // 角度制限類の反映
-                ret.IsLimitAngleX = b.IsLimitAngleX;
-                ret.LimitAngleX = b.LimitAngleX;
-                ret.IsLimitAngleY = b.IsLimitAngleY;
-                ret.LimitAngleY = b.LimitAngleY;
+                ret.IsLimitAngleX = after.IsLimitAngleX;
+                ret.LimitAngleX = after.LimitAngleX;
+                ret.IsLimitAngleY = after.IsLimitAngleY;
+                ret.LimitAngleY = after.LimitAngleY;
 
                 return ret;
             }
@@ -302,6 +308,7 @@ namespace SettingCamera
                 return ret;
             }
         }
+
         [Serializable]
         public class LimitAngle
         {

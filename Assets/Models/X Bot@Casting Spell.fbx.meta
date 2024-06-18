@@ -47,8 +47,8 @@ ModelImporter:
       loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
       keepOriginalOrientation: 0
       keepOriginalPositionY: 1
       keepOriginalPositionXZ: 0
@@ -73,6 +73,13 @@ ModelImporter:
         messageOptions: 0
       - time: 0.734388
         functionName: BurstFlareShoot
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.8731621
+        functionName: MakeMovable
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0

@@ -14,7 +14,7 @@ public class Presenter : MonoBehaviour
     [SerializeField] TargetDeterminationModel _targetDetermination;
     [SerializeField] TargetTrackingView _targetTracking;
     [SerializeField] CameraManager _cameraManager;
-    [SerializeField] PlayerAction _playerAction;
+    [SerializeField] Unit.PlayerController _playerAction;
     [SerializeField] SerectMagicView _serectMagicView;
     /*
     [SerializeField] UnitStatsModel _statsModel;
@@ -25,7 +25,7 @@ public class Presenter : MonoBehaviour
     {
         _targetDetermination = Camera.main.GetComponent<TargetDeterminationModel>();
         _cameraManager = Camera.main.GetComponent<CameraManager>();
-        _playerAction = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerAction>();
+        _playerAction = GameObject.FindGameObjectWithTag("Player").GetComponent<Unit.PlayerController>();
     }
 
     void Start()

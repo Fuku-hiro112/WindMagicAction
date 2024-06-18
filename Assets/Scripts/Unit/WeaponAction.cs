@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unit;
@@ -18,7 +17,7 @@ public class WeaponAction : MonoBehaviour
 
     private int _power; //現在の攻撃力
     private PlayerStats _playerStats;
-    private PlayerAction playerAction;
+    private Unit.PlayerController playerController;
     private int _healMagicPoint;
     private float _hitStopTime;
     private AudioSource _seAudioSource;
@@ -41,10 +40,10 @@ public class WeaponAction : MonoBehaviour
         // Playerが持っているなら
         if (_hasPlayer)
         {
-            playerAction = gameObject.transform.root.GetComponent<PlayerAction>();
-            Assert.IsNotNull(playerAction, "PlayerActionがNullです");
-            _healMagicPoint = playerAction.AttackHealMagicPoint;
-            _hitStopTime = playerAction.HitStopTime;
+            playerController = gameObject.transform.root.GetComponent<Unit.PlayerController>();
+            Assert.IsNotNull(playerController, "PlayerActionがNullです");
+            _healMagicPoint = playerController.AttackHealMagicPoint;
+            _hitStopTime = playerController.HitStopTime;
 
             gameObject.transform.root.TryGetComponent(out _playerStats);
         }
@@ -77,7 +76,7 @@ public class WeaponAction : MonoBehaviour
                     if (other.gameObject.CompareTag("Player"))
                     {
                         // プレイヤーが回避中か取得
-                        isAvoiding = other.gameObject.GetComponent<PlayerAction>().IsAvoiding;
+                        isAvoiding = other.gameObject.GetComponent<Unit.PlayerController>().IsAvoiding;
                     }
                     
                     return isFirstHit && hasUnitStats && !isAvoiding;//TODO: UnitStatsにするとDragonの尻尾に当たらないのでHitZoneなどのスクリプトをColliderに取り付けるようにしよう（時間あれば）
@@ -92,19 +91,18 @@ public class WeaponAction : MonoBehaviour
                     {
                         _seAudioSource.PlayOneShot(_audioClip);
                     }
-
+                    Debug.Log($"{this.gameObject.name}の攻撃:{_power}");
                     // プレイヤーが持っているなら
                     if (_hasPlayer)
                     {
                         //TODO:　ヒットストップ実装　攻撃者、被攻撃者のアニメーションを少し止める
                         // プレイヤーの攻撃ヒット処理　
-                        playerAction.AttackHit(_hitStopTime);
+                        playerController.AttackHit(_hitStopTime);
                         // 敵の被弾処理 enemyActionBase.OnDamage();
-                        other.gameObject.GetComponent<EnemyActionBase>().OnDamage(_hitStopTime);
+                        other.gameObject.GetComponent<EnemyControllerBase>().OnDamage(_hitStopTime);
 
                         // Mp回復
                         _playerStats.ChangeMagicPoint(_healMagicPoint);
-                        Debug.Log("Playerの攻撃");
 
                         //TODO: MP回復エフェクト発生
                     }
@@ -147,7 +145,7 @@ public class WeaponAction : MonoBehaviour
             _complementCollier.isAttack = active; 
         }
         WeaponActivate(active);
-        ChangePower(attackPower - _power);
+        ChangePower(attackPower);
     }
 #endregion
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using Unit;
 
-public class WargAction : EnemyActionBase
+public class WargAction : EnemyControllerBase
 {
     private List<Transform> _nearbyEnemieList = new List<Transform>();
     [SerializeField] private float _targetPriority = 2;
@@ -104,7 +104,6 @@ public class WargAction : EnemyActionBase
     public override void AttackStart()
     {
         _weaponActions[0].WeaponActivate(true);
-        IsAttacking = true;
     }
     /// <summary>
     /// çUåÇñ≥å¯âª
@@ -112,7 +111,6 @@ public class WargAction : EnemyActionBase
     public override void AttackFinish()
     {
         _weaponActions[0].WeaponActivate(false);
-        IsAttacking = false;
     }
 
 #endregion

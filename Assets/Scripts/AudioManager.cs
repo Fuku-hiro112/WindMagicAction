@@ -37,6 +37,7 @@ public class AudioManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
     /// <summary>
     /// BGM‚ð–Â‚ç‚·
     /// </summary>
@@ -75,7 +76,11 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// SE‚ð–Â‚ç‚·
+    /// </summary>
+    /// <param name="se"></param>
+    /// <param name="isFade"></param>
     public void PlaySE(SESoundData.SE se, bool isFade = false)
     {
         SESoundData data = seSoundDatas.Find(data => data.se == se);
@@ -93,6 +98,11 @@ public class AudioManager : MonoBehaviour
         }
 
     }
+
+    /// <summary>
+    /// SE‚ðŽ~‚ß‚é
+    /// </summary>
+    /// <param name="isFadeOut"></param>
     public void StopSE(bool isFadeOut = false)
     {
         if (isFadeOut)
