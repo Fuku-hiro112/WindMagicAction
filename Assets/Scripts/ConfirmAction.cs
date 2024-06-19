@@ -110,6 +110,10 @@ namespace GameInput
         }
         private void OnLookStop(InputAction.CallbackContext context) => LookDirection = Vector2.zero;
 
+        /// <summary>
+        /// 魔法選択ボタン
+        /// </summary>
+        /// <param name="context"></param>
         private void OnSerectMagic(InputAction.CallbackContext context)
         {
             CurrentMagic = context.ReadValue<Vector2>();
@@ -147,7 +151,16 @@ namespace GameInput
         {
             //Boolで取る
         }
-
+        /// <summary>
+        /// 入力値をある場所から見た方向に変換
+        /// </summary>
+        public Vector3 InputVectorFromPosition(Transform transform)
+        {
+            // 移動方向のベクトルを作成
+            Vector3 direction = MoveDirection;
+            Quaternion horizontalRotation = Quaternion.AngleAxis(transform.eulerAngles.y, Vector3.up);
+            return horizontalRotation * direction;// 水平方向の向きに変換
+        }
         private void Update()
         {
             if (Gamepad.current == null) return; //必ずGamepadが有効かどうかを確認してから値を参照すること

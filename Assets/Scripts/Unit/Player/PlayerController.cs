@@ -68,9 +68,10 @@ namespace Unit
         [SerializeField] private GameObject _patDamage; // ダメージエフェクト
         [SerializeField] private CameraManager _cameraManager;
         [SerializeField] private TargetDeterminationModel _targetDeterminationModel;
-        [SerializeField] private MagicShoot _testEffectShoot;
+        [SerializeField] private MagicShoot _magicShoot;
         [SerializeField] private EnemyManager _enemyManager;
 
+        private bool _isAttacking = false; // 攻撃中か
         private bool _isEnhance = false; // 強化中か
         private HomingBullet _testBullet;
         private ShakeCamera _shakeCamera;
@@ -103,7 +104,7 @@ namespace Unit
         private void Reset()
         {
             _targetDeterminationModel = Camera.main.GetComponent<TargetDeterminationModel>();
-            _testEffectShoot = GetComponent<MagicShoot>();
+            _magicShoot = GetComponent<MagicShoot>();
         }
         private void Awake()
         {
@@ -160,9 +161,7 @@ namespace Unit
             }
 
             // 移動方向のベクトルを作成
-            Vector3 direction = _confirmAction.MoveDirection;
-            Quaternion horizontalRotation = Quaternion.AngleAxis(_camera.transform.eulerAngles.y, Vector3.up);
-            Vector3 horizontalMoveDirection = horizontalRotation * direction;// 水平方向の向きに変換
+            Vector3 horizontalMoveDirection = _confirmAction.InputVectorFromPosition(_camera.transform);
 
             // 移動方向への量に応じて砂煙サイズを制御
             _smokeMain.startSize = 1.5f * horizontalMoveDirection.sqrMagnitude;
@@ -195,12 +194,15 @@ namespace Unit
 
             if (CanMove)
             {
-                OnAttack();
+                OnAttack();//TODO: コンボ攻撃を実装したい
                 OnMagic();
+            }
+            // 回避中でも、攻撃中でもない時
+            if (!IsAvoiding && !_isAttacking)//TODO: 余裕があれば先行入力させたいね
+            {
                 OnAvoid();
             }
         }
-
         /// <summary>
         /// 移動制御
         /// </summary>
@@ -232,7 +234,7 @@ namespace Unit
                 Ray ray = _camera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
 
                 // レイの原点から方向に10m伸ばした座標
-                Vector3 targetPosition = ray.origin + ray.direction * 10f;
+                Vector3 targetPosition = ray.origin + ray.direction * 10f;//NOTE: 別に何mでも良い
 
                 // ターゲットオブジェクトの向きを緩やかに追従
                 Vector3 targetDirection = targetPosition - transform.position;
@@ -323,6 +325,15 @@ namespace Unit
             {
                 // 無敵になる
                 CanMove = false;
+                _myAnim.SetTrigger("MagicCancel");
+
+                //NOTE: BurstMagicの貯め中に回避した場合Particleが残ってしまうので非表示にする
+                _magicShoot.StopParticle();
+
+                // 入力方向に回転させる
+                Vector3 InputDirection = _confirmAction.InputVectorFromPosition(_camera.transform);
+                transform.rotation = Quaternion.LookRotation(InputDirection);
+
                 _myAnim.SetTrigger("Avoid");
             }
         }
@@ -538,6 +549,7 @@ namespace Unit
         public override void AttackStart()
         {
             _weaponActions[0].PlayerWeaponActivate(true, AttackPower);// nullが出る
+            _isAttacking = true;
         }
         /// <summary>
         /// 強攻撃有効化
@@ -545,6 +557,7 @@ namespace Unit
         public void StrongAttackStart()
         {
             _weaponActions[0].PlayerWeaponActivate(true, StrongAttackPower);
+            _isAttacking = true;
         }
         /// <summary>
         /// 攻撃無効化
@@ -552,6 +565,7 @@ namespace Unit
         public override void AttackFinish()
         {
             _weaponActions[0].PlayerWeaponActivate(false, -AttackPower);
+            _isAttacking = false;
         }
         /// <summary>
         /// 強攻撃無効化
@@ -559,6 +573,7 @@ namespace Unit
         public void StrongAttackFinish()
         {
             _weaponActions[0].PlayerWeaponActivate(false, -StrongAttackPower);
+            _isAttacking = false;
         }
 
         public void AvoidStart()
@@ -585,14 +600,14 @@ namespace Unit
         /// </summary>
         public void BurstChargeStart()
         {
-            _testEffectShoot.Charge();
+            _magicShoot.Charge();
         }
         /// <summary>
         /// Burst攻撃：貯め終了
         /// </summary>
         public void BurstChargeFinish()
         {
-            _testEffectShoot.StopParticle();
+            _magicShoot.StopParticle();
         }
 
         /// <summary>
@@ -601,11 +616,11 @@ namespace Unit
         public void SlashShoot()
         {
             // 照準に向かって飛ばす
-            Vector3 targetPosition = _testEffectShoot.ToScreenCenter();
+            Vector3 targetPosition = _magicShoot.ToScreenCenter();
             Transform target = new GameObject().transform;
             target.position = targetPosition;
 
-            _testEffectShoot.InstanceSlash(target);
+            _magicShoot.InstanceSlash(target);
             CanMove = true;
         }
         /// <summary>
@@ -626,7 +641,7 @@ namespace Unit
                 }
                 else// 敵が居なければ
                 {
-                    targetTransform.position = _testEffectShoot.ToScreenCenter();
+                    targetTransform.position = _magicShoot.ToScreenCenter();
                 }
             }
             else// Targetが居れば
@@ -635,7 +650,7 @@ namespace Unit
             }
 
             // 火を飛ばす
-            _testEffectShoot.InstanceFlame(targetTransform);
+            _magicShoot.InstanceFlame(targetTransform);
             //CanMove = true;
             Assert.AreNotEqual(targetTransform, default);
         }
