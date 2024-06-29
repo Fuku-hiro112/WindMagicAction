@@ -176,10 +176,14 @@ namespace SettingCamera
             // エイムモードが絡む切り替え時は素早くカメラを遷移させる
             if (modeChange == CameraMode.Aim || _cameraModeType.Value == CameraMode.Aim) duration = _aimSwitchingSeconds;
 
+            // モードによってパラメーターを変更　ポジション、角度
             switch (modeChange)
             {
+                // デフォルトモードに切り替え時
                 case CameraMode.Default:
                     _defaultParameter.Position = _defaultParameter.TrackTarget.position;
+                    
+                    // 切り替え前のモードによって角度を変える
                     switch (_cameraModeType.Value)
                     {
                         case CameraMode.LookTarget:
@@ -190,6 +194,7 @@ namespace SettingCamera
                             break;
                     }
                     break;
+                // エイムモードに切り替え時
                 case CameraMode.Aim:
                     _aimParameter.Position = _aimParameter.TrackTarget.position;
                     _aimParameter.Angles = _currentParameter.Angles;

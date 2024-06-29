@@ -1,12 +1,10 @@
 using Cysharp.Threading.Tasks;
-using DG.Tweening;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Unit;
 
-public class WargAction : EnemyControllerBase
+public class WargController : EnemyControllerBase
 {
     private List<Transform> _nearbyEnemieList = new List<Transform>();
     [SerializeField] private float _targetPriority = 2;
@@ -21,7 +19,7 @@ public class WargAction : EnemyControllerBase
     }
     protected new void Start()
     {
-        transform.root.TryGetComponent(out WanderingManager);
+        GameObject.FindWithTag("EnemyManager").TryGetComponent(out WanderingManager);
         Assert.IsNotNull(WanderingManager, $"{this}‚ÌWanderingManager‚ªNull‚Å‚·");
         base.Start();
     }
@@ -98,20 +96,6 @@ public class WargAction : EnemyControllerBase
 
 #region AnimationEvent
 
-    /// <summary>
-    /// UŒ‚—LŒø‰»
-    /// </summary>
-    public override void AttackStart()
-    {
-        _weaponActions[0].WeaponActivate(true);
-    }
-    /// <summary>
-    /// UŒ‚–³Œø‰»
-    /// </summary>
-    public override void AttackFinish()
-    {
-        _weaponActions[0].WeaponActivate(false);
-    }
-
 #endregion
+
 }

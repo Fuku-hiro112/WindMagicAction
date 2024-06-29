@@ -14,12 +14,9 @@ public class MagicBase : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.gameObject.name);
         // PlayerˆÈŠO‚É“–‚½‚Á‚½‚È‚ç
         if (!other.gameObject.CompareTag("Player"))
         {
-            Debug.Log(transform.position);
-
             OnHit();
             Destroy(gameObject);
             _disposable.Dispose();

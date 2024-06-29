@@ -340,6 +340,7 @@ MonoBehaviour:
   _maxHealth: 10
   _decreaseDuration: 0.5
   _invincibilityTimeSeconds: 1
+  TargetDisplayPosition: {fileID: 2632495735667354330}
 --- !u!54 &98192832
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -550,3 +551,8 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!4 &2632495735667354330 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400040, guid: 80936c9837a05964192963e010c7dbdc, type: 3}
+  m_PrefabInstance: {fileID: 2632495735666962546}
+  m_PrefabAsset: {fileID: 0}

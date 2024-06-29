@@ -365,14 +365,14 @@ ModelImporter:
         intParameter: 0
         messageOptions: 0
       - time: 0.35694686
-        functionName: AttackStart
+        functionName: Attack0Start
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
       - time: 0.52003396
-        functionName: AttackFinish
+        functionName: Attack0Finish
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
@@ -549,11 +549,11 @@ ModelImporter:
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 0
-  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 79b50b34e44b5fd4db1cdc9535a3c86b, type: 3}
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
-  avatarSetup: 1
+  avatarSetup: 2
   addHumanoidExtraRootOnlyWhenUsingAvatar: 0
   importBlendShapeDeformPercent: 0
   remapMaterialsIfMaterialImportModeIsNone: 1

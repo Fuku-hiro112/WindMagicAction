@@ -41,6 +41,6 @@ public class TitleManager : MonoBehaviour
                 sequence.Append(_imgTitle.DOColor(Color.black, _duration))
                         .Join  (_txtButton.DOColor(Color.black, _duration))
                         .OnComplete(() => SceneManager.LoadScene("GameScene"));// GameScene‚Ö
-            }).AddTo(this);
+            });
     }
 }

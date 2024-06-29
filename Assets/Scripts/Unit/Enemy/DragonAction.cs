@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
 using Cysharp.Threading.Tasks;
 using UnityEngine.Assertions;
 
@@ -62,21 +59,6 @@ namespace Unit
         }
 
         #region AnimationEvent
-
-        /// <summary>
-        /// UŒ‚—LŒø‰»
-        /// </summary>
-        public override void AttackStart()
-        {
-            _weaponActions[0].WeaponActivate(true);
-        }
-        /// <summary>
-        /// UŒ‚–³Œø‰»
-        /// </summary>
-        public override void AttackFinish()
-        {
-            _weaponActions[0].WeaponActivate(false);
-        }
 
         #endregion
     }

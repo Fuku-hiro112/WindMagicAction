@@ -35,21 +35,23 @@ namespace Unit
 
         protected NavMeshAgent MyNavi; // 自身のナビメッシュ
         protected Animator MyAnim; // 自身のアニメーター
+        protected UnitStats MyStats;   // 自身のStats
         protected EnemyManager EnemyManager;
-        private UnitStats _myStats;   // 自身のCombatAction
+        protected WanderingManager WanderingManager = null;
+        protected Vector3 TargetWanderingPoint;
+        protected EnemyState State;
+        protected bool IsAttacking = false;
+
+
         private GameObject _player; // プレイヤー
         private UnitStats _playerStats; // プレイヤーのCombatAction
 
         // 徘徊する
-        protected WanderingManager WanderingManager = null;
         private Wandering _wandering;
-        protected Vector3 TargetWanderingPoint;
         private float _wanderingStateDuration;
 
-        protected EnemyState State;
-
-        protected bool IsAttacking = false;
         private Vector3 _targetPos;
+
 
         protected new void Start()
         {
@@ -57,9 +59,9 @@ namespace Unit
 
             TryGetComponent(out MyAnim); // 自身のアニメーターを取得
             TryGetComponent(out MyNavi); // 自身のナビメッシュを取得
-            TryGetComponent(out _myStats);  // 自身のCombatActionを取得
-            transform.parent.TryGetComponent(out EnemyManager);
-            _player = GameObject.FindGameObjectWithTag("Player"); // プレイヤーを取得
+            TryGetComponent(out MyStats);  // 自身のCombatActionを取得
+            GameObject.FindWithTag("EnemyManager").TryGetComponent(out EnemyManager);
+            _player = GameObject.FindWithTag("Player"); // プレイヤーを取得
 
             Assert.IsNotNull(EnemyManager, $"{this}の_enemyManagerがNullです。EnemyManager配下に敵オブジェクトを生成するようにしてください。");
             Assert.IsNotNull(_player, $"{this}の_playerがNullです");
@@ -85,7 +87,7 @@ namespace Unit
         /// </summary>
         protected void ActionEnemy()
         {
-            if (!_player || _myStats.IsDead) return;// プレイヤー未発見時
+            if (!_player || MyStats.IsDead) return;// プレイヤー未発見時
                                                     // プレイヤー死亡時の対応
             if (_playerStats.IsDead)
             {
@@ -206,7 +208,15 @@ namespace Unit
                     _waitIdleStateTimer = 0f;
                 }
             }
-            
+
+            SwitchStateNoticePlayer(distance);
+        }
+        /// <summary>
+        /// Playerに気が付いている状態変化
+        /// </summary>
+        /// <param name="distance">Playerとの距離</param>
+        protected virtual void SwitchStateNoticePlayer(float distance)
+        {
             // 攻撃範囲内
             if (distance <= FireDistance)
             {
@@ -214,7 +224,7 @@ namespace Unit
             }// 攻撃範囲外
             else if (distance <= SearchRange)// プレイヤーとの距離が索敵範囲内なら
             {
-                if (!IsAttacking) 
+                if (!IsAttacking)
                 {
                     State = EnemyState.Chase;// 攻撃中でないなら追いかける
                 }
@@ -344,17 +354,18 @@ namespace Unit
         /// <summary>
         /// 攻撃有効化
         /// </summary>
-        public override void AttackStart()
+        public override void Attack0Start()
         {
             _weaponActions[0].WeaponActivate(true);
         }
         /// <summary>
         /// 攻撃無効化
         /// </summary>
-        public override void AttackFinish()
+        public override void Attack0Finish()
         {
             _weaponActions[0].WeaponActivate(false);
         }
+
         /// <summary>
         /// 攻撃アニメーション開始
         /// </summary>
@@ -365,7 +376,7 @@ namespace Unit
         /// <summary>
         /// 攻撃アニメーション終了
         /// </summary>
-        public void AttackAnimationEnd()
+        public virtual void AttackAnimationEnd()
         {
             IsAttacking = false;
         }

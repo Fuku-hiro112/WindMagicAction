@@ -163,6 +163,7 @@ namespace GameInput
         }
         private void Update()
         {
+            #region 入力確認 デバック用
             if (Gamepad.current == null) return; //必ずGamepadが有効かどうかを確認してから値を参照すること
 
             _stickL = new Vector2(
@@ -192,6 +193,7 @@ namespace GameInput
             _btnPad[1] = Gamepad.current.dpad.down.isPressed;
             _btnPad[2] = Gamepad.current.dpad.left.isPressed;
             _btnPad[3] = Gamepad.current.dpad.up.isPressed;
+            #endregion
         }
     }
 }

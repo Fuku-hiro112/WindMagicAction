@@ -1,13 +1,13 @@
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.InputSystem; // 新Inputシステムの利用に必要
-using GameInput;
 using Cysharp.Threading.Tasks;
 using System;
+using GameInput;
+using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Assertions;
-using SettingCamera;
 using UniRx;
 using DG.Tweening;
+using SettingCamera;
 
 namespace Unit
 {
@@ -73,7 +73,9 @@ namespace Unit
 
         private bool _isAttacking = false; // 攻撃中か
         private bool _isEnhance = false; // 強化中か
-        private HomingBullet _testBullet;
+
+
+        private HomingBullet _homingBullet;
         private ShakeCamera _shakeCamera;
         private Animator _myAnim; // 自身のアニメーター
         private UnitStats _myStats; // 自身のCombatAction
@@ -93,10 +95,10 @@ namespace Unit
         // パブリック
         public IReadOnlyReactiveProperty<SerectMagic> CurrentMagic => _currentMagic;
         public bool CanMove { get; private set; } = true;
-
+        public bool CanAvoid { get; private set; } = true;
+        public bool IsAvoiding { get; private set; } = false; // 回避中,ダメージを受けない状態にTrueにする
 
         // プロパティ
-        public bool IsAvoiding { get; private set; } = false; // 回避中,ダメージを受けない状態にTrueにする
         public float HitStopTime => _hitStopTime;
         public Dictionary<SerectMagic, int> RequiredMagicDictionary { get; private set; }
             = new Dictionary<SerectMagic, int>(4);
@@ -126,7 +128,7 @@ namespace Unit
             TryGetComponent(out _myStats); // 自身のCombatActionを取得
             TryGetComponent(out _myPlayerStats);
             TryGetComponent(out _myRigidbody);
-            TryGetComponent(out _testBullet);
+            TryGetComponent(out _homingBullet);
             _camera.transform.GetChild(0).TryGetComponent(out _shakeCamera);
             _patSmoke = transform.Find("PatSmoke").gameObject; // 走行エフェクトを取得
             _patStrong = transform.Find("PatStrong").gameObject; // 強化エフェクトを取得
@@ -180,10 +182,10 @@ namespace Unit
             switch (_cameraManager.CameraModeType.Value)
             {
                 case CameraMode.Default:
-                    _targetDeterminationModel.NullTarget();
+                    _targetDeterminationModel.OnUpdate();
                     break;
                 case CameraMode.Aim:
-                    _targetDeterminationModel.OnUpdate();
+                    _targetDeterminationModel.NullTarget();
                     break;
                 case CameraMode.LookTarget:
                     break;
@@ -198,7 +200,8 @@ namespace Unit
                 OnMagic();
             }
             // 回避中でも、攻撃中でもない時
-            if (!IsAvoiding && !_isAttacking)//TODO: 余裕があれば先行入力させたいね
+            CanAvoid = !IsAvoiding && !_isAttacking && !_myStats.IsDead;
+            if (CanAvoid)//TODO: 余裕があれば先行入力させたいね
             {
                 OnAvoid();
             }
@@ -287,20 +290,50 @@ namespace Unit
         /// </summary>
         private void OnAttack()
         {
+            PlayerControls.PlayerActions plaeyerActoins = _confirmAction.InputAction.Player;
             // 攻撃ボタンを押した時
-            if (_confirmAction.InputAction.Player.Fire.WasPressedThisFrame())
+            if (plaeyerActoins.Fire.WasPressedThisFrame())
             {
+                FaceTarget();
                 // 攻撃モーションの発動
                 _myAnim.SetTrigger("Attack");//NOTE: アニメーションイベントで攻撃処理をしている
                 CanMove = false;
             }
             // 強攻撃ボタンを押した時
-            if (_confirmAction.InputAction.Player.StrongAttack.WasPressedThisFrame())
+            if (plaeyerActoins.StrongAttack.WasPressedThisFrame())
             {
+                FaceTarget();
                 _myAnim.SetTrigger("StrongAttack");
                 CanMove = false;
             }
+
+            //AttackProseceWhenPressed(plaeyerActoins.Fire, "Attack");
+            //AttackProseceWhenPressed(plaeyerActoins.StrongAttack, "StrongAttack");
+
         }
+        /// <summary>
+        /// ターゲットの方を向く
+        /// </summary>
+        private void FaceTarget()
+        {
+            GameObject targetObj = _targetDeterminationModel.TargetObj.Value;
+
+            if (targetObj != null)
+            {
+                transform.LookAt(targetObj.transform.position);
+            }
+        }
+        /*
+        private void AttackProseceWhenPressed(InputAction inputAction, string animationName, bool canMove = false)
+        {
+            if (inputAction.WasPressedThisFrame())
+            {
+                _myAnim.SetTrigger(animationName);
+                CanMove = canMove;
+            }
+        }
+        */
+
         /// <summary>
         /// 攻撃ヒット処理
         /// </summary>
@@ -442,7 +475,7 @@ namespace Unit
                 PlayerRotate(transform.position - _camera.transform.position);
 
                 // ホーミング弾を生み出す
-                _testBullet.GenerateBullet();
+                _homingBullet.GenerateBullet();
 
                 // MP消費
                 _myPlayerStats.ChangeMagicPoint(-_requiredMagicPoints[homing]);
@@ -546,7 +579,7 @@ namespace Unit
         /// <summary>
         /// 攻撃有効化
         /// </summary>
-        public override void AttackStart()
+        public override void Attack0Start()
         {
             _weaponActions[0].PlayerWeaponActivate(true, AttackPower);// nullが出る
             _isAttacking = true;
@@ -562,7 +595,7 @@ namespace Unit
         /// <summary>
         /// 攻撃無効化
         /// </summary>
-        public override void AttackFinish()
+        public override void Attack0Finish()
         {
             _weaponActions[0].PlayerWeaponActivate(false, -AttackPower);
             _isAttacking = false;
@@ -575,10 +608,13 @@ namespace Unit
             _weaponActions[0].PlayerWeaponActivate(false, -StrongAttackPower);
             _isAttacking = false;
         }
-
+        /// <summary>
+        /// 回避開始処理
+        /// </summary>
         public void AvoidStart()
         {
             IsAvoiding = true;
+
             Vector3 move = transform.forward * _avoidPower;
             _myRigidbody.AddForce(move, ForceMode.Impulse);
         }
@@ -590,6 +626,9 @@ namespace Unit
             // 無敵時間を終了
             IsAvoiding = false;
         }
+        /// <summary>
+        /// 移動可能にする
+        /// </summary>
         public void MakeMovable()
         {
             CanMove = true;

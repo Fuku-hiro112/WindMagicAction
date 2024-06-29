@@ -11,11 +11,6 @@ namespace Unit
     [RequireComponent(typeof(UnitBase))]
     public class UnitStats : MonoBehaviour
     {
-        [NonSerialized] public bool IsDead; // 死亡の真偽値
-        private ReactiveProperty<int> _health = new ReactiveProperty<int>(); // 現在のヘルス値
-        public IReadOnlyReactiveProperty<int> Health => _health;
-
-
         [Header("Canvas設定")]
         [SerializeField] private GameObject _healthCanvasPrefab;
         [SerializeField] private int _magnificationCanvasScale = 1;// Canvasの大きさ　何倍するか
@@ -25,12 +20,19 @@ namespace Unit
         [SerializeField, Tooltip("無敵時間(秒)")]
         private float _invincibilityTimeSeconds = 0.2f;
 
+        [NonSerialized] public bool IsDead = false; // 死亡の真偽値
         [NonSerialized] public GameObject MyCanvas; // 自身のCanvas
         private UnitBase _myUnit;
         private Image _imgHealth; // ヘルスバー
         private Image _imgDamage;
         private Text _txtHealth; // ヘルス文字
         private Camera _camera;//NOTE: Camera.mainで取るとShake中カメラの切り替えでバグるので
+        
+        
+        private ReactiveProperty<int> _health = new ReactiveProperty<int>(); // 現在のヘルス値
+        public Transform TargetDisplayPosition;
+        public IReadOnlyReactiveProperty<int> Health => _health;
+        public int MaxHealth => _maxHealth;
 
         private void Awake()
         {

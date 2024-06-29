@@ -11,6 +11,7 @@ public class WeaponAction : MonoBehaviour
     [SerializeField] private int _maxPower = 2; //最大攻撃力
     [SerializeField] private Collider _weaponCollier;
     [SerializeField] private ComplementCollider _complementCollier;
+    [SerializeField] private ParticleSystem _weaponParticle = null;
     [SerializeField] private bool _weaponStartActive = false;
     [SerializeField] private bool _hasPlayer;
     [SerializeField] private AudioClip _audioClip;
@@ -31,7 +32,8 @@ public class WeaponAction : MonoBehaviour
         {
             _hasPlayer = true;
         }
-        _weaponCollier = GetComponent<BoxCollider>();
+
+        _weaponCollier = GetComponent<Collider>();
         TryGetComponent(out _complementCollier);
     }
 
@@ -48,6 +50,11 @@ public class WeaponAction : MonoBehaviour
             gameObject.transform.root.TryGetComponent(out _playerStats);
         }
 
+        if (_weaponCollier == null)
+        {
+            _weaponParticle.Stop();
+        }
+
         // AudioSourceの取得
         TryGetComponent(out _seAudioSource);
         
@@ -62,14 +69,15 @@ public class WeaponAction : MonoBehaviour
                 .Where(other => 
                 {
                     bool isFirstHit = false;
+                    GameObject rootObj = other.transform.root.gameObject;
                     // ヒットリストに無ければリストに入れる
-                    if (!_hitObjectList.Contains(other.gameObject))
+                    if (!_hitObjectList.Contains(rootObj))
                     {
                         isFirstHit = true;
-                        _hitObjectList.Add(other.gameObject);
+                        _hitObjectList.Add(rootObj);//TODO: 一番上から２番目のオブジェクトをリストに入れる
                     }
                     // UnitStatsがあるか
-                    bool hasUnitStats = other.gameObject.GetComponent<UnitStats>() != null;
+                    bool hasUnitStats = rootObj.GetComponent<UnitStats>() != null;
 
                     bool isAvoiding = false;
                     // Playerに当たったら
@@ -83,9 +91,10 @@ public class WeaponAction : MonoBehaviour
                 })
                 .Subscribe(other => 
                 {
+                    GameObject rootObj = other.transform.root.gameObject;
+
                     // ダメージ処理
-                    other.gameObject.GetComponent<UnitStats>().OnDamage(_power);
-                    //other.gameObject.GetComponent<UnitStats>().ChangeHealth(-_power);
+                    rootObj.GetComponent<UnitStats>().OnDamage(_power);
 
                     if (_audioClip != null)
                     {
@@ -95,16 +104,23 @@ public class WeaponAction : MonoBehaviour
                     // プレイヤーが持っているなら
                     if (_hasPlayer)
                     {
-                        //TODO:　ヒットストップ実装　攻撃者、被攻撃者のアニメーションを少し止める
                         // プレイヤーの攻撃ヒット処理　
                         playerController.AttackHit(_hitStopTime);
                         // 敵の被弾処理 enemyActionBase.OnDamage();
-                        other.gameObject.GetComponent<EnemyControllerBase>().OnDamage(_hitStopTime);
+                        rootObj.GetComponent<EnemyControllerBase>().OnDamage(_hitStopTime);
 
                         // Mp回復
                         _playerStats.ChangeMagicPoint(_healMagicPoint);
 
                         //TODO: MP回復エフェクト発生
+                    }// 敵が持っているなら
+                    else
+                    {
+                        IMissingAttackCountReseter iAttackCounter;
+
+                        // IAttackCounterがあるなら
+                        if (rootObj.TryGetComponent(out iAttackCounter))
+                            iAttackCounter.MissingAttackCountReset();// 攻撃が外れた回数をリセット
                     }
                 });
     }
@@ -127,11 +143,14 @@ public class WeaponAction : MonoBehaviour
     public void WeaponActivate(bool active)
     {
         // 武器有効時にListの要素を削除する
-        if (active)
+        if (active) _hitObjectList.Clear();
+
+        if      (_weaponCollier != null) _weaponCollier.enabled = active;
+        else if (_weaponParticle != null)//Colliderが無くて、パーティクルがある場合
         {
-            _hitObjectList.Clear();
+            if(active) _weaponParticle.Play();
+            else       _weaponParticle.Stop();
         }
-        _weaponCollier.enabled = active;
     }
     /// <summary>
     /// プレイヤーの武器の有効無効処理

@@ -125,8 +125,8 @@ MonoBehaviour:
   _period: 1
   _targetY: 1
   _accelerationUpperLimit: 60
-  _speed: 0.2
-  _velocity: {x: 0, y: 5, z: -10}
+  _speed: 2
+  _velocity: {x: 0, y: 8, z: -10}
 --- !u!114 &-547410010917083310
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour
                 _gameOverCanvas.gameObject.SetActive(false);
                 _panel.DOColor(Color.black, _duration)
                       .OnComplete(() => SceneManager.LoadScene("TitleScene"));
-            }).AddTo(this);
+            });
 
         // ゲーム中、ボスとプレイヤーの生死を監視
         this.UpdateAsObservable()
@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
                 // プレイヤーが死んだら
                 if (_playerStats.IsDead) OverGame();
 
-            }).AddTo(this);
+            });
 
     }
 

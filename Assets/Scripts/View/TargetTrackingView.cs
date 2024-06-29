@@ -1,7 +1,4 @@
 using DG.Tweening;
-using System.Collections;
-using System.Collections.Generic;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,13 +18,6 @@ public class TargetTrackingView : MonoBehaviour
         _camera = Camera.main;
         _targetImage.enabled = false;
     }
-
-    void Update()
-    {
-        //if (_targetDetermination.TargetObj.Value == null) return;
-        //transform.position = 
-        //    RectTransformUtility.WorldToScreenPoint(Camera.main, _targetDetermination.TargetObj.Value.transform.position + Vector3.up);
-    }
     /// <summary>
     /// カーソル位置の調整
     /// </summary>
@@ -35,7 +25,7 @@ public class TargetTrackingView : MonoBehaviour
     public void AdjustCursorPosition(Vector3 pos)
     {
         transform.position =
-            RectTransformUtility.WorldToScreenPoint(_camera, pos + Vector3.up);//HACK: Vector3.upは高さ補正です。　
+            RectTransformUtility.WorldToScreenPoint(_camera, pos /*+ Vector3.up*/);//HACK: Vector3.upは高さ補正です。　
     }
     /// <summary>
     /// ターゲット画像の表示の切り替え

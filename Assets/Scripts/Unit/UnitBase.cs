@@ -35,8 +35,8 @@ namespace Unit
             }
         }
 
-        public virtual void AttackStart() { }
-        public virtual void AttackFinish() { }
+        public virtual void Attack0Start() { }
+        public virtual void Attack0Finish() { }
     }
 
     //HACK: AnimationEventŠÖ”‚ğ”­¶‚³‚¹‚é‚É‚ÍŒp³Œ³‚ÉŠÖ”‚ª•K—v‚Á‚Û‚¢
@@ -46,10 +46,10 @@ namespace Unit
         /// <summary>
         /// UŒ‚—LŒø‰»
         /// </summary>
-        void AttackStart();
+        void Attack0Start();
         /// <summary>
         /// UŒ‚–³Œø‰»
         /// </summary>
-        void AttackFinish();
+        void Attack0Finish();
     }
 }

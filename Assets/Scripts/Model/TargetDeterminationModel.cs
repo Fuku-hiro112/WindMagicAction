@@ -2,7 +2,6 @@ using System.Linq;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.SocialPlatforms.Impl;
 
 public class TargetDeterminationModel : MonoBehaviour
 {
@@ -18,7 +17,7 @@ public class TargetDeterminationModel : MonoBehaviour
     */
 
     // 視界の最大距離
-    [SerializeField] private float _maxDistance = float.PositiveInfinity;
+    [SerializeField] private float _maxDistance = float.PositiveInfinity;//WHY: 何故無限にしてる？
 
     // 視界の円錐の頂角
     [SerializeField, Tooltip("視界の円錐の頂角")] private float _viewConeApexAngle = 155f;
@@ -27,12 +26,12 @@ public class TargetDeterminationModel : MonoBehaviour
     [SerializeField] private EnemyManager _enemyManager;
     // 評価点の満点
     private const float c_maxPoint = 100;
-    [SerializeField, Tooltip("標準からの距離点数の割合"), Range(0, c_maxPoint)] private int _aimDistanceRatio;
+    [SerializeField, Tooltip("照準からの距離点数の割合"), Range(0, c_maxPoint)] private int _aimDistanceRatio = 40;
 
     // ターゲット
     private ReactiveProperty<GameObject> _targetObj = new ReactiveProperty<GameObject>();
-    public IReadOnlyReactiveProperty<GameObject> TargetObj => _targetObj;
     private Camera _camera;//NOTE: Camera.mainで取るとShake中カメラの切り替えでバグるので
+    public IReadOnlyReactiveProperty<GameObject> TargetObj => _targetObj;
 
     private void Awake()
     {
@@ -43,6 +42,9 @@ public class TargetDeterminationModel : MonoBehaviour
         //NOTE: 振動時カメラ切り替えが起こるため事前に取得していないとエラーが出る
         _camera = Camera.main;
     }
+    /// <summary>
+    /// ターゲットをNullにする
+    /// </summary>
     public void NullTarget()
     {
         _targetObj.Value = null;
@@ -74,6 +76,7 @@ public class TargetDeterminationModel : MonoBehaviour
                 float totalPoint = 0;
 
                 #region 距離ポイント計算
+                
                 // 敵との距離から点数を出す TODO: Rayを使ってEnemyに当たった時にhit.distanceで距離を取って敵との距離を取った方が敵のモデルの大きさに左右されずに住むのでは？
                 float distanceMaxPoint = c_maxPoint - _aimDistanceRatio;
                 var playerDistance = obj.transform.position - _player.transform.position;
@@ -83,10 +86,12 @@ public class TargetDeterminationModel : MonoBehaviour
 
                 // 距離ポイント合計
                 float distancePoint = proximityScore * (distanceMaxPoint / _maxDistance); // 近さスコア×(最大点数/最大視野距離) = 近ければ点数高い
+                
                 #endregion
 
 
                 #region スクリーンポイント計算
+
                 // オブジェクトの位置をスクリーン座標へ
                 Vector3 objToScreenPoint = _camera.WorldToScreenPoint(obj.transform.position); 
                 // スクリーン座標座標 画面中央
@@ -99,12 +104,13 @@ public class TargetDeterminationModel : MonoBehaviour
 
                 // スクリーンポイント合計
                 float screenPoint = proximityScoreFromSenter * (_aimDistanceRatio / maxDistance);
+                
                 #endregion
 
                 // 合計ポイント
                 totalPoint = distancePoint + screenPoint;
                 Debug.Assert(totalPoint <= 100, "トータルスコアが想定外の数値になっています。(totalPoint("+totalPoint+") = distancePoint("+distancePoint+") + screenPoint("+screenPoint+ "))");
-                Debug.Log($"{totalPoint} = 距離{distancePoint} + スクリーン{screenPoint}");
+                //Debug.Log($"{totalPoint} = 距離{distancePoint} + スクリーン{screenPoint}");
                 
                 if (maxPoint < totalPoint)
                 {
@@ -113,23 +119,17 @@ public class TargetDeterminationModel : MonoBehaviour
                         // 代入
                         maxPoint = totalPoint; // 合計ポイント
                         target = obj;// ターゲットオブジェクト
-                        /*
-                        //Debug.Log(obj.name);
-                        //NOTE: 確認用すぐ消そう
-                        _maxPoint = maxPoint;
-                        _maxdis = distancePoint;
-                        _maxscr = screenPoint;
-                        */
                     }
                 }
             }
         });
 
-        // 見た目確認用　targetは青　それ以外白
+        // ターゲットが変わった時
+        // ターゲットがいなくなった時
         if (_targetObj.Value != target && target != null)
         {
             _targetObj.Value = target;
-        }// target反映
+        }// ターゲットが現れた時
         else if (_targetObj.Value != null && target == null)
         {
             _targetObj.Value = target;
@@ -162,11 +162,11 @@ public class TargetDeterminationModel : MonoBehaviour
             if (hit.collider.gameObject.name != targetTransform.gameObject.name)
             {
                 result = true;
-                Debug.Log($"{hit.collider.gameObject.name}に当たっている");
+                //Debug.Log($"{hit.collider.gameObject.name}に当たっている");
             }
             else
             {
-                Debug.Log("ちゃんとターゲットに当たってる");
+                //Debug.Log("ちゃんとターゲットに当たってる");
                 result = false;
             }
         }
@@ -189,8 +189,9 @@ public class TargetDeterminationModel : MonoBehaviour
         Transform minEnemy = null;
         
         // 最小距離を記録
-        float minDistance = 999999;
+        float minDistance = 99999;
 
+        // 全ての敵を見てプレイヤーとの距離が最小の敵を格納する
         foreach (var enemy in _enemyManager.EnemyList)
         {
             // プレイヤーと敵の距離
