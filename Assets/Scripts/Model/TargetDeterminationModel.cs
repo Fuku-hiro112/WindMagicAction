@@ -1,5 +1,6 @@
 using System.Linq;
 using UniRx;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -7,14 +8,6 @@ public class TargetDeterminationModel : MonoBehaviour
 {
     // 自分自身
     [SerializeField] private Transform _player;
-
-    /*
-    // ターゲット
-    //private List<Transform> _targetPositionList;
-
-    // 視野角（度数法）
-    //[SerializeField] private float _sightAngle;
-    */
 
     // 視界の最大距離
     [SerializeField] private float _maxDistance = float.PositiveInfinity;//WHY: 何故無限にしてる？
@@ -27,6 +20,9 @@ public class TargetDeterminationModel : MonoBehaviour
     // 評価点の満点
     private const float c_maxPoint = 100;
     [SerializeField, Tooltip("照準からの距離点数の割合"), Range(0, c_maxPoint)] private int _aimDistanceRatio = 40;
+
+    // 視野
+    private const float c_cos153 = -0.89f;// 約cos153
 
     // ターゲット
     private ReactiveProperty<GameObject> _targetObj = new ReactiveProperty<GameObject>();
@@ -67,10 +63,9 @@ public class TargetDeterminationModel : MonoBehaviour
         {
             //ターゲットからカメラの方向へ正規化したベクトルを作成
             Vector3 targetToCameraDirection = (_camera.transform.position - obj.transform.position).normalized;
-            float cos153 = -0.89f;// 約cos153
 
             // カメラの視界にいるかどうか
-            if (Vector3.Dot(targetToCameraDirection, _camera.transform.forward.normalized) < cos153)//NOTE: .normalizedを付けることにより、内積の計算で|a||b|ベクトルが1になりcosθのみの計算で良くなる
+            if (Vector3.Dot(targetToCameraDirection, _camera.transform.forward.normalized) < c_cos153)//NOTE: .normalizedを付けることにより、内積の計算で|a||b|ベクトルが1になりcosθのみの計算で良くなる
             {
                 // TODO: ポイント計算がおかしい　満点・最小の時の距離を出す必要がありそう
                 float totalPoint = 0;
@@ -110,15 +105,21 @@ public class TargetDeterminationModel : MonoBehaviour
                 // 合計ポイント
                 totalPoint = distancePoint + screenPoint;
                 Debug.Assert(totalPoint <= 100, "トータルスコアが想定外の数値になっています。(totalPoint("+totalPoint+") = distancePoint("+distancePoint+") + screenPoint("+screenPoint+ "))");
-                //Debug.Log($"{totalPoint} = 距離{distancePoint} + スクリーン{screenPoint}");
                 
+                if (obj.name == "RedDragon")
+                {
+                    //Debug.Log($"Doragon : {totalPoint} {target}");
+                }
+
                 if (maxPoint < totalPoint)
                 {
-                    if (!IsObjectsDuringObstacle(obj.transform, _camera.transform))// カメラとオブジェクトの間に障害物があるか
+                    Transform root = obj.transform.root;
+
+                    if (!IsObjectsDuringObstacle(root, _camera.transform))// カメラとオブジェクトの間に障害物があるか
                     {
                         // 代入
                         maxPoint = totalPoint; // 合計ポイント
-                        target = obj;// ターゲットオブジェクト
+                        target = root.gameObject;// ターゲットオブジェクト
                     }
                 }
             }
@@ -159,7 +160,7 @@ public class TargetDeterminationModel : MonoBehaviour
         {//TODO: 障害物レイヤーのみに当たるようにしよう
 
             // オブジェクト以外に当たっていれば
-            if (hit.collider.gameObject.name != targetTransform.gameObject.name)
+            if (hit.collider.transform.root.gameObject.name != targetTransform.gameObject.name)
             {
                 result = true;
                 //Debug.Log($"{hit.collider.gameObject.name}に当たっている");

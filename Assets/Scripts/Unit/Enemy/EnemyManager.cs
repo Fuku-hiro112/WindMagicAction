@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -11,12 +10,12 @@ public class EnemyManager : MonoBehaviour
     {
         var enemys = GameObject.FindGameObjectsWithTag("Enemy");
         EnemyList = new List<GameObject>(enemys);
-    }
 
-    /*void Update()
-    {
-        //NOTE: UpdateでFindはしたくない！！　絶対重い！！
-    }*/
+        foreach (var enemy in EnemyList) 
+        {
+            Debug.Log(enemy.name);
+        }
+    }
 
     // 新しい敵をリストに追加するメソッド
     public void AddEnemy(GameObject enemy)
@@ -64,7 +63,7 @@ public class EnemyManager : MonoBehaviour
         return minEnemy;
     }
     /// <summary>
-    /// 
+    /// あるオブジェクトから一定距離内の敵を取得
     /// </summary>
     /// <param name="objTransform">何から近いか</param>
     /// <param name="range">範囲</param>

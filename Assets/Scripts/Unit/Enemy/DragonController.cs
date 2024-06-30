@@ -33,14 +33,14 @@ namespace Unit
         [SerializeField] private Material _material;
 
         [SerializeField] private Collider[] _colliders;
-        private Rigidbody _myRigidbody;
         private DragonAttackType _attackType = DragonAttackType.None;
-        private bool _isSleeping = true;
+        private Rigidbody _myRigidbody;
+        private GameObject _canvas;
         private int _missingAttackCount = 0;// UŒ‚Žã‚ª“–‚½‚ç‚È‚©‚Á‚½‰ñ”
         private int _minCount = 1;// UŒ‚Žã‚ª“–‚½‚ç‚È‚©‚Á‚½‰ñ”‚ÌÅ‘å’l
         private int _maxCount = 3;
         private int _missTolerance;
-        private GameObject _canvas;
+        private bool _isSleeping = true;
 
         private void Reset()
         {
@@ -68,13 +68,11 @@ namespace Unit
 
             // Q‚Ä‚éó‘Ô‚ÅHP‚ªMax‚¶‚á‚È‚­‚È‚Á‚½‚ç@‹N‚«‚é
             this.UpdateAsObservable()
-                .Where(_ => _isSleeping && MyStats.Health.Value != MyStats.MaxHealth)
-                .First()
+                .First(_ => _isSleeping && MyStats.Health.Value != MyStats.MaxHealth)
                 .Subscribe(_ => OnWakeUp().Forget());
             // Ž€–S‚µ‚½‚Æ‚«ƒAƒjƒ[ƒVƒ‡ƒ“‚ðÄ¶
             this.UpdateAsObservable()
-                .Where(_ => MyStats.IsDead)
-                .First()
+                .First(_ => MyStats.IsDead)
                 .Subscribe(_ => MyAnim.SetTrigger("Death"));
             
         }

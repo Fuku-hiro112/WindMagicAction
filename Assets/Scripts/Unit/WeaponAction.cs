@@ -11,6 +11,7 @@ public class WeaponAction : MonoBehaviour
     [SerializeField] private int _maxPower = 2; //最大攻撃力
     [SerializeField] private Collider _weaponCollier;
     [SerializeField] private ComplementCollider _complementCollier;
+    [SerializeField] private ParticleSystem _weaponParticleParent;
     [SerializeField] private ParticleSystem _weaponParticle = null;
     [SerializeField] private bool _weaponStartActive = false;
     [SerializeField] private bool _hasPlayer;
@@ -37,6 +38,12 @@ public class WeaponAction : MonoBehaviour
         TryGetComponent(out _complementCollier);
     }
 
+    //private void OnParticleCollision(GameObject other)
+    //{
+    //    if(_weaponParticle != null)
+    //    if(IsFirstTimeCollidingUnit(other)) ApplyDamage(other);
+    //}
+
     private void Start()
     {
         // Playerが持っているなら
@@ -50,9 +57,10 @@ public class WeaponAction : MonoBehaviour
             gameObject.transform.root.TryGetComponent(out _playerStats);
         }
 
+        // パーティクルの場合止める
         if (_weaponCollier == null)
         {
-            _weaponParticle.Stop();
+            _weaponParticleParent.Stop();
         }
 
         // AudioSourceの取得
@@ -64,65 +72,100 @@ public class WeaponAction : MonoBehaviour
         //武器を有無を決める
         WeaponActivate(_weaponStartActive);
 
-        // 当たった時 OnTrigger
-        this.OnTriggerEnterAsObservable()
-                .Where(other => 
-                {
-                    bool isFirstHit = false;
-                    GameObject rootObj = other.transform.root.gameObject;
-                    // ヒットリストに無ければリストに入れる
-                    if (!_hitObjectList.Contains(rootObj))
-                    {
-                        isFirstHit = true;
-                        _hitObjectList.Add(rootObj);//TODO: 一番上から２番目のオブジェクトをリストに入れる
-                    }
-                    // UnitStatsがあるか
-                    bool hasUnitStats = rootObj.GetComponent<UnitStats>() != null;
-
-                    bool isAvoiding = false;
-                    // Playerに当たったら
-                    if (other.gameObject.CompareTag("Player"))
-                    {
-                        // プレイヤーが回避中か取得
-                        isAvoiding = other.gameObject.GetComponent<Unit.PlayerController>().IsAvoiding;
-                    }
-                    
-                    return isFirstHit && hasUnitStats && !isAvoiding;//TODO: UnitStatsにするとDragonの尻尾に当たらないのでHitZoneなどのスクリプトをColliderに取り付けるようにしよう（時間あれば）
-                })
-                .Subscribe(other => 
-                {
-                    GameObject rootObj = other.transform.root.gameObject;
-
-                    // ダメージ処理
-                    rootObj.GetComponent<UnitStats>().OnDamage(_power);
-
-                    if (_audioClip != null)
-                    {
-                        _seAudioSource.PlayOneShot(_audioClip);
-                    }
-                    Debug.Log($"{this.gameObject.name}の攻撃:{_power}");
-                    // プレイヤーが持っているなら
-                    if (_hasPlayer)
-                    {
-                        // プレイヤーの攻撃ヒット処理　
-                        playerController.AttackHit(_hitStopTime);
-                        // 敵の被弾処理 enemyActionBase.OnDamage();
-                        rootObj.GetComponent<EnemyControllerBase>().OnDamage(_hitStopTime);
-
-                        // Mp回復
-                        _playerStats.ChangeMagicPoint(_healMagicPoint);
-
-                        //TODO: MP回復エフェクト発生
-                    }// 敵が持っているなら
-                    else
-                    {
-                        IMissingAttackCountReseter iAttackCounter;
-
-                        // IAttackCounterがあるなら
-                        if (rootObj.TryGetComponent(out iAttackCounter))
-                            iAttackCounter.MissingAttackCountReset();// 攻撃が外れた回数をリセット
-                    }
+        // 当たったUnitにダメージを与える
+        if (_weaponParticle != null)
+        // パーティクル衝突時のストリーム
+        this.OnParticleCollisionAsObservable()
+            .Where(other => IsFirstTimeCollidingUnit(other))
+            .Subscribe(other => {
+                ApplyDamage(other);
+                Debug.Log("パーティクル当たった");
                 });
+        else
+            // Collision（Trigger）衝突時のストリーム　
+            this.OnTriggerEnterAsObservable()
+                .Where(other => IsFirstTimeCollidingUnit(other))
+                .Subscribe(other => ApplyDamage(other));
+    }
+
+    /// <summary>
+    /// ダメージを与える
+    /// </summary>
+    /// <param name="obj"></param>
+    private void ApplyDamage(Collider obj) => ApplyDamage(obj.gameObject);
+    private void ApplyDamage(GameObject obj)
+    {
+        GameObject rootObj = obj.transform.root.gameObject;
+
+        // ダメージ処理
+        rootObj.GetComponent<UnitStats>().OnDamage(_power);
+
+        if (_audioClip != null)
+        {
+            _seAudioSource.PlayOneShot(_audioClip);
+        }
+
+        Debug.Log($"{this.gameObject.name}の攻撃:{_power}");
+        
+        // プレイヤーが持っているなら
+        if (_hasPlayer)
+        {
+            // プレイヤーの攻撃ヒット処理　
+            playerController.AttackHit(_hitStopTime);
+            // 敵の被弾処理 enemyActionBase.OnDamage();
+            rootObj.GetComponent<EnemyControllerBase>().OnDamage(_hitStopTime);
+
+            // Mp回復
+            _playerStats.ChangeMagicPoint(_healMagicPoint);
+
+            //TODO: MP回復エフェクト発生
+        }// 敵が持っているなら
+        else
+        {
+            IMissingAttackCountReseter iAttackCounter;
+
+            // IAttackCounterがあるなら
+            if (rootObj.TryGetComponent(out iAttackCounter))
+                iAttackCounter.MissingAttackCountReset();// 攻撃が外れた回数をリセット
+        }
+    }
+
+    /// <summary>
+    /// 初めて当たったUnitか
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    private bool IsFirstTimeCollidingUnit(Collider other) => IsFirstTimeCollidingUnit(other.gameObject);
+    private bool IsFirstTimeCollidingUnit(GameObject obj)
+    {
+        bool isFirstHit = false;
+        GameObject rootObj = obj.transform.root.gameObject;
+        // ヒットリストに無ければリストに入れる
+        if (!_hitObjectList.Contains(rootObj))
+        {
+            isFirstHit = true;
+            _hitObjectList.Add(rootObj);//TODO: 一番上から２番目のオブジェクトをリストに入れる
+        }
+        // UnitStatsがあるか
+        bool hasUnitStats = rootObj.GetComponent<UnitStats>() != null;
+
+        bool isAvoiding = false;
+        // Playerに当たったら
+        if (rootObj.CompareTag("Player"))
+        {
+            // プレイヤーが回避中か取得
+            isAvoiding = rootObj.GetComponent<Unit.PlayerController>().IsAvoiding;
+            Debug.Log($"回避{isAvoiding}");
+        }
+        else
+        {
+            if (rootObj == transform.root.gameObject)
+            {
+                isAvoiding = true;
+            }
+        }
+
+        return isFirstHit && hasUnitStats && !isAvoiding;
     }
 
     /// <summary>
@@ -148,8 +191,8 @@ public class WeaponAction : MonoBehaviour
         if      (_weaponCollier != null) _weaponCollier.enabled = active;
         else if (_weaponParticle != null)//Colliderが無くて、パーティクルがある場合
         {
-            if(active) _weaponParticle.Play();
-            else       _weaponParticle.Stop();
+            if(active) _weaponParticleParent?.Play();
+            else       _weaponParticleParent?.Stop();
         }
     }
     /// <summary>

@@ -4885,9 +4885,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 226b1fdce9c0a4b4486503bc4863824a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxPower: 5
+  _maxPower: 10
   _weaponCollier: {fileID: 7843648611592090133}
   _complementCollier: {fileID: 0}
+  _weaponParticleParent: {fileID: 0}
+  _weaponParticle: {fileID: 0}
   _weaponStartActive: 1
   _hasPlayer: 0
   _audioClip: {fileID: 0}
