@@ -125,7 +125,7 @@ MonoBehaviour:
   _period: 1
   _targetY: 1
   _accelerationUpperLimit: 60
-  _speed: 2
+  _speed: 30
   _velocity: {x: 0, y: 8, z: -10}
 --- !u!114 &-547410010917083310
 MonoBehaviour:
@@ -142,6 +142,7 @@ MonoBehaviour:
   _maxPower: 8
   _weaponCollier: {fileID: 13500000}
   _complementCollier: {fileID: 0}
+  _weaponParticleParent: {fileID: 0}
   _weaponParticle: {fileID: 0}
   _weaponStartActive: 1
   _hasPlayer: 0

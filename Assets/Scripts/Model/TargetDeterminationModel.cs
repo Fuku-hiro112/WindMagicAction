@@ -1,5 +1,6 @@
 using System.Linq;
 using UniRx;
+using Unit;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -113,7 +114,20 @@ public class TargetDeterminationModel : MonoBehaviour
 
                 if (maxPoint < totalPoint)
                 {
+                    Transform targetTrans;
                     Transform root = obj.transform.root;
+                    UnitStats unitStats;
+                    // UnitStatsがあるなら
+                    if (root.TryGetComponent(out unitStats))
+                    {
+                        // ターゲットの位置を渡す
+                        targetTrans = unitStats.TargetDisplayPosition;
+                    }
+                    else
+                    {
+                        // 一番上の階層のオブジェクトを渡す
+                        targetTrans = root;
+                    }
 
                     if (!IsObjectsDuringObstacle(root, _camera.transform))// カメラとオブジェクトの間に障害物があるか
                     {
@@ -160,10 +174,10 @@ public class TargetDeterminationModel : MonoBehaviour
         {//TODO: 障害物レイヤーのみに当たるようにしよう
 
             // オブジェクト以外に当たっていれば
-            if (hit.collider.transform.root.gameObject.name != targetTransform.gameObject.name)
+            if (hit.collider.transform.root.gameObject != targetTransform.gameObject)
             {
                 result = true;
-                //Debug.Log($"{hit.collider.gameObject.name}に当たっている");
+                Debug.Log($"{hit.collider.gameObject.name}に当たっている");
             }
             else
             {

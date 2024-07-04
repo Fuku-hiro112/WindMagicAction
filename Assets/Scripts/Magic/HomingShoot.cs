@@ -34,7 +34,7 @@ public class HomingShoot : MonoBehaviour
     {
         if (_target == default)
         {
-            transform.position += _InjectionDirection * _speed;// CameraŠp“x‚É‚·‚é‚Æ‚¨‚©‚µ‚¢
+            transform.position += _InjectionDirection * _speed * Time.deltaTime;// CameraŠp“x‚É‚·‚é‚Æ‚¨‚©‚µ‚¢
         }
         else
         {

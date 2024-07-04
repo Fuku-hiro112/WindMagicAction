@@ -130,8 +130,9 @@ public class MagicShoot : MonoBehaviour
         RaycastHit hit;
 
         // Rayがオブジェクトに当たったかどうか
-        if (Physics.Raycast(ray, out hit))
+        if (Physics.Raycast(ray, out hit) && hit.collider.gameObject.layer != LayerMask.NameToLayer("PlayerSide"))
         {
+            Debug.Log(hit.collider.gameObject.name);
             // Rayが当たった位置を取得して表示
             shootPosition = hit.point;
         }

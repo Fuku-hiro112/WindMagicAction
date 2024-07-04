@@ -4,6 +4,7 @@ using Unit;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine.Assertions;
+using Unity.VisualScripting;
 
 [RequireComponent(typeof(AudioSource))]
 public class WeaponAction : MonoBehaviour
@@ -49,12 +50,13 @@ public class WeaponAction : MonoBehaviour
         // Playerが持っているなら
         if (_hasPlayer)
         {
-            playerController = gameObject.transform.root.GetComponent<Unit.PlayerController>();
+            GameObject player = GameObject.FindWithTag("Player");
+            playerController = player.GetComponent<Unit.PlayerController>();
             Assert.IsNotNull(playerController, "PlayerActionがNullです");
             _healMagicPoint = playerController.AttackHealMagicPoint;
             _hitStopTime = playerController.HitStopTime;
 
-            gameObject.transform.root.TryGetComponent(out _playerStats);
+            player.TryGetComponent(out _playerStats);
         }
 
         // パーティクルの場合止める
@@ -76,11 +78,13 @@ public class WeaponAction : MonoBehaviour
         if (_weaponParticle != null)
         // パーティクル衝突時のストリーム
         this.OnParticleCollisionAsObservable()
-            .Where(other => IsFirstTimeCollidingUnit(other))
-            .Subscribe(other => {
-                ApplyDamage(other);
-                Debug.Log("パーティクル当たった");
-                });
+            .Where(other => 
+            {
+                bool suicide = false;
+                if (_hasPlayer) suicide = other.CompareTag("Player");
+                return IsFirstTimeCollidingUnit(other) && !suicide; 
+            })
+            .Subscribe(other => ApplyDamage(other));
         else
             // Collision（Trigger）衝突時のストリーム　
             this.OnTriggerEnterAsObservable()

@@ -66,6 +66,7 @@ namespace Unit
 
         [Header("アタッチ必須オブジェクト")]
         [SerializeField] private GameObject _patDamage; // ダメージエフェクト
+        [SerializeField] private ParticleSystem _patStrongAttack; // 強攻撃エフェクト
         [SerializeField] private CameraManager _cameraManager;
         [SerializeField] private TargetDeterminationModel _targetDeterminationModel;
         [SerializeField] private MagicShoot _magicShoot;
@@ -147,12 +148,13 @@ namespace Unit
 
             _patHeal.Stop(); // 回復エフェクトを停止
             _patStrong.SetActive(false); // 強化エフェクトを無効化
+            _patStrongAttack.Stop();
             _myAnim.SetFloat("Speed", 0);
         }
 
         private void FixedUpdate()
         {
-            if (_myStats.IsDead || !CanMove) // 自身が死んでいる、動けない時は何もしない
+            if (_myStats.IsDead || !CanMove || IsAvoiding) // 自身が死んでいる、動けない時は何もしない
             {
                 if(_myStats.IsDead)
                 {
@@ -194,7 +196,7 @@ namespace Unit
             SwitchAim();
             SerectMagic();
 
-            if (CanMove)
+            if (CanMove && !IsAvoiding)
             {
                 OnAttack();//TODO: コンボ攻撃を実装したい
                 OnMagic();
@@ -306,10 +308,6 @@ namespace Unit
                 _myAnim.SetTrigger("StrongAttack");
                 CanMove = false;
             }
-
-            //AttackProseceWhenPressed(plaeyerActoins.Fire, "Attack");
-            //AttackProseceWhenPressed(plaeyerActoins.StrongAttack, "StrongAttack");
-
         }
         /// <summary>
         /// ターゲットの方を向く
@@ -323,16 +321,6 @@ namespace Unit
                 transform.LookAt(targetObj.transform.position);
             }
         }
-        /*
-        private void AttackProseceWhenPressed(InputAction inputAction, string animationName, bool canMove = false)
-        {
-            if (inputAction.WasPressedThisFrame())
-            {
-                _myAnim.SetTrigger(animationName);
-                CanMove = canMove;
-            }
-        }
-        */
 
         /// <summary>
         /// 攻撃ヒット処理
@@ -358,6 +346,7 @@ namespace Unit
             {
                 // 無敵になる
                 CanMove = false;
+                IsAvoiding = true;
                 _myAnim.SetTrigger("MagicCancel");
 
                 //NOTE: BurstMagicの貯め中に回避した場合Particleが残ってしまうので非表示にする
@@ -599,6 +588,19 @@ namespace Unit
         {
             _weaponActions[0].PlayerWeaponActivate(false, -AttackPower);
             _isAttacking = false;
+        }
+        /// <summary>
+        /// 強攻撃パーティクル発生
+        /// </summary>
+        public void StrongAttackParticle()
+        {
+            AudioSource audioSource;
+            _patStrongAttack.gameObject.TryGetComponent(out audioSource);
+            _patStrongAttack.transform.position = transform.position + transform.forward*2;
+
+            audioSource.Play();
+            _patStrongAttack.Play();
+
         }
         /// <summary>
         /// 強攻撃無効化
