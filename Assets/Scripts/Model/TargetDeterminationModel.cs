@@ -70,10 +70,10 @@ public class TargetDeterminationModel : MonoBehaviour
                 float totalPoint = 0;
 
                 #region 距離ポイント計算
-                
-                // 敵との距離から点数を出す TODO: Rayを使ってEnemyに当たった時にhit.distanceで距離を取って敵との距離を取った方が敵のモデルの大きさに左右されずに住むのでは？
+
+                // 敵との距離から点数を出す
                 float distanceMaxPoint = c_maxPoint - _aimDistanceRatio;
-                var playerDistance = obj.transform.position - _player.transform.position;
+                Vector3 playerDistance = obj.transform.position - _player.transform.position;
                 float proximityScore = _maxDistance - playerDistance.magnitude;// 近いほど点数が高い　最高はMaxDistance値
                 // 接近スコアが0未満の時エラーを出す。　マイナス値の場合得点計算がおかしくなるため
                 Debug.Assert(proximityScore >= 0, "接近スコアが0未満になっています！(proximityScore : "+ proximityScore +")");
@@ -97,7 +97,7 @@ public class TargetDeterminationModel : MonoBehaviour
                 Debug.Assert(proximityScoreFromSenter >= 0, "接近スコアが0未満になっています！(proximityScoreFromSenter : " + proximityScore + ")");
 
                 // スクリーンポイント合計
-                float screenPoint = proximityScoreFromSenter * (_aimDistanceRatio / maxDistance);
+                float screenPoint = proximityScoreFromSenter * (_aimDistanceRatio / maxDistance);// 近さスコア×（最大点数 / 最大距離）= 画面中央から近ければ点数が高い
                 
                 #endregion
 
