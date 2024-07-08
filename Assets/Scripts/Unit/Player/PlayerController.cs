@@ -541,7 +541,7 @@ namespace Unit
                 // 強化開始
                 _isEnhance = true;
                 _patStrong.SetActive(true); // エフェクト有効化
-                _weaponActions[0].ChangePower(_strongValue);// 攻撃強化
+                _weaponActions[0].AddPower(_strongValue);// 攻撃強化
 
                 // MP消費
                 _myPlayerStats.ChangeMagicPoint( -_requiredMagicPoints[enhance]);
@@ -552,7 +552,7 @@ namespace Unit
                 // 強化終了
                 _isEnhance = false;
                 _patStrong.SetActive(false); // エフェクト無効化
-                _weaponActions[0].ChangePower( -_strongValue);//HACK: 見にくいですがマイナスが付いてます
+                _weaponActions[0].AddPower( -_strongValue);//HACK: 見にくいですがマイナスが付いてます
             }
             else
             {

@@ -1,11 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.ComponentModel;
-using UnityEngine.InputSystem.HID;
 
 namespace MagicArsenal
 {
-    public class MagicProjectileScriptNew : MonoBehaviour// Assetのスクリプト　主にエフェクト再生用
+    public class MagicProjectileScriptNew : MonoBehaviour// MagicArsenalAssetのスクリプトをそのまま持ってきました　使用用途は主にエフェクト（MagicArsenalの）再生用
     {
         public GameObject impactParticle;
         public GameObject projectileParticle;

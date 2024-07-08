@@ -1,7 +1,6 @@
 using System.Linq;
 using UniRx;
 using Unit;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -68,7 +67,6 @@ public class TargetDeterminationModel : MonoBehaviour
             // カメラの視界にいるかどうか
             if (Vector3.Dot(targetToCameraDirection, _camera.transform.forward.normalized) < c_cos153)//NOTE: .normalizedを付けることにより、内積の計算で|a||b|ベクトルが1になりcosθのみの計算で良くなる
             {
-                // TODO: ポイント計算がおかしい　満点・最小の時の距離を出す必要がありそう
                 float totalPoint = 0;
 
                 #region 距離ポイント計算
@@ -106,11 +104,6 @@ public class TargetDeterminationModel : MonoBehaviour
                 // 合計ポイント
                 totalPoint = distancePoint + screenPoint;
                 Debug.Assert(totalPoint <= 100, "トータルスコアが想定外の数値になっています。(totalPoint("+totalPoint+") = distancePoint("+distancePoint+") + screenPoint("+screenPoint+ "))");
-                
-                if (obj.name == "RedDragon")
-                {
-                    //Debug.Log($"Doragon : {totalPoint} {target}");
-                }
 
                 if (maxPoint < totalPoint)
                 {
@@ -171,19 +164,12 @@ public class TargetDeterminationModel : MonoBehaviour
 
         Debug.DrawLine(startTransform.position, targetPoint, Color.red, 0.1f);
         if (Physics.Raycast(startTransform.position, objDirection, out hit, _maxDistance, layerMask))// カメラからオブジェクトにRayを飛ばす
-        {//TODO: 障害物レイヤーのみに当たるようにしよう
-
+        {
             // オブジェクト以外に当たっていれば
             if (hit.collider.transform.root.gameObject != targetTransform.gameObject)
-            {
                 result = true;
-                Debug.Log($"{hit.collider.gameObject.name}に当たっている");
-            }
             else
-            {
-                //Debug.Log("ちゃんとターゲットに当たってる");
                 result = false;
-            }
         }
 
         // 結果を返す
@@ -193,12 +179,12 @@ public class TargetDeterminationModel : MonoBehaviour
     /// <summary>
     /// 敵が存在しているか
     /// </summary>
-    /// <returns></returns>
+    /// <returns>敵が居ればTrue</returns>
     public bool HasExistsEnemy() => _enemyManager.EnemyList.Count > 0;
     /// <summary>
-    /// プレイヤーから近くの敵を返す
+    /// プレイヤーから一番近くの敵を返す
     /// </summary>
-    /// <returns>近くの敵のTransformを返す</returns>
+    /// <returns>一番近くの敵のTransformを返す</returns>
     public Transform NearEnemy() 
     {
         Transform minEnemy = null;

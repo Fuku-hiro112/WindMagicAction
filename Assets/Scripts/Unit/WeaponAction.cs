@@ -4,7 +4,6 @@ using Unit;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine.Assertions;
-using Unity.VisualScripting;
 
 [RequireComponent(typeof(AudioSource))]
 public class WeaponAction : MonoBehaviour
@@ -20,7 +19,7 @@ public class WeaponAction : MonoBehaviour
 
     private int _power; //現在の攻撃力
     private PlayerStats _playerStats;
-    private Unit.PlayerController playerController;
+    private PlayerController playerController;
     private int _healMagicPoint;
     private float _hitStopTime;
     private AudioSource _seAudioSource;
@@ -39,19 +38,13 @@ public class WeaponAction : MonoBehaviour
         TryGetComponent(out _complementCollier);
     }
 
-    //private void OnParticleCollision(GameObject other)
-    //{
-    //    if(_weaponParticle != null)
-    //    if(IsFirstTimeCollidingUnit(other)) ApplyDamage(other);
-    //}
-
     private void Start()
     {
         // Playerが持っているなら
         if (_hasPlayer)
         {
             GameObject player = GameObject.FindWithTag("Player");
-            playerController = player.GetComponent<Unit.PlayerController>();
+            playerController = player.GetComponent<PlayerController>();
             Assert.IsNotNull(playerController, "PlayerActionがNullです");
             _healMagicPoint = playerController.AttackHealMagicPoint;
             _hitStopTime = playerController.HitStopTime;
@@ -69,22 +62,22 @@ public class WeaponAction : MonoBehaviour
         TryGetComponent(out _seAudioSource);
         
         //攻撃力を最大にする
-        ChangePower(_maxPower);
+        AddPower(_maxPower);
 
         //武器を有無を決める
         WeaponActivate(_weaponStartActive);
 
         // 当たったUnitにダメージを与える
         if (_weaponParticle != null)
-        // パーティクル衝突時のストリーム
-        this.OnParticleCollisionAsObservable()
-            .Where(other => 
-            {
-                bool suicide = false;
-                if (_hasPlayer) suicide = other.CompareTag("Player");
-                return IsFirstTimeCollidingUnit(other) && !suicide; 
-            })
-            .Subscribe(other => ApplyDamage(other));
+            // パーティクル衝突時のストリーム
+            this.OnParticleCollisionAsObservable()
+                .Where(other => 
+                {
+                    bool suicide = false;
+                    if (_hasPlayer) suicide = other.CompareTag("Player");
+                    return IsFirstTimeCollidingUnit(other) && !suicide; 
+                })
+                .Subscribe(other => ApplyDamage(other));
         else
             // Collision（Trigger）衝突時のストリーム　
             this.OnTriggerEnterAsObservable()
@@ -95,7 +88,7 @@ public class WeaponAction : MonoBehaviour
     /// <summary>
     /// ダメージを与える
     /// </summary>
-    /// <param name="obj"></param>
+    /// <param name="obj">ダメージを与えるObj</param>
     private void ApplyDamage(Collider obj) => ApplyDamage(obj.gameObject);
     private void ApplyDamage(GameObject obj)
     {
@@ -122,7 +115,6 @@ public class WeaponAction : MonoBehaviour
             // Mp回復
             _playerStats.ChangeMagicPoint(_healMagicPoint);
 
-            //TODO: MP回復エフェクト発生
         }// 敵が持っているなら
         else
         {
@@ -137,8 +129,8 @@ public class WeaponAction : MonoBehaviour
     /// <summary>
     /// 初めて当たったUnitか
     /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
+    /// <param name="other">当たったもの</param>
+    /// <returns>初めてかどうか</returns>
     private bool IsFirstTimeCollidingUnit(Collider other) => IsFirstTimeCollidingUnit(other.gameObject);
     private bool IsFirstTimeCollidingUnit(GameObject obj)
     {
@@ -158,7 +150,7 @@ public class WeaponAction : MonoBehaviour
         if (rootObj.CompareTag("Player"))
         {
             // プレイヤーが回避中か取得
-            isAvoiding = rootObj.GetComponent<Unit.PlayerController>().IsAvoiding;
+            isAvoiding = rootObj.GetComponent<PlayerController>().IsAvoiding;
             Debug.Log($"回避{isAvoiding}");
         }
         else
@@ -175,8 +167,8 @@ public class WeaponAction : MonoBehaviour
     /// <summary>
     /// 攻撃力の増減処理
     /// </summary>
-    /// <param name="Value"></param>
-    public void ChangePower(int Value)
+    /// <param name="Value">増やす値</param>
+    public void AddPower(int Value)
     {
         _power += Value;
         if (_power < 0) _power = 0;
@@ -186,7 +178,7 @@ public class WeaponAction : MonoBehaviour
     /// <summary>
     /// 武器の有効無効処理
     /// </summary>
-    /// <param name="active"></param>
+    /// <param name="active">攻撃判定</param>
     public void WeaponActivate(bool active)
     {
         // 武器有効時にListの要素を削除する
@@ -202,16 +194,17 @@ public class WeaponAction : MonoBehaviour
     /// <summary>
     /// プレイヤーの武器の有効無効処理
     /// </summary>
-    /// <param name="active"></param>
+    /// <param name="active">攻撃判定</param>
+    /// <param name="attackPower">攻撃力</param>
     public void PlayerWeaponActivate(bool active, int attackPower)
     {
         // 当たり判定の補完　ONOFF
         if (_complementCollier != null) //NOTE: 不具合があるのでデバックの為にもNullチェックを入れている
-        { 
-            _complementCollier.isAttack = active; 
+        {
+            _complementCollier.isAttack = active;
         }
         WeaponActivate(active);
-        ChangePower(attackPower);
+        AddPower(attackPower);
     }
 #endregion
 }

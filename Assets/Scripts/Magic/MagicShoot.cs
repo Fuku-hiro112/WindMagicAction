@@ -118,9 +118,9 @@ public class MagicShoot : MonoBehaviour
     #endregion
 
     /// <summary>
-    /// 画面中央からRayを飛ばし当たった座標を返す　
+    /// 画面中央からRayを飛ばし当たった座標を返す
     /// </summary>
-    /// <returns></returns>
+    /// <returns>画面中央からRayを飛ばして当たった座標</returns>
     public Vector3 ToScreenCenter()
     {
         Vector3 shootPosition;
@@ -170,7 +170,7 @@ public class MagicShoot : MonoBehaviour
     /// </summary>
     public void HitSlashEffect(Vector3 impactPosition)
     {
-        //TODO: ヒット時エフェクト発生
+        // ヒット時エフェクト発生
         GameObject slash = Instantiate(_hitEffectObj, impactPosition, Quaternion.identity);
         
         Destroy(slash, _hitEffectDestroyTime);

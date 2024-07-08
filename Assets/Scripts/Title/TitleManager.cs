@@ -1,6 +1,4 @@
 using GameInput;
-using System.Collections;
-using System.Collections.Generic;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
@@ -22,8 +20,10 @@ public class TitleManager : MonoBehaviour
     {
         AudioManager.Instance.PlayBGM(BGMSoundData.BGM.Play, true);
 
+        // Fadeしてテキスト、ボタンを表示
         _imgTitle.DOColor(Color.white, _duration);
         _txtButton.DOColor(Color.white, _duration);
+
         // textの点滅
         Sequence sequenceButton = DOTween.Sequence();
         sequenceButton.Append(_txtButton.DOFade(1, _duration))

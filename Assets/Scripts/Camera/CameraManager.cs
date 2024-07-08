@@ -261,7 +261,7 @@ namespace SettingCamera
             public Transform TrackTarget;
             public Vector3 Position;
             public Vector3 Angles = new Vector3(20f, -90f, 0f);
-            public float Distance = 7f;　　　　　　　　　　　　// Targetからの距離
+            public float Distance = 7f;　　// Targetからの距離
             public float FieldOfView = 45f;// 視野角
             public Vector3 OffsetPosition = new Vector3(0f, 1f, 0f);
             public Vector3 OffsetAngles;

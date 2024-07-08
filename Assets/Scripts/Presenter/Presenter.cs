@@ -12,10 +12,6 @@ public class Presenter : MonoBehaviour
     [SerializeField] private CameraManager _cameraManager;
     [SerializeField] private Unit.PlayerController _playerAction;
     [SerializeField] private SerectMagicView _serectMagicView;
-    /*
-    [SerializeField] UnitStatsModel _statsModel;
-    [SerializeField] UnitStatsView _statsView;
-    */
 
     private void Reset()
     {
@@ -50,22 +46,5 @@ public class Presenter : MonoBehaviour
         _playerAction.CurrentMagic
             .Subscribe(state => _serectMagicView.VisualizeChoosingMagic(state, _playerAction.RequiredMagicDictionary[state]));
 #endregion
-
-        #region Model￫View[Helth]
-        // Healthのテキスト・Barの更新
-        /*//TODO: わざわざ全ての敵にMVP全部付けるなら要らないのでは？ 
-        _statsModel.Health
-            .Subscribe(health => 
-            {
-                _statsView.UpdateHealthBar(health, _statsModel.MaxHealth);
-                _statsView.UpdateHealthText(health, _statsModel.MaxHealth);
-            });
-        */
-
-        #endregion
-    }
-    void Update()
-    {
-        
     }
 }

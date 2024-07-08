@@ -9,7 +9,7 @@ using UnityEngine.UI;
 namespace Unit
 {
     [RequireComponent(typeof(UnitBase))]
-    public class UnitStats : MonoBehaviour
+    public class UnitStats : MonoBehaviour // Unitの状態を保持している
     {
         [Header("Canvas設定")]
         [SerializeField] private GameObject _healthCanvasPrefab;
@@ -58,7 +58,7 @@ namespace Unit
             Assert.IsNotNull(_camera, "CameraがNullです");
             Ready();// 初期化
 
-            // ドラゴン出ないEnemyなら
+            // ドラゴンでないEnemyなら
             if (gameObject.CompareTag("Enemy") && gameObject.name != "Dragon")
             {
                 // キャンバスをカメラの方に向ける
@@ -96,14 +96,7 @@ namespace Unit
                 );
 
         }
-        /*
-        private void Update()
-        {
-            // キャンバスをカメラに向ける
-            if (gameObject.CompareTag(""))
-            MyCanvas.transform.forward = _camera.transform.forward;
-        }
-        */
+
         /// <summary>
         /// HP画像を現在のHP割合で変更する
         /// </summary>
@@ -117,7 +110,7 @@ namespace Unit
         /// <summary>
         /// ImageのFillAmount値を滑らかに更新
         /// </summary>
-        /// <param name="currentFillAmount"></param>
+        /// <param name="currentFillAmount">現在満たされている割合</param>
         /// <param name="frontImage">手前の減らしたい画像</param>
         /// <param name="backImage">後ろの減らしたい画像</param>
         public void UpdateBarFillAmount(float currentFillAmount, Image frontImage, Image backImage)
@@ -148,7 +141,7 @@ namespace Unit
         /// <summary>
         /// ダメージ処理
         /// </summary>
-        /// <param name="power"></param>
+        /// <param name="power">ダメージの力の値</param>
         public void OnDamage(int power)
         {
             // 武器の現在の攻撃力Powerを照会し、自身のヘルス値を減らす
@@ -169,7 +162,7 @@ namespace Unit
         /// <summary>
         /// HP変動時に最大値と最小値を超えないようにする。
         /// </summary>
-        /// <param name="Value"></param>
+        /// <param name="Value">HPを変動させる値</param>
         public void ChangeHealth(int Value)
         {
             _health.Value =

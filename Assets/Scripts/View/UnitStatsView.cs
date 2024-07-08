@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,7 +6,6 @@ public class UnitStatsView : MonoBehaviour
     [Header("Canvas設定")]
     [SerializeField] private GameObject _healthCanvasPrefab;
     [SerializeField] private int _magnificationCanvasScale = 1;// Canvasの大きさ　何倍するか
-    [SerializeField] private Vector3 _canvasPos = new Vector3(0, 2, 0); // Canvas の位置
 
     private GameObject _myCanvas; // 自身のCanvas
     private Image _imgHealth; // ヘルスバー

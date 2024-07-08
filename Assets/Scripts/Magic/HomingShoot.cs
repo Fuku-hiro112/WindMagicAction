@@ -23,6 +23,10 @@ public class HomingShoot : MonoBehaviour
         _position = transform.localPosition;
     }
 
+    /// <summary>
+    /// 弾の初期設定
+    /// </summary>
+    /// <param name="target"></param>
     public void Initialize(Transform target)
     {
         _InjectionDirection = _camera.transform.forward;
@@ -38,12 +42,12 @@ public class HomingShoot : MonoBehaviour
         }
         else
         {
-            var targetPosition = _target.position;
+            Vector3 targetPosition = _target.position;
             _targetHitPos = new Vector3(targetPosition.x, targetPosition.y + _targetY, targetPosition.z);
 
-            var acceleration = Vector3.zero;
+            Vector3 acceleration = Vector3.zero;
             // 運動方程式の実装（等加速度直線運動）
-            var diff = _targetHitPos - _position;
+            Vector3 diff = _targetHitPos - _position;
             acceleration += (diff - _velocity * _period) * 2f // d = v0t + 1/2at^2(等加速度直線運動) を　a= 2(d-vt) / t^2 に
                              / (_period * _period);
 
@@ -60,16 +64,6 @@ public class HomingShoot : MonoBehaviour
             _position += _velocity * Time.deltaTime;   // 位置m   = 速度m/s　   * deltaTime
 
             transform.position = _position;
-            //Debug.Log("加速度 "+ Pythagorean(acceleration)+" ");
         }
-    }
-
-    float Pythagorean(Vector3 vec)
-    {
-        float v = Mathf.Sqrt
-            (
-            Mathf.Pow(vec.x, 2) + Mathf.Pow(vec.x, 2) + Mathf.Pow(vec.x, 2)
-            );
-        return v;
     }
 }
